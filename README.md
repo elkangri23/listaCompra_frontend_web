@@ -171,13 +171,13 @@ listaCompra_frontend_web/
 
 #### Sprint 1.1: Setup Inicial
 - [x] Inicializar proyecto Next.js 15 con TypeScript
-- [ ] Configurar Tailwind CSS y sistema de diseño
-- [ ] Configurar ESLint + Prettier
-- [ ] Configurar Jest + React Testing Library
-- [ ] Crear estructura de carpetas base
-- [ ] Configurar variables de entorno
-- [ ] Implementar CSP y security headers
-- [ ] Configurar análisis de código estático
+- [x] Configurar Tailwind CSS y sistema de diseño
+- [x] Configurar ESLint + Prettier
+- [x] Configurar Jest + React Testing Library
+- [x] Crear estructura de carpetas base
+- [x] Configurar variables de entorno
+- [x] Implementar CSP y security headers
+- [x] Configurar análisis de código estático
 
 #### Sprint 1.2: Sistema de Diseño Base
 - [ ] Integrar shadcn/ui

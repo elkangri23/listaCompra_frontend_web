@@ -2,7 +2,7 @@
 
 ## 1. Autenticación y Usuarios
 
-- [ ] Como usuario, puedo registrarme con email y contraseña para tener una cuenta segura.
+- [x] Como usuario, puedo registrarme con email y contraseña para tener una cuenta segura.
 - [ ] Como usuario, puedo iniciar sesión y cerrar sesión de forma segura usando NextAuth.js y JWT.
 - [ ] Como usuario, puedo recuperar mi contraseña mediante email.
 - [ ] Como usuario, puedo editar mi perfil, cambiar nombre, email o contraseña.
@@ -51,14 +51,14 @@
 
 ## 7. Seguridad
 
-- [ ] Como usuario, todos mis datos están protegidos con HTTPS, CSP, protección XSS y CSRF.
+- [x] Como usuario, todos mis datos están protegidos con HTTPS, CSP, protección XSS y CSRF.
 - [ ] Como usuario, los formularios sanitizan y validan entrada del lado cliente antes de enviarse.
 - [ ] Como usuario, los tokens y cookies se guardan de forma segura (HttpOnly, SameSite, Secure).
 
 ## 8. Tests, Calidad y Monitorización
 
-- [ ] Como desarrollador, puedo ejecutar tests unitarios, integración y E2E locales y en pipelines.
-- [ ] Como desarrollador, puedo ver métricas de cobertura de tests y recibir feedback para optimización.
+- [x] Como desarrollador, puedo ejecutar tests unitarios, integración y E2E locales y en pipelines.
+- [x] Como desarrollador, puedo ver métricas de cobertura de tests y recibir feedback para optimización.
 - [ ] Como developer, sistemas de error tracking (Sentry) reportan errores de frontend automáticamente.
 
 ## 9. Performance y Optimización
