@@ -2,15 +2,15 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { DM_Sans, Inter } from 'next/font/google'
 
-import { AppProviders } from '@/components/providers/app-providers'
+import { ThemeProvider } from '@/components/theme-provider'
 
 const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-sans' })
 const dmSans = DM_Sans({ subsets: ['latin'], display: 'swap', variable: '--font-display' })
 
 export const metadata: Metadata = {
-  title: 'ListaCompra — Plataforma colaborativa',
+  title: 'ListaCompra — Sistema de diseño',
   description:
-    'Gestiona tus listas colaborativas con autenticación segura, componentes accesibles y soporte de temas personalizables.',
+    'Base de componentes accesibles, tokens de diseño y soporte de temas para la aplicación ListaCompra.',
 }
 
 export default function RootLayout({
@@ -21,9 +21,9 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={`${inter.variable} ${dmSans.variable} min-h-screen bg-background font-sans antialiased`}>
-        <AppProviders>
+        <ThemeProvider>
           <main className="min-h-screen bg-background text-foreground">{children}</main>
-        </AppProviders>
+        </ThemeProvider>
       </body>
     </html>
   )
