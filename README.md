@@ -180,13 +180,13 @@ listaCompra_frontend_web/
 - [x] Configurar análisis de código estático
 
 #### Sprint 1.2: Sistema de Diseño Base
-- [ ] Integrar shadcn/ui
-- [ ] Crear componentes atómicos (Button, Input, Card, etc.)
-- [ ] Implementar sistema de colores y tipografía
-- [ ] Configurar temas (light/dark mode)
-- [ ] Crear documentación de componentes con Storybook
-- [ ] Implementar tokens de diseño
-- [ ] Tests unitarios de componentes UI
+- [x] Integrar shadcn/ui
+- [x] Crear componentes atómicos (Button, Input, Card, etc.)
+- [x] Implementar sistema de colores y tipografía
+- [x] Configurar temas (light/dark mode)
+- [x] Crear documentación de componentes con Storybook
+- [x] Implementar tokens de diseño
+- [x] Tests unitarios de componentes UI
 
 ### Fase 2: Autenticación y Autorización (Semanas 3-4)
 
