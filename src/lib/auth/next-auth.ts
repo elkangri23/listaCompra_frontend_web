@@ -18,8 +18,8 @@ const callbacks: NextAuthConfig['callbacks'] = {
       token.refreshToken = enrichedUser.refreshToken
       token.expiresAt = enrichedUser.expiresAt
       token.user = {
-        id: user.id,
-        email: user.email!,
+        id: user.id ?? '',
+        email: user.email ?? '',
         name: user.name ?? '',
         image: user.image ?? undefined,
         roles: enrichedUser.roles ?? [],
@@ -51,8 +51,11 @@ const callbacks: NextAuthConfig['callbacks'] = {
     return token
   },
   async session({ session, token }) {
-    if (token.user) {
-      session.user = token.user
+    if (token.user && typeof token.user === 'object') {
+      session.user = {
+        ...session.user,
+        ...token.user,
+      }
     }
 
     if (token.accessToken && typeof token.accessToken === 'string') {
@@ -114,8 +117,9 @@ export const authConfig: NextAuthConfig = {
   ],
   callbacks,
   events: {
-    async signOut({ token }) {
-      if (token?.refreshToken) {
+    async signOut(message) {
+      // Check if it's a JWT strategy signOut (has token)
+      if ('token' in message && message.token?.refreshToken) {
         // In future we can notify backend to revoke refresh token
       }
     },

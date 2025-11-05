@@ -1,9 +1,9 @@
 
 import type { Config } from 'tailwindcss'
-import { fontFamily } from 'tailwindcss/defaultTheme'
+import defaultTheme from 'tailwindcss/defaultTheme'
 
 const config: Config = {
-  darkMode: ['class'],
+  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -59,8 +59,8 @@ const config: Config = {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        sans: ['var(--font-sans)', ...fontFamily.sans],
-        display: ['var(--font-display)', ...fontFamily.sans],
+        sans: ['var(--font-sans)', ...(defaultTheme.fontFamily?.sans || [])],
+        display: ['var(--font-display)', ...(defaultTheme.fontFamily?.sans || [])],
       },
       keyframes: {
         'accordion-down': {
