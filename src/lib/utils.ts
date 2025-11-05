@@ -1,8 +1,15 @@
 // Shared utility functions
-import { v4 as uuidv4 } from 'uuid';
-
 export function generateUUID(): string {
-  return uuidv4();
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  // Fallback RFC4122 v4-like generator
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+    const random = (Math.random() * 16) | 0;
+    const value = char === 'x' ? random : (random & 0x3) | 0x8;
+    return value.toString(16);
+  });
 }
 
 export function isValidName(name: string): boolean {
@@ -28,4 +35,23 @@ export function normalizeEmail(email: string): string {
 
 export function isValidPassword(password: string): boolean {
   return password.length >= 8 && password.length <= 100;
+}
+
+type ClassValue = string | false | null | undefined | ClassValue[];
+
+export function cn(...inputs: ClassValue[]): string {
+  const classes: string[] = [];
+
+  const processValue = (value: ClassValue): void => {
+    if (!value) return;
+    if (Array.isArray(value)) {
+      value.forEach(processValue);
+    } else {
+      classes.push(value);
+    }
+  };
+
+  inputs.forEach(processValue);
+
+  return classes.join(' ');
 }
