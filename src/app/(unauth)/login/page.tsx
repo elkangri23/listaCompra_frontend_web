@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Suspense } from 'react'
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Text } from '@/components/ui'
 import { LoginForm } from '@/features/auth/components/login-form'
@@ -18,7 +19,9 @@ export default function LoginPage() {
         <CardDescription>Ingresa tus credenciales para continuar gestionando tus listas.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <LoginForm />
+        <Suspense fallback={<div>Cargando...</div>}>
+          <LoginForm />
+        </Suspense>
         <div className="text-right text-sm">
           <Link className="font-medium text-primary underline-offset-4 hover:underline" href="/forgot-password">
             ¿Olvidaste tu contraseña?
