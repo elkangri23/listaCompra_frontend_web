@@ -1,0 +1,73 @@
+import { Meta, Canvas } from '@storybook/blocks'
+import { designTokens } from '@/lib/design-tokens'
+
+<Meta title="Fundamentos/Tokens de diseño" />
+
+# Tokens de diseño
+
+La base de nuestro sistema de diseño está construida sobre tokens semánticos que permiten escalar la interfaz en web y
+plataformas futuras. Los valores se mantienen sincronizados con Tailwind y los componentes de la librería UI.
+
+## Colores
+
+<Canvas>
+  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    {Object.entries(designTokens.colors).map(([token, value]) => (
+      <div key={token} className="rounded-lg border bg-card p-4 shadow-sm">
+        <div className="flex items-center justify-between text-sm font-medium">
+          <span>{token}</span>
+          <code className="text-xs text-muted-foreground">{value}</code>
+        </div>
+        <div className="mt-4 h-16 rounded-md border" style={{ background: value }} />
+      </div>
+    ))}
+  </div>
+</Canvas>
+
+## Tipografía
+
+<Canvas>
+  <div className="space-y-4">
+    <section>
+      <h3 className="text-lg font-semibold">Familias</h3>
+      <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
+        <li><strong>Sans</strong>: {designTokens.typography.fontSans}</li>
+        <li><strong>Display</strong>: {designTokens.typography.fontDisplay}</li>
+      </ul>
+    </section>
+
+    <section>
+      <h3 className="text-lg font-semibold">Escalas</h3>
+      <pre className="rounded-lg bg-muted p-4 text-xs">
+        {JSON.stringify(designTokens.typography.heading, null, 2)}
+      </pre>
+    </section>
+  </div>
+</Canvas>
+
+## Espaciado y radios
+
+<Canvas>
+  <div className="grid gap-6 md:grid-cols-2">
+    <div>
+      <h3 className="text-lg font-semibold">Espaciado</h3>
+      <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+        {Object.entries(designTokens.spacing).map(([token, value]) => (
+          <li key={token}>
+            <strong>{token}</strong>: {value}
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h3 className="text-lg font-semibold">Radios</h3>
+      <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+        {Object.entries(designTokens.radius).map(([token, value]) => (
+          <li key={token}>
+            <strong>{token}</strong>: {value}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</Canvas>

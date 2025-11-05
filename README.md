@@ -180,25 +180,25 @@ listaCompra_frontend_web/
 - [x] Configurar análisis de código estático
 
 #### Sprint 1.2: Sistema de Diseño Base
-- [ ] Integrar shadcn/ui
-- [ ] Crear componentes atómicos (Button, Input, Card, etc.)
-- [ ] Implementar sistema de colores y tipografía
-- [ ] Configurar temas (light/dark mode)
-- [ ] Crear documentación de componentes con Storybook
-- [ ] Implementar tokens de diseño
-- [ ] Tests unitarios de componentes UI
+- [x] Integrar shadcn/ui
+- [x] Crear componentes atómicos (Button, Input, Card, etc.)
+- [x] Implementar sistema de colores y tipografía
+- [x] Configurar temas (light/dark mode)
+- [x] Crear documentación de componentes con Storybook
+- [x] Implementar tokens de diseño
+- [x] Tests unitarios de componentes UI
 
 ### Fase 2: Autenticación y Autorización (Semanas 3-4)
 
 #### Sprint 2.1: Sistema de Autenticación
-- [ ] Configurar NextAuth.js v5
-- [ ] Implementar login con email/password
-- [ ] Implementar registro de usuarios
-- [ ] Implementar recuperación de contraseña
-- [ ] Crear middleware de autenticación
-- [ ] Implementar refresh token automático
-- [ ] Manejo de errores de autenticación
-- [ ] Tests de flujos de autenticación
+- [x] Configurar NextAuth.js v5
+- [x] Implementar login con email/password
+- [x] Implementar registro de usuarios
+- [x] Implementar recuperación de contraseña
+- [x] Crear middleware de autenticación
+- [x] Implementar refresh token automático
+- [x] Manejo de errores de autenticación
+- [x] Tests de flujos de autenticación
 
 #### Sprint 2.2: Gestión de Sesiones
 - [ ] Implementar ProtectedRoute HOC
