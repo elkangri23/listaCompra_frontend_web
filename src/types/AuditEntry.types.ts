@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { generateUUID } from '@/lib/utils';
 
 interface AuditEntryProps {
   id?: string;
@@ -24,7 +24,7 @@ export class AuditEntry {
   public readonly changedFields?: string[];
 
   private constructor(props: AuditEntryProps) {
-    this.id = props.id || uuidv4();
+    this.id = props.id || generateUUID();
     this.entityType = props.entityType;
     this.entityId = props.entityId;
     this.changeType = props.changeType;
