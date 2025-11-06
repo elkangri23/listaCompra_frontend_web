@@ -5,8 +5,8 @@
 ## � Estado del Proyecto
 
 **Última actualización**: 6 de noviembre de 2025  
-**Progreso general**: ~50% completado  
-**Fase actual**: Fase 3 - Gestión de Listas 📋 (Pendiente)
+**Progreso general**: ~60% completado  
+**Fase actual**: Fase 3.2 - Colaboración en Listas (Pendiente)
 
 ### ✅ Completado
 - ✅ Configuración base de Next.js 15 con TypeScript
@@ -242,17 +242,17 @@ listaCompra_frontend_web/
 - [x] Persistencia de sesión con cookies seguras (HttpOnly, SameSite, Secure) por NextAuth
 - [x] Tests E2E de flujos de autenticación
 
-### Fase 3: Gestión de Listas 📋 (Pendiente)
+### Fase 3: Gestión de Listas 📋 (Completada)
 
-#### Sprint 3.1: CRUD de Listas
-- [ ] Implementar listado de listas del usuario
-- [ ] Crear nueva lista
-- [ ] Editar información de lista
-- [ ] Eliminar lista
-- [ ] Vista detalle de lista
-- [ ] Filtros y búsqueda de listas
-- [ ] Paginación de resultados
-- [ ] Tests de componentes de listas
+#### Sprint 3.1: CRUD de Listas ✅ (Completada)
+- [x] Implementar listado de listas del usuario
+- [x] Crear nueva lista
+- [x] Editar información de lista
+- [x] Eliminar lista
+- [x] Vista detalle de lista
+- [x] Filtros y búsqueda de listas
+- [x] Paginación de resultados
+- [x] Tests de componentes de listas
 
 #### Sprint 3.2: Colaboración en Listas
 - [ ] Invitar usuarios a lista (por email)

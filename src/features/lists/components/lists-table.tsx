@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Lista } from '@/types/Lista.types';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { Trash2 } from 'lucide-react';
 import { useDeleteList, useUpdateList } from '../hooks/use-lists';
 import { EditListDialog } from './edit-list-dialog';
@@ -50,7 +51,7 @@ export function ListsTable({ lists }: ListsTableProps) {
       <TableBody>
         {lists.map((list) => (
           <TableRow key={list.id}>
-            <TableCell>{list.nombre}</TableCell>
+            <TableCell><Link href={`/lists/${list.id}`} className="hover:underline">{list.nombre}</Link></TableCell>
             <TableCell>{list.descripcion}</TableCell>
             <TableCell className="text-right">
               <EditListDialog list={list} onSubmit={handleUpdateList(list.id)} />

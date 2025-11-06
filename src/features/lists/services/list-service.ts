@@ -2,8 +2,19 @@ import { axiosInstance } from '@/lib/api/axios-instance';
 import { CreateListDto, UpdateListDto } from '@/types/dtos/lists';
 import { Lista } from '@/types/Lista.types';
 
-const getLists = async (): Promise<Lista[]> => {
-  const response = await axiosInstance.get<Lista[]>('/lists');
+import { PaginatedResponse } from '@/types/PaginatedResponse.types';
+
+const getLists = async (
+  query?: string,
+  page = 1,
+  limit = 10
+): Promise<PaginatedResponse<Lista>> => {
+  const response = await axiosInstance.get<PaginatedResponse<Lista>>(
+    '/lists',
+    {
+      params: { q: query, page, limit },
+    }
+  );
   return response.data;
 };
 
