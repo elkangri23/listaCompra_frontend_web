@@ -1,7 +1,7 @@
 import { isAxiosError } from 'axios'
 import { z } from 'zod'
 
-import { apiClient } from '@/lib/api/axios-instance'
+import { axiosInstance } from '@/lib/api/axios-instance'
 import type {
   AuthResponse,
   AuthTokens,
@@ -94,7 +94,7 @@ export async function login(request: LoginRequest): Promise<AuthResponse> {
       password: request.password,
     }
 
-    const { data } = await apiClient.post('/auth/login', payload)
+    const { data } = await axiosInstance.post('/auth/login', payload)
     const parsed = authResponseSchema.parse(data)
 
     return {
@@ -124,7 +124,7 @@ export async function registerUser(request: RegisterRequest): Promise<void> {
       password: request.password,
     }
 
-    const response = await apiClient.post('/auth/register', payload)
+    const response = await axiosInstance.post('/auth/register', payload)
     messageResponseSchema.parse(response.data ?? {})
   } catch (error) {
     throw buildAuthApiError(error, 'No se pudo completar el registro. Inténtalo nuevamente.')
@@ -137,7 +137,7 @@ export async function requestPasswordReset(request: ForgotPasswordRequest): Prom
       email: normalizeEmail(request.email),
     }
 
-    const response = await apiClient.post('/auth/forgot-password', payload)
+    const response = await axiosInstance.post('/auth/forgot-password', payload)
     messageResponseSchema.parse(response.data ?? {})
   } catch (error) {
     throw buildAuthApiError(error, 'No se pudo enviar el enlace de recuperación.')
@@ -150,7 +150,7 @@ export async function refreshAccessToken(request: RefreshTokenRequest): Promise<
   }
 
   try {
-    const { data } = await apiClient.post('/auth/refresh-token', {
+    const { data } = await axiosInstance.post('/auth/refresh-token', {
       refreshToken: request.refreshToken,
     })
 
