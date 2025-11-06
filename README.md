@@ -2,11 +2,11 @@
 
 **Sistema frontend moderno y escalable** construido con **Next.js 15**, **TypeScript** y **Tailwind CSS** siguiendo **arquitectura limpia** y **principios SOLID**.
 
-## � Estado del Proyecto
+## 📊 Estado del Proyecto
 
-**Última actualización**: 6 de noviembre de 2025
-**Progreso general**: ~70% completado
-**Fase actual**: Fase 2 - Autenticación completa (100%) | Fase 3 - Gestión de Listas (85%)
+**Última actualización**: 7 de enero de 2025
+**Progreso general**: ~75% completado
+**Fase actual**: Fase 4 - Productos (100%) | Fase 5 - IA (Sprint 5.1 completado ✅)
 
 ### ✅ Completado
 - ✅ Configuración base de Next.js 15 con TypeScript
@@ -15,34 +15,39 @@
 - ✅ Sistema de autenticación completo con NextAuth.js v5
 - ✅ Páginas de login, registro y recuperación de contraseña
 - ✅ Dashboard protegido con información de usuario
-- ✅ **Gestión de perfil completa (Sprint 2.3)** - NUEVO
-- ✅ **Edición de perfil (nombre, email, bio)** - NUEVO
-- ✅ **Cambio de contraseña con validaciones** - NUEVO
-- ✅ CRUD completo de listas (crear, editar, eliminar, listar) - componentes y servicios
-- ✅ Sistema de invitaciones a listas - componentes, hooks y servicios
-- ✅ Gestión de categorías de productos - hooks y servicios
-- ✅ CRUD de productos en listas - componentes, hooks y servicios completos
+- ✅ **Gestión de perfil completa (Sprint 2.3)**
+- ✅ **Edición de perfil (nombre, email, bio)**
+- ✅ **Cambio de contraseña con validaciones**
+- ✅ CRUD completo de listas (crear, editar, eliminar, listar)
+- ✅ Sistema de invitaciones a listas
+- ✅ Gestión de categorías de productos
+- ✅ CRUD de productos en listas
+- ✅ **Búsqueda y filtros en tiempo real (Sprint 4.2)**
+- ✅ **Historial de productos comprados**
+- ✅ **Sugerencias de productos basadas en frecuencia**
+- ✅ **Ordenamiento y paginación de productos**
+- ✅ **Categorización inteligente con IA (Sprint 5.1)** - NUEVO
+- ✅ **Auto-categorización con confidence scoring** - NUEVO
+- ✅ **Toggle AI on/off en formularios de productos** - NUEVO
 - ✅ Validación de formularios con Zod en todos los features
 - ✅ Configuración de seguridad (CSP, headers)
 - ✅ Testing setup (Jest + React Testing Library)
 - ✅ React Query (TanStack Query) para estado asíncrono
 - ✅ QueryClientProvider configurado en AppProviders
 - ✅ SessionProvider de NextAuth configurado
-- ✅ **Sistema de notificaciones Sonner (toasts)** - NUEVO
+- ✅ **Sistema de notificaciones Sonner (toasts)**
 - ✅ Componentes de paginación reutilizables
 - ✅ Corrección de errores de compilación (imports, props, providers)
 
 ### 🚧 En Progreso
-- 🚧 Página detalle de lista completa (actualmente placeholder temporal)
-- 🚧 Búsqueda y filtros en tiempo real de productos
+- 🚧 Tests unitarios de componentes AI
 - 🚧 Accesibilidad WCAG 2.2 completa
 
 ### 🔜 Próximamente
-- 🔜 Funcionalidades avanzadas de productos (drag & drop, reordenamiento)
-- 🔜 Tests unitarios de componentes
-- 🔜 Funcionalidades de IA (categorización, recomendaciones)
+- 🔜 Recomendaciones de productos con IA (Sprint 5.2)
 - 🔜 Sistema de notificaciones en tiempo real
 - 🔜 Tests E2E con Playwright
+- 🔜 Optimizaciones de rendimiento avanzadas
 
 ## �🚀 Descripción General
 
@@ -491,14 +496,33 @@ listaCompra_frontend_web/
 
 ### Fase 5: Funcionalidades IA (Semanas 9-10)
 
-#### Sprint 5.1: Categorización Inteligente
-- [ ] Integrar endpoint de categorización IA
-- [ ] Auto-categorizar productos al agregarlos
-- [ ] Sugerencias de categorías
-- [ ] Feedback visual de categorización
-- [ ] Cache de categorías en cliente
-- [ ] Manejo de errores de IA
+#### Sprint 5.1: Categorización Inteligente con IA ✅ (Completado)
+- [x] Integrar endpoint de categorización IA (/ai/categorize)
+- [x] Auto-categorizar productos al agregarlos (debounce 800ms)
+- [x] Sugerencias de categorías con confianza %
+- [x] Toggle para habilitar/deshabilitar IA
+- [x] Feedback visual de categorización (loader, badges, toasts)
+- [x] Cache de categorías en cliente (30min staleTime)
+- [x] Manejo de errores de IA con degradación a manual
+- [x] Componente AIProductForm wrapper completo
+- [x] Auto-selección con confianza > 70%
+- [x] Hasta 3 sugerencias ordenadas por confianza
 - [ ] Tests de integración con IA
+
+**Archivos Creados/Modificados:**
+- `src/types/dtos/ai/CategorizeProductDto.ts` (66 LOC)
+- `src/features/ai/services/ai-service.ts` (33 LOC)
+- `src/features/ai/hooks/use-ai.ts` (47 LOC)
+- `src/features/products/components/ai-product-form.tsx` (231 LOC)
+- `src/features/products/components/product-form.tsx` (modificado - callback onChange)
+- `src/features/products/components/create-product-dialog.tsx` (modificado - usa AIProductForm)
+
+**Características Técnicas:**
+- Confidence threshold: 0.7 para auto-aplicar categorías
+- Debouncing: 800ms para evitar llamadas excesivas
+- React Query caching: staleTime 30min, gcTime 1hr
+- Wrapper pattern: Separación de concerns (AI logic + Product form)
+- Graceful degradation: Falla silenciosamente a selección manual
 
 #### Sprint 5.2: Recomendaciones
 - [ ] Integrar endpoint de recomendaciones
