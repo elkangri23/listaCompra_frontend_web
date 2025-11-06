@@ -57,6 +57,7 @@ export interface ProductFormProps {
   onSubmit: (values: ProductFormValues) => Promise<void> | void;
   isSubmitting?: boolean;
   submitLabel?: string;
+  onFieldChange?: (field: string, value: any) => void;
 }
 
 export function ProductForm({
@@ -65,6 +66,7 @@ export function ProductForm({
   onSubmit,
   isSubmitting = false,
   submitLabel = 'Guardar producto',
+  onFieldChange,
 }: ProductFormProps) {
   const form = useForm<ProductFormInputValues>({
     resolver: zodResolver(productFormSchema),
@@ -123,7 +125,14 @@ export function ProductForm({
             <FormItem>
               <FormLabel>Nombre</FormLabel>
               <FormControl>
-                <Input placeholder="Leche semidesnatada" {...field} />
+                <Input 
+                  placeholder="Leche semidesnatada" 
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    onFieldChange?.('nombre', e.target.value);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -137,7 +146,14 @@ export function ProductForm({
             <FormItem>
               <FormLabel>Descripción</FormLabel>
               <FormControl>
-                <Input placeholder="Opcional" {...field} />
+                <Input 
+                  placeholder="Opcional" 
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    onFieldChange?.('descripcion', e.target.value);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
