@@ -1,11 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter, DM_Sans } from 'next/font/google'
 import { AppProviders } from '@/components/providers/app-providers'
 import { ThemeProvider } from '@/components/theme-provider'
-
-const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-sans' })
-const dmSans = DM_Sans({ subsets: ['latin'], display: 'swap', variable: '--font-display' })
 
 export const metadata: Metadata = {
   title: 'ListaCompra — Sistema de diseño',
@@ -20,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={`${inter.variable} ${dmSans.variable} min-h-screen bg-background font-sans antialiased`}>
+      <body className="min-h-screen bg-background font-sans antialiased">
         <AppProviders>
           <ThemeProvider>
             <main className="min-h-screen bg-background text-foreground">{children}</main>

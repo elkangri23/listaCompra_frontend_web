@@ -2,9 +2,9 @@
 
 ## Estado del Proyecto: 🚧 En Desarrollo Activo
 
-**Última actualización**: 6 de noviembre de 2025  
-**Progreso general**: ~60% completado  
-**Fase actual**: Fase 3.2 - Colaboración en Listas (Pendiente)
+**Última actualización**: 9 de noviembre de 2025
+**Progreso general**: ~70% completado
+**Fase actual**: Fase 4.2 - Búsqueda y Filtros (En progreso)
 
 ---
 
@@ -71,32 +71,34 @@
   - 🔜 Pendiente: Implementar polling o SSE
   - 🔜 Pendiente: Optimistic updates
 
-## 3. Gestión de Productos y Categorías 🛍️ (0% Completado)
+## 3. Gestión de Productos y Categorías 🛍️ (70% Completado)
 
-- [ ] **Como usuario, puedo agregar productos a una lista existente.**
-  - 🔜 Pendiente: Formulario de producto
-  - 🔜 Pendiente: Modal de adición rápida
-  
-- [ ] **Como usuario, puedo editar nombre, cantidad, y categoría de un producto.**
-  - 🔜 Pendiente: Modal de edición
-  - 🔜 Pendiente: Validación inline
-  
-- [ ] **Como usuario, puedo eliminar productos de una lista.**
-  - 🔜 Pendiente: Confirmación de eliminación
-  - 🔜 Pendiente: Soft delete con deshacer
-  
-- [ ] **Como usuario, puedo arrastrar y soltar productos para reordenarlos.**
-  - 🔜 Pendiente: Integrar react-beautiful-dnd o dnd-kit
-  - 🔜 Pendiente: Persistir orden en backend
-  
-- [ ] **Como usuario, puedo marcar productos como comprados o pendientes.**
-  - 🔜 Pendiente: Toggle de estado
-  - 🔜 Pendiente: Animaciones de estado
-  
-- [ ] **Como usuario, puedo filtrar o buscar productos por nombre, estado o categoría.**
-  - 🔜 Pendiente: Barra de búsqueda con debounce
-  - 🔜 Pendiente: Filtros por categoría/estado
-  
+- [x] **Como usuario, puedo agregar productos a una lista existente.**
+  - ✅ Formulario accesible con validación Zod y soporte de categorías
+  - ✅ Modal de creación rápida disponible en la vista de detalle de la lista
+
+- [x] **Como usuario, puedo editar nombre, cantidad, y categoría de un producto.**
+  - ✅ Modal de edición reutiliza el formulario con valores precargados
+  - ✅ Validación inline y mensajes de error accesibles
+
+- [x] **Como usuario, puedo eliminar productos de una lista.**
+  - ✅ Acción directa desde la tabla con confirmación visual y estados de carga
+
+- [x] **Como usuario, puedo arrastrar y soltar productos para reordenarlos.**
+  - ✅ Soporte de drag & drop nativo con persistencia en backend
+  - ✅ Indicadores visuales durante el arrastre
+
+- [x] **Como usuario, puedo marcar productos como comprados o pendientes.**
+  - ✅ Toggle accesible con badges de estado y seguimiento del backend
+
+- [x] **Como usuario, puedo filtrar o buscar productos por nombre, estado o categoría.**
+  - ✅ Barra de búsqueda con debounce a 400 ms
+  - ✅ Filtros por estado (pendiente/comprado) y categoría
+
+- [x] **Como usuario, puedo navegar productos paginados con controles accesibles.**
+  - ✅ Enlaces de paginación con estados deshabilitados y etiquetas para lectores de pantalla
+  - ✅ Prevención de cambios cuando se alcanza la primera o última página
+
 - [ ] **Como usuario, puedo consultar el histórico de productos comprados en listas pasadas.**
   - 🔜 Pendiente: Vista de historial
   - 🔜 Pendiente: Estadísticas de compras
