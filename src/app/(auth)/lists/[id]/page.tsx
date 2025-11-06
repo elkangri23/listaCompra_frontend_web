@@ -4,134 +4,18 @@ import { useMemo, useState } from 'react';
 import { Heading, Text, Input } from '@/components/ui';
 import { useList } from '@/features/lists/hooks/use-lists';
 import { useParams } from 'next/navigation';
-import { useDebounce } from '@/hooks/use-debounce';
-import {
-  useCreateProduct,
-  useDeleteProduct,
-  useProducts,
-  useReorderProducts,
-  useToggleProductPurchased,
-  useUpdateProduct,
-} from '@/features/products/hooks/use-products';
-import { useCategories } from '@/features/categories/hooks/use-categories';
-import { CreateProductDialog } from '@/features/products/components/create-product-dialog';
-import { ProductsTable } from '@/features/products/components/products-table';
-import { ProductFormValues } from '@/features/products/components/product-form';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
-
-const PAGE_SIZE = 10;
+import { InviteUserDialog } from '@/features/invitations/components/invite-user-dialog';
+import { useInviteUser } from '@/features/invitations/hooks/use-invitations';
+import { InviteUserFormValues } from '@/features/invitations/components/invite-user-form';
 
 export default function ListDetailPage() {
   const params = useParams();
   const { id } = params;
-  const listId = id as string;
-  const { data: list, isLoading, isError } = useList(listId);
+  const { data: list, isLoading, isError } = useList(id as string);
+  const inviteUserMutation = useInviteUser(id as string);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'purchased' | 'pending'>('all');
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [page, setPage] = useState(1);
-  const debouncedSearch = useDebounce(searchTerm, 400);
-
-  const productsQuery = useProducts(listId, {
-    search: debouncedSearch,
-    status: statusFilter,
-    categoryId: categoryFilter || undefined,
-    page,
-    limit: PAGE_SIZE,
-  });
-  const categoriesQuery = useCategories({ activas: true });
-
-  const categories = useMemo(
-    () => categoriesQuery.data?.categorias ?? [],
-    [categoriesQuery.data?.categorias]
-  );
-  const categoriesMap = useMemo(() => {
-    return categories.reduce<Record<string, string>>((acc, category) => {
-      acc[category.id] = category.nombre;
-      return acc;
-    }, {});
-  }, [categories]);
-
-  const createProductMutation = useCreateProduct(listId);
-  const updateProductMutation = useUpdateProduct(listId);
-  const deleteProductMutation = useDeleteProduct(listId);
-  const toggleProductMutation = useToggleProductPurchased(listId);
-  const reorderProductsMutation = useReorderProducts(listId);
-
-  const [activeProductId, setActiveProductId] = useState<string | null>(null);
-
-  const handleCreateProduct = async (values: ProductFormValues) => {
-    await createProductMutation.mutateAsync(values);
-  };
-
-  const handleEditProduct = async (productId: string, values: ProductFormValues) => {
-    setActiveProductId(productId);
-    try {
-      await updateProductMutation.mutateAsync({ productId, data: values });
-    } finally {
-      setActiveProductId(null);
-    }
-  };
-
-  const handleAdjustQuantity = async (productId: string, quantity: number) => {
-    setActiveProductId(productId);
-    try {
-      await updateProductMutation.mutateAsync({
-        productId,
-        data: { cantidad: quantity },
-      });
-    } finally {
-      setActiveProductId(null);
-    }
-  };
-
-  const handleTogglePurchased = async (productId: string, purchased: boolean) => {
-    setActiveProductId(productId);
-    try {
-      await toggleProductMutation.mutateAsync({ productId, purchased });
-    } finally {
-      setActiveProductId(null);
-    }
-  };
-
-  const handleDeleteProduct = async (productId: string) => {
-    setActiveProductId(productId);
-    try {
-      await deleteProductMutation.mutateAsync(productId);
-    } finally {
-      setActiveProductId(null);
-    }
-  };
-
-  const handleReorderProducts = async (orderedIds: string[]) => {
-    try {
-      await reorderProductsMutation.mutateAsync(orderedIds);
-    } finally {
-      setActiveProductId(null);
-    }
-  };
-
-  const products = productsQuery.data?.items ?? [];
-  const resumen = productsQuery.data?.resumen;
-  const totalPages = productsQuery.data?.totalPages ?? 0;
-
-  const isLoadingProducts = productsQuery.isLoading || productsQuery.isFetching;
-  const hasProductsError = productsQuery.isError;
-  const isMutatingProduct =
-    updateProductMutation.isPending ||
-    deleteProductMutation.isPending ||
-    toggleProductMutation.isPending;
-
-  const resetPagination = () => {
-    setPage(1);
+  const handleInviteUser = (data: InviteUserFormValues) => {
+    inviteUserMutation.mutate(data);
   };
 
   return (
@@ -139,11 +23,12 @@ export default function ListDetailPage() {
       {isLoading && <p>Cargando lista...</p>}
       {isError && <p>Error al cargar la lista.</p>}
       {list && (
-        <header className="mb-6 space-y-2">
-          <Heading level={1}>{list.nombre}</Heading>
-          {list.descripcion && (
-            <Text variant="muted">{list.descripcion}</Text>
-          )}
+        <header className="mb-6 flex items-center justify-between">
+          <div>
+            <Heading level={1}>{list.nombre}</Heading>
+            <p className="text-muted-foreground">{list.descripcion}</p>
+          </div>
+          <InviteUserDialog onSubmit={handleInviteUser} />
         </header>
       )}
 
