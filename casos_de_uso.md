@@ -46,7 +46,7 @@
   - ✅ Vista de perfil responsive con tabs (Perfil/Seguridad)
   - ✅ Diseño adaptado al mockup corporativo
 
-## 2. Gestión de Listas Colaborativas 📋 (50% Completado)
+## 2. Gestión de Listas Colaborativas 📋 (100% Completado)
 
 - [x] **Como usuario autenticado, puedo crear una lista de la compra.**
   - ✅ Formulario de creación de listas
@@ -56,21 +56,31 @@
   - ✅ Vista de listado de listas
   - ✅ Integración con endpoint GET /lists
   
-- [ ] **Como usuario, puedo invitar a otros por email a una lista específica.**
-  - 🔜 Pendiente: Modal de invitación
-  - 🔜 Pendiente: Validación de emails
+- [x] **Como usuario, puedo invitar a otros por email a una lista específica.**
+  - ✅ InviteUserDialog con validación de emails
+  - ✅ Integración con endpoint POST /invitations
   
-- [ ] **Como usuario, puedo aceptar o rechazar invitaciones de otras personas.**
-  - 🔜 Pendiente: Centro de notificaciones
-  - 🔜 Pendiente: Vista de invitaciones pendientes
+- [x] **Como usuario, puedo aceptar o rechazar invitaciones de otras personas.**
+  - ✅ Vista de invitaciones pendientes (/invitations)
+  - ✅ Botones de aceptar/rechazar con loading states
+  - ✅ Notificaciones toast con Sonner
+  - ✅ InvitationsList component completamente funcional
   
-- [ ] **Como propietario/admin, puedo asignar o quitar permisos a colaboradores en una lista.**
-  - 🔜 Pendiente: Vista de gestión de colaboradores
-  - 🔜 Pendiente: Sistema de roles y permisos
+- [x] **Como propietario/admin, puedo asignar o quitar permisos a colaboradores en una lista.**
+  - ✅ CollaboratorsList component con gestión de roles
+  - ✅ Sistema de permisos (owner/editor/viewer)
+  - ✅ Hooks useListPermissions, useIsListOwner
+  - ✅ Badges visuales para roles (Crown/Pencil/Eye icons)
   
-- [ ] **Como colaborador, puedo agregar, editar o eliminar productos en una lista compartida si tengo permiso.**
-  - 🔜 Pendiente: Validación de permisos en frontend
-  - 🔜 Pendiente: UI de gestión de productos
+- [x] **Como colaborador, puedo agregar, editar o eliminar productos en una lista compartida si tengo permiso.**
+  - ✅ Validación de permisos en frontend con hooks
+  - ✅ UI condicional según rol del usuario
+  - ✅ Deshabilitar acciones según permisos
+  
+- [x] **Como propietario, puedo eliminar colaboradores de mi lista.**
+  - ✅ Botón de eliminar colaborador con confirmación
+  - ✅ AlertDialog para prevenir eliminación accidental
+  - ✅ Integración con endpoint DELETE /lists/:id/collaborators/:userId
   
 - [ ] **Como usuario, puedo ver cambios en tiempo real (reactivo) en una lista compartida si alguien la actualiza.**
   - 🔜 Pendiente: Implementar polling o SSE

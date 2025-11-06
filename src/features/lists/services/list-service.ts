@@ -1,6 +1,6 @@
 import { axiosInstance } from '@/lib/api/axios-instance';
 import { CreateListDto, UpdateListDto } from '@/types/dtos/lists';
-import { Lista } from '@/types/Lista.types';
+import { Lista, ListSummary } from '@/types/Lista.types';
 
 import { PaginatedResponse } from '@/types/PaginatedResponse.types';
 

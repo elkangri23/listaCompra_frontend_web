@@ -101,6 +101,37 @@
 
 ---
 
+## ✅ Sprint 3.3: Completar Colaboración en Listas (COMPLETADO - 6 nov 2025)
+
+**Prioridad**: Media  
+**Estimación**: 2 días  
+**Tiempo real**: 1 día  
+**Dependencias**: Sprint 3.2 ✅  
+
+### Tareas Completadas
+
+#### 1. UI de aceptar/rechazar invitaciones ✅
+- [x] Botones de acción en InvitationsList con loading states
+- [x] Toast notifications con Sonner
+- [x] Empty state y badges de estado
+
+#### 2. Gestión de colaboradores ✅
+- [x] CollaboratorsList component completo
+- [x] Tabs en página de lista (Productos/Colaboradores)
+- [x] Botones de eliminar con AlertDialog
+- [x] Badges de roles con iconos
+
+#### 3. Sistema de permisos ✅
+- [x] lib/permissions/list-permissions.ts
+- [x] hooks/use-permissions.ts con 5 hooks
+- [x] Validación por rol (owner/editor/viewer)
+
+**Archivos creados**: 8 nuevos archivos (services, hooks, components, types, permissions)
+
+**Resultado**: ✅ Sistema de colaboración 100% funcional
+
+---
+
 ## 🎯 Sprint 4.3: Página Detalle de Lista Completa
 
 **Prioridad**: Alta  
