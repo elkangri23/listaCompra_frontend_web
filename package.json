@@ -11,6 +11,7 @@
     "test:watch": "jest --watch",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
+    "analyze:bundle": "next build && node scripts/analyze-bundle.mjs",
     "mcp:server": "tsx mcp-server.ts",
     "mcp:server:dev": "tsx --watch mcp-server.ts",
     "audit": "npm audit --production",

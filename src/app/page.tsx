@@ -16,6 +16,7 @@ import {
   ThemeToggle,
 } from '@/components/ui'
 import { designTokens } from '@/lib/design-tokens'
+import Image from 'next/image'
 
 const colorSamples = Object.entries(designTokens.colors)
 
@@ -103,6 +104,31 @@ export default function Home() {
             <Badge variant="outline">Versión 1.0</Badge>
           </CardFooter>
         </Card>
+      </section>
+
+      <section className="grid gap-8 rounded-2xl border bg-card/40 p-8 shadow-sm md:grid-cols-[minmax(0,1fr)_320px] md:items-center">
+        <div className="space-y-4">
+          <Heading level={2}>Rendimiento web preparado para producción</Heading>
+          <Text>
+            Implementamos optimizaciones clave como imágenes responsivas, división de código bajo demanda y virtualización de
+            listas para mantener la experiencia fluida incluso con cientos de elementos.
+          </Text>
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="outline">Lazy loading</Badge>
+            <Badge variant="outline">Virtual scroll</Badge>
+            <Badge variant="outline">Bundle analyzer</Badge>
+          </div>
+        </div>
+        <div className="flex justify-center md:justify-end">
+          <Image
+            src="/images/performance-insights.svg"
+            alt="Panel con métricas de rendimiento optimizadas"
+            width={320}
+            height={200}
+            priority
+            className="h-auto w-full max-w-[320px]"
+          />
+        </div>
       </section>
 
       <section id="tokens" className="space-y-6">
