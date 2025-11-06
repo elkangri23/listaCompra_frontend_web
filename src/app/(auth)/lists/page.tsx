@@ -62,9 +62,10 @@ export default function ListsPage() {
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
+                  if (page === 1) return;
                   setPage((prev) => Math.max(prev - 1, 1));
                 }}
-                disabled={page === 1}
+                isDisabled={page === 1}
               />
             </PaginationItem>
             {[...Array(totalPages)].map((_, i) => (
@@ -86,9 +87,10 @@ export default function ListsPage() {
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
+                  if (page === totalPages) return;
                   setPage((prev) => Math.min(prev + 1, totalPages));
                 }}
-                disabled={page === totalPages}
+                isDisabled={page === totalPages}
               />
             </PaginationItem>
           </PaginationContent>
