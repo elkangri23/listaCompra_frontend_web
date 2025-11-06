@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Text } from '@/components/ui'
 import { RegisterForm } from '@/features/auth/components/register-form'
 
 export const metadata: Metadata = {
@@ -11,19 +10,25 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
-    <Card className="border-border/60 bg-background/95 backdrop-blur">
-      <CardHeader>
-        <CardTitle>Crea tu cuenta</CardTitle>
-        <CardDescription>Completa los campos para unirte a la plataforma.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <RegisterForm />
-      </CardContent>
-      <CardFooter className="flex-col gap-2 text-center">
-        <Text className="text-sm text-muted-foreground">
-          Al registrarte aceptas los términos y condiciones del servicio.
-        </Text>
-      </CardFooter>
-    </Card>
+    <div className="relative flex min-h-screen w-full flex-col bg-white">
+      <div className="layout-container flex h-full grow flex-col items-center justify-center p-5">
+        <div className="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5">
+          {/* Hero Image */}
+          <div>
+            <div className="px-4 py-3">
+              <div 
+                className="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-white rounded-lg min-h-[218px]" 
+                style={{
+                  backgroundImage: 'url("https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&auto=format&fit=crop&q=80")'
+                }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Register Form */}
+          <RegisterForm />
+        </div>
+      </div>
+    </div>
   )
 }
