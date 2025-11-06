@@ -20,7 +20,8 @@ describe('Typography components', () => {
       </div>,
     )
 
-    expect(screen.getByTestId('default')).toHaveClass('leading-relaxed')
+    expect(screen.getByTestId('default')).toHaveClass('text-base');
+    expect(screen.getByTestId('default')).toHaveClass('text-foreground');
     expect(screen.getByTestId('muted')).toHaveClass('text-muted-foreground')
   })
 })

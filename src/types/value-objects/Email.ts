@@ -36,9 +36,10 @@ export class Email {
   static createUnsafe(email: string): Email {
     const result = Email.create(email);
     if (result.success === false) {
-      throw result.error;
+      throw result.error!;
     }
-    return result.value;
+    // Type assertion: when success is true, value is guaranteed to be present
+    return result.value as Email;
   }
 
   get value(): string {

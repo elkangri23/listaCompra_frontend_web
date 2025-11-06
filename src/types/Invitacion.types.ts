@@ -260,14 +260,14 @@ export class Invitacion {
 
     const tipoPermisoResult = PermissionType.create(data.tipoPermiso);
     if (tipoPermisoResult.success === false) {
-      return failure(tipoPermisoResult.error);
+      return failure(tipoPermisoResult.error!);
     }
 
     return Invitacion.create(
       data.id,
       data.listaId,
-      hashResult.value,
-      tipoPermisoResult.value,
+      hashResult.value!,
+      tipoPermisoResult.value!,
       data.creadaEn,
       data.expiraEn,
       data.activa
