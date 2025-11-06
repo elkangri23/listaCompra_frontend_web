@@ -24,6 +24,167 @@ interface ProductsTableProps {
   isReordering?: boolean;
 }
 
+interface ProductRowProps {
+  product: ProductoListDto;
+  categories: Array<{ id: string; nombre: string }>;
+  categoryLabel: string;
+  isProductPending: boolean;
+  draggingId: string | null;
+  isReordering: boolean;
+  onTogglePurchased: (productId: string, purchased: boolean) => Promise<void> | void;
+  onDelete: (productId: string) => Promise<void> | void;
+  onEdit: (productId: string, values: ProductFormValues) => Promise<void> | void;
+  onAdjustQuantity: (productId: string, nextQuantity: number) => Promise<void> | void;
+  onDragStart: (productId: string) => () => void;
+  onDragOver: (productId: string) => (event: React.DragEvent<HTMLTableRowElement>) => void;
+  onDragEnd: () => Promise<void>;
+}
+
+function ProductRow({
+  product,
+  categories,
+  categoryLabel,
+  isProductPending,
+  draggingId,
+  isReordering,
+  onTogglePurchased,
+  onDelete,
+  onEdit,
+  onAdjustQuantity,
+  onDragStart,
+  onDragOver,
+  onDragEnd,
+}: ProductRowProps) {
+  const [quantityInput, setQuantityInput] = useState(product.cantidad.toString());
+  const debouncedQuantity = useDebounce(quantityInput, 500);
+
+  useEffect(() => {
+    setQuantityInput(product.cantidad.toString());
+  }, [product.cantidad]);
+
+  useEffect(() => {
+    const newQuantity = parseInt(debouncedQuantity);
+    if (!isNaN(newQuantity) && newQuantity > 0 && newQuantity !== product.cantidad) {
+      onAdjustQuantity(product.id, newQuantity);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedQuantity]);
+
+  const handleDecrease = async () => {
+    if (product.cantidad > 1) {
+      await onAdjustQuantity(product.id, product.cantidad - 1);
+    }
+  };
+
+  const handleIncrease = async () => {
+    await onAdjustQuantity(product.id, product.cantidad + 1);
+  };
+
+  return (
+    <TableRow
+      key={product.id}
+      draggable={!isReordering}
+      data-testid={`product-row-${product.id}`}
+      aria-grabbed={draggingId === product.id}
+      onDragStart={onDragStart(product.id)}
+      onDragOver={onDragOver(product.id)}
+      onDragEnd={onDragEnd}
+      className={cn(
+        draggingId === product.id && 'opacity-60',
+        isProductPending && 'opacity-50',
+      )}
+    >
+      <TableCell>
+        <div className="flex items-center justify-center">
+          <GripVertical className="h-4 w-4 cursor-move text-muted-foreground" />
+        </div>
+      </TableCell>
+      <TableCell>
+        <div>
+          <div className="font-medium">{product.nombre}</div>
+          {product.descripcion && (
+            <div className="text-xs text-muted-foreground">{product.descripcion}</div>
+          )}
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 p-0"
+            onClick={handleDecrease}
+            disabled={product.cantidad <= 1 || isProductPending}
+            aria-label="Disminuir cantidad"
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          <Input
+            type="number"
+            value={quantityInput}
+            onChange={(e) => setQuantityInput(e.target.value)}
+            className="h-8 w-16 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            disabled={isProductPending}
+            min="1"
+            aria-label="Cantidad del producto"
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 p-0"
+            onClick={handleIncrease}
+            disabled={isProductPending}
+            aria-label="Aumentar cantidad"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+          {product.unidad && <span className="text-sm text-muted-foreground">{product.unidad}</span>}
+        </div>
+      </TableCell>
+      <TableCell>
+        {product.precio ? `${product.precio.toFixed(2)} €` : '—'}
+      </TableCell>
+      <TableCell>
+        <Badge
+          variant={product.comprado ? 'default' : 'secondary'}
+          onClick={() => onTogglePurchased(product.id, !product.comprado)}
+          className="cursor-pointer"
+          aria-label={
+            product.comprado ? 'Marcar como pendiente' : 'Marcar como comprado'
+          }
+        >
+          {product.comprado ? 'Comprado' : 'Pendiente'}
+        </Badge>
+        {product.urgente && (
+          <Badge variant="destructive" className="ml-1">
+            Urgente
+          </Badge>
+        )}
+      </TableCell>
+      <TableCell>{categoryLabel}</TableCell>
+      <TableCell className="text-right">
+        <div className="flex justify-end gap-1">
+          <EditProductDialog
+            defaultValues={product}
+            categories={categories}
+            onSubmit={(values) => onEdit(product.id, values)}
+            isSubmitting={isProductPending}
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onDelete(product.id)}
+            disabled={isProductPending}
+            aria-label={`Eliminar ${product.nombre}`}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
+
 export function ProductsTable({
   products,
   categories,
@@ -123,153 +284,23 @@ export function ProductsTable({
             : 'Sin categoría';
           const isProductPending = isPending(product.id);
 
-          const handleDecrease = async () => {
-            if (product.cantidad > 1) {
-              await onAdjustQuantity(product.id, product.cantidad - 1);
-            }
-          };
-
-          const handleIncrease = async () => {
-            await onAdjustQuantity(product.id, product.cantidad + 1);
-          };
-
-          const [quantityInput, setQuantityInput] = useState(product.cantidad.toString());
-          const debouncedQuantity = useDebounce(quantityInput, 500);
-
-          useEffect(() => {
-            setQuantityInput(product.cantidad.toString());
-          }, [product.cantidad]);
-
-          useEffect(() => {
-            const newQuantity = parseInt(debouncedQuantity);
-            if (!isNaN(newQuantity) && newQuantity > 0 && newQuantity !== product.cantidad) {
-              onAdjustQuantity(product.id, newQuantity);
-            }
-          }, [debouncedQuantity]);
-
           return (
-            <TableRow
+            <ProductRow
               key={product.id}
-              draggable={!isReordering}
-              data-testid={`product-row-${product.id}`}
-              aria-grabbed={draggingId === product.id}
-              onDragStart={handleDragStart(product.id)}
-              onDragOver={handleDragOver(product.id)}
+              product={product}
+              categories={categories}
+              categoryLabel={categoryLabel}
+              isProductPending={isProductPending}
+              draggingId={draggingId}
+              isReordering={isReordering}
+              onTogglePurchased={onTogglePurchased}
+              onDelete={onDelete}
+              onEdit={onEdit}
+              onAdjustQuantity={onAdjustQuantity}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
               onDragEnd={handleDragEnd}
-              className={cn(
-                draggingId === product.id && 'opacity-60',
-                isReordering && 'cursor-move'
-              )}
-            >
-              <TableCell className="align-middle">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-dashed">
-                  <GripVertical className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                </span>
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-col">
-                  <span className="font-medium text-foreground">{product.nombre}</span>
-                  {product.descripcion && (
-                    <span className="text-xs text-muted-foreground">{product.descripcion}</span>
-                  )}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleDecrease}
-                    disabled={product.cantidad <= 1 || isProductPending}
-                    aria-label={`Reducir cantidad de ${product.nombre}`}
-                  >
-                    <Minus className="h-4 w-4" />
-                  </Button>
-                  <Input
-                    type="number"
-                    value={quantityInput}
-                    onChange={(e) => setQuantityInput(e.target.value)}
-                    onBlur={() => {
-                      const newQuantity = parseInt(quantityInput);
-                      if (isNaN(newQuantity) || newQuantity <= 0) {
-                        setQuantityInput(product.cantidad.toString()); // Revert to original if invalid
-                      }
-                    }}
-                    className="w-16 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                    disabled={isProductPending}
-                    aria-label={`Cantidad de ${product.nombre}`}
-                    min="1"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleIncrease}
-                    disabled={isProductPending}
-                    aria-label={`Aumentar cantidad de ${product.nombre}`}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                  {product.unidad && (
-                    <span className="text-xs uppercase text-muted-foreground">{product.unidad}</span>
-                  )}
-                </div>
-              </TableCell>
-              <TableCell>
-                {product.precio !== undefined && product.precio !== null ? (
-                  <span className="font-medium">{product.precio.toFixed(2)} €</span>
-                ) : (
-                  <span className="text-sm text-muted-foreground">-</span>
-                )}
-              </TableCell>
-              <TableCell>
-                <label className="inline-flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={product.comprado}
-                    onChange={async (event) =>
-                      await onTogglePurchased(
-                        product.id,
-                        event.target.checked
-                      )
-                    }
-                    disabled={isProductPending}
-                    aria-label={`Marcar ${product.nombre} como ${product.comprado ? 'pendiente' : 'comprado'}`}
-                    className="h-4 w-4 rounded border border-input text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  />
-                  {product.comprado ? (
-                    <Badge variant="success">Comprado</Badge>
-                  ) : (
-                    <Badge variant="secondary">Pendiente</Badge>
-                  )}
-                  {product.urgente && <Badge variant="warning">Urgente</Badge>}
-                </label>
-              </TableCell>
-              <TableCell>
-                <span className="text-sm text-muted-foreground">{categoryLabel}</span>
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex items-center justify-end gap-2">
-                  <EditProductDialog
-                    categories={categories}
-                    defaultValues={product}
-                    onSubmit={(values) => onEdit(product.id, values)}
-                    isSubmitting={isProductPending}
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={async () => await onDelete(product.id)}
-                    disabled={isProductPending}
-                    aria-label={`Eliminar ${product.nombre}`}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
+            />
           );
         })}
       </TableBody>

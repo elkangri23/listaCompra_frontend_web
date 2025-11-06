@@ -255,7 +255,7 @@ export class Invitacion {
   }): Result<Invitacion, DomainError> {
     const hashResult = Hash.create(data.hash);
     if (hashResult.success === false) {
-      return failure(hashResult.error);
+      return failure(hashResult.error!);
     }
 
     const tipoPermisoResult = PermissionType.create(data.tipoPermiso);

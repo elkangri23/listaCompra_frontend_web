@@ -340,16 +340,24 @@ listaCompra_frontend_web/
 - [x] Hooks use-lists.ts con React Query
 - [x] Componente ListsTable con acciones inline
 
-#### Sprint 3.2: Colaboración en Listas ✅
+#### Sprint 3.2: Colaboración en Listas ✅ (100% Completado - 6 nov 2025)
 - [x] Invitar usuarios a lista por email (InviteUserDialog + InviteUserForm)
 - [x] Vista de invitaciones pendientes (/invitations)
 - [x] Componente InvitationsList
 - [x] Servicio invitation-service.ts completo
 - [x] Hooks use-invitations.ts con React Query
-- [ ] Aceptar/rechazar invitaciones - UI pendiente
-- [ ] Gestionar permisos de colaboradores - Pendiente
-- [ ] Eliminar colaboradores - Pendiente
-- [ ] Notificaciones de invitaciones - Pendiente
+- [x] Aceptar/rechazar invitaciones - ✅ Completado Sprint 3.3
+- [x] Gestionar permisos de colaboradores - ✅ Completado Sprint 3.3
+- [x] Eliminar colaboradores - ✅ Completado Sprint 3.3
+- [x] Sistema de permisos completo - ✅ Completado Sprint 3.3
+
+**Sprint 3.3: Colaboración Completa (6 nov 2025)**:
+- ✅ Botones aceptar/rechazar con loading states y notificaciones
+- ✅ Componente CollaboratorsList con gestión de roles
+- ✅ Sistema de permisos (owner/editor/viewer)
+- ✅ Hooks de permisos para validar acciones
+- ✅ Página de lista con tabs (Productos/Colaboradores)
+- ✅ Eliminación de colaboradores con confirmación
 
 ### Fase 4: Gestión de Productos 🚧 (70% Completada)
 

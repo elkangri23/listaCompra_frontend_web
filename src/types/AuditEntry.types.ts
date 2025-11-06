@@ -1,4 +1,4 @@
-import { generateUUID } from '@/lib/utils';
+import { randomUUID } from 'crypto';
 
 interface AuditEntryProps {
   id?: string;
@@ -24,7 +24,7 @@ export class AuditEntry {
   public readonly changedFields?: string[];
 
   private constructor(props: AuditEntryProps) {
-    this.id = props.id || generateUUID();
+    this.id = props.id || randomUUID();
     this.entityType = props.entityType;
     this.entityId = props.entityId;
     this.changeType = props.changeType;
