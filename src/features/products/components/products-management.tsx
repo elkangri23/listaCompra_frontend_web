@@ -5,9 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ProductsTable } from '@/features/products/components/products-table';
-import { CreateProductDialog } from '@/features/products/components/create-product-dialog';
-import { ProductSuggestions } from '@/features/products/components/product-suggestions';
+import dynamic from 'next/dynamic';
+import type { ProductsTableProps } from '@/features/products/components/products-table';
 import {
   Pagination,
   PaginationContent,
@@ -24,6 +23,31 @@ import { ProductFormValues } from '@/features/products/components/product-form';
 import { Search, Filter, ArrowUpDown, X, History } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useMemo } from 'react';
+
+const ProductsTable = dynamic<ProductsTableProps>(
+  () => import('@/features/products/components/products-table').then((mod) => mod.ProductsTable),
+  {
+    loading: () => (
+      <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
+        Cargando productos...
+      </div>
+    ),
+  }
+);
+
+const CreateProductDialog = dynamic(
+  () => import('@/features/products/components/create-product-dialog').then((mod) => mod.CreateProductDialog),
+  {
+    loading: () => null,
+  }
+);
+
+const ProductSuggestions = dynamic(
+  () => import('@/features/products/components/product-suggestions').then((mod) => mod.ProductSuggestions),
+  {
+    loading: () => null,
+  }
+);
 
 interface ProductsManagementProps {
   listId: string;
