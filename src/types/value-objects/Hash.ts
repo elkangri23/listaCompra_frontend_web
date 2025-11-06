@@ -29,12 +29,12 @@ export class Hash {
     return success(new Hash(hash));
   }
 
-  static createUnsafe(hash: string): Hash {
-    const result = Hash.create(hash);
+  static createUnsafe(value: string): Hash {
+    const result = Hash.create(value);
     if (result.success === false) {
       throw result.error;
     }
-    return result.value;
+    return result.value as Hash;
   }
 
   get value(): string {

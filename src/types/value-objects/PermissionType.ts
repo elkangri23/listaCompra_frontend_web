@@ -37,7 +37,7 @@ export class PermissionType {
     if (result.success === false) {
       throw result.error;
     }
-    return result.value;
+    return result.value as PermissionType;
   }
 
   // Factory methods para los tipos más comunes

@@ -122,12 +122,12 @@ export class Permiso {
 
     const nuevoTipoResult = PermissionType.create('ESCRITURA');
     if (nuevoTipoResult.success === false) {
-      return failure(nuevoTipoResult.error);
+      return failure(nuevoTipoResult.error!);
     }
 
     return success(new Permiso({
       ...this.props,
-      tipoPermiso: nuevoTipoResult.value
+      tipoPermiso: nuevoTipoResult.value!
     }));
   }
 
@@ -145,12 +145,12 @@ export class Permiso {
 
     const nuevoTipoResult = PermissionType.create('ADMIN');
     if (nuevoTipoResult.success === false) {
-      return failure(nuevoTipoResult.error);
+      return failure(nuevoTipoResult.error!);
     }
 
     return success(new Permiso({
       ...this.props,
-      tipoPermiso: nuevoTipoResult.value
+      tipoPermiso: nuevoTipoResult.value!
     }));
   }
 
@@ -168,12 +168,12 @@ export class Permiso {
 
     const nuevoTipoResult = PermissionType.create('LECTURA');
     if (nuevoTipoResult.success === false) {
-      return failure(nuevoTipoResult.error);
+      return failure(nuevoTipoResult.error!);
     }
 
     return success(new Permiso({
       ...this.props,
-      tipoPermiso: nuevoTipoResult.value
+      tipoPermiso: nuevoTipoResult.value!
     }));
   }
 
@@ -223,14 +223,14 @@ export class Permiso {
   }): Result<Permiso, DomainError> {
     const tipoPermisoResult = PermissionType.create(data.tipoPermiso);
     if (tipoPermisoResult.success === false) {
-      return failure(tipoPermisoResult.error);
+      return failure(tipoPermisoResult.error!);
     }
 
     return Permiso.create(
       data.id,
       data.usuarioId,
       data.listaId,
-      tipoPermisoResult.value,
+      tipoPermisoResult.value!,
       data.creadoEn
     );
   }

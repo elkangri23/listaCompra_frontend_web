@@ -107,16 +107,33 @@
   - ✅ Toggle accesible con badges de estado y seguimiento del backend
 
 - [x] **Como usuario, puedo filtrar o buscar productos por nombre, estado o categoría.**
-  - ✅ Barra de búsqueda con debounce a 400 ms
-  - ✅ Filtros por estado (pendiente/comprado) y categoría
+  - ✅ Barra de búsqueda con debounce a 400 ms
+  - ✅ Filtros por estado (pendiente/comprado/todos) con select dropdown
+  - ✅ Filtros por categoría con select de todas las categorías disponibles
+  - ✅ Badges de filtros activos mostrando filtros aplicados
+  - ✅ Botón "Limpiar filtros" para resetear todos los filtros
+
+- [x] **Como usuario, puedo ordenar productos de múltiples formas.**
+  - ✅ Ordenamiento por nombre (A-Z / Z-A)
+  - ✅ Ordenamiento por fecha (más recientes / más antiguos)
+  - ✅ Ordenamiento por categoría
+  - ✅ Ordenamiento por estado (pendientes primero)
 
 - [x] **Como usuario, puedo navegar productos paginados con controles accesibles.**
   - ✅ Enlaces de paginación con estados deshabilitados y etiquetas para lectores de pantalla
   - ✅ Prevención de cambios cuando se alcanza la primera o última página
+  - ✅ Paginación con shadcn/ui y ellipsis inteligente
 
-- [ ] **Como usuario, puedo consultar el histórico de productos comprados en listas pasadas.**
-  - 🔜 Pendiente: Vista de historial
-  - 🔜 Pendiente: Estadísticas de compras
+- [x] **Como usuario, puedo consultar el histórico de productos comprados.**
+  - ✅ Página dedicada `/lists/[id]/history` con tabla de productos comprados
+  - ✅ Botón "Agregar otra vez" para re-añadir productos desde el historial
+  - ✅ Fecha de compra formateada en español
+  - ✅ Navegación de regreso a la lista
+
+- [x] **Como usuario, recibo sugerencias inteligentes de productos basadas en mi historial.**
+  - ✅ Análisis de frecuencia de compras (productos comprados 2+ veces)
+  - ✅ Visualización en cards con badge de frecuencia
+  - ✅ Botón rápido para agregar sugerencias (máximo 6)
 
 ## 4. Inteligencia Artificial en la Interfaz 🤖 (0% Completado)
 

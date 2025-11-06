@@ -374,14 +374,29 @@ listaCompra_frontend_web/
 - [x] Ajustar cantidad inline
 - [x] Drag & drop para reordenar
 
-#### Sprint 4.2: Búsqueda y Filtros 🚧 (En Progreso)
-- [ ] Buscador de productos en tiempo real con debounce
-- [ ] Filtros por categoría (select)
-- [ ] Filtros por estado (comprado/pendiente)
-- [ ] Ordenamiento (alfabético, fecha, categoría)
-- [ ] Historial de productos comprados
-- [ ] Sugerencias de productos
-- [ ] Optimización de queries con React Query
+#### Sprint 4.2: Búsqueda y Filtros ✅ (Completado)
+- [x] Buscador de productos en tiempo real con debounce (400ms)
+- [x] Filtros por categoría (select dropdown con todas las categorías)
+- [x] Filtros por estado (comprado/pendiente/todos)
+- [x] Ordenamiento (6 opciones: nombre asc/desc, fecha asc/desc, categoría, estado)
+- [x] Historial de productos comprados (página `/lists/[id]/history`)
+- [x] Sugerencias de productos (basado en compras frecuentes 2+)
+- [x] Optimización de queries con React Query
+- [x] Paginación con shadcn/ui
+- [x] Componente ProductsManagement completo con todas las features
+- [x] Badges de filtros activos y botón "Limpiar filtros"
+
+**Archivos creados**:
+- `src/features/products/components/products-management.tsx` (340 LOC)
+- `src/features/products/components/product-suggestions.tsx` (170 LOC)
+- `src/app/(auth)/lists/[id]/history/page.tsx` (160 LOC)
+
+**Mejoras implementadas**:
+- Ordenamiento en cliente con `useMemo` para mejor UX
+- Debounce de búsqueda para reducir llamadas API
+- Sugerencias inteligentes basadas en historial
+- Botón de historial con ícono para acceso rápido
+- Integración completa con ProductsTable existente
 
 #### Sprint 4.3: Página Detalle de Lista Completa 📋 (Próximo Sprint - 0% Completado)
 
@@ -462,13 +477,16 @@ listaCompra_frontend_web/
 - [x] Arrastrar y soltar para reordenar
 - [x] Tests de gestión de productos
 
-#### Sprint 4.2: Búsqueda y Filtros
-- [x] Buscador de productos en tiempo real
-- [x] Filtros por categoría
-- [x] Filtros por estado (comprado/pendiente)
-- [ ] Ordenamiento (alfabético, fecha, categoría)
-- [ ] Historial de productos comprados
-- [ ] Sugerencias de productos
+#### Sprint 4.2: Búsqueda y Filtros ✅
+- [x] Buscador de productos en tiempo real (debounce 400ms)
+- [x] Filtros por categoría (dropdown con todas las categorías)
+- [x] Filtros por estado (comprado/pendiente/todos)
+- [x] Ordenamiento (6 opciones: nombre asc/desc, fecha asc/desc, categoría, estado)
+- [x] Historial de productos comprados (página dedicada con botón "Agregar otra vez")
+- [x] Sugerencias de productos (análisis de frecuencia de compras 2+)
+- [x] Badges de filtros activos
+- [x] Botón "Limpiar filtros"
+- [x] Paginación con shadcn/ui
 - [ ] Tests de búsqueda y filtros
 
 ### Fase 5: Funcionalidades IA (Semanas 9-10)
