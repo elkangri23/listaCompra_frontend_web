@@ -4,9 +4,9 @@
 
 ## � Estado del Proyecto
 
-**Última actualización**: 6 de noviembre de 2025  
-**Progreso general**: ~60% completado  
-**Fase actual**: Fase 3.2 - Colaboración en Listas (Pendiente)
+**Última actualización**: 9 de noviembre de 2025
+**Progreso general**: ~70% completado
+**Fase actual**: Fase 4.2 - Búsqueda y Filtros (En progreso)
 
 ### ✅ Completado
 - ✅ Configuración base de Next.js 15 con TypeScript
@@ -18,13 +18,14 @@
 - ✅ Configuración de seguridad (CSP, headers)
 - ✅ Testing setup (Jest + React Testing Library)
 - ✅ Dashboard protegido
+- ✅ Gestión de productos dentro de listas (CRUD completo)
 
 ### 🚧 En Progreso
 - 🚧 Accesibilidad WCAG 2.2
 
 ### 🔜 Próximamente
 - 🔜 Gestión de listas colaborativas (CRUD)
-- 🔜 Gestión de productos y categorías
+- 🔜 Búsqueda y filtros avanzados de productos
 - 🔜 Funcionalidades de IA (categorización, recomendaciones)
 - 🔜 Sistema de notificaciones en tiempo real
 
@@ -82,6 +83,11 @@ npm start
 
 - Como desarrollador, puedes encontrar el código base de las páginas y una imagen de cómo se verían en la carpeta `infoDoc/moockup_funcionalidad`.
 - Como desarrollador, puedes encontrar toda la información del proyecto, incluyendo el contexto del backend, en la carpeta `infoDoc/Docs`.
+
+## ℹ️ Notas Técnicas Recientes
+
+- Se eliminaron las dependencias de descarga de fuentes de Google en tiempo de build para garantizar compilaciones reproducibles sin acceso a internet.
+- Los controles de paginación de productos ahora exponen estados deshabilitados accesibles y etiquetas para lectores de pantalla.
 
 ## 📁 Estructura del Proyecto
 
@@ -265,20 +271,20 @@ listaCompra_frontend_web/
 
 ### Fase 4: Gestión de Productos (Semanas 7-8)
 
-#### Sprint 4.1: CRUD de Productos
-- [ ] Agregar productos a lista
-- [ ] Editar productos de lista
-- [ ] Eliminar productos de lista
-- [ ] Marcar productos como comprados/pendientes
-- [ ] Cambiar cantidad de productos
-- [ ] Asignar categorías a productos
-- [ ] Arrastrar y soltar para reordenar
-- [ ] Tests de gestión de productos
+#### Sprint 4.1: CRUD de Productos ✅
+- [x] Agregar productos a lista
+- [x] Editar productos de lista
+- [x] Eliminar productos de lista
+- [x] Marcar productos como comprados/pendientes
+- [x] Cambiar cantidad de productos
+- [x] Asignar categorías a productos
+- [x] Arrastrar y soltar para reordenar
+- [x] Tests de gestión de productos
 
 #### Sprint 4.2: Búsqueda y Filtros
-- [ ] Buscador de productos en tiempo real
-- [ ] Filtros por categoría
-- [ ] Filtros por estado (comprado/pendiente)
+- [x] Buscador de productos en tiempo real
+- [x] Filtros por categoría
+- [x] Filtros por estado (comprado/pendiente)
 - [ ] Ordenamiento (alfabético, fecha, categoría)
 - [ ] Historial de productos comprados
 - [ ] Sugerencias de productos
@@ -418,7 +424,9 @@ listaCompra_frontend_web/
 - ✅ Marcar productos como comprados
 - ✅ Cambiar cantidades
 - ✅ Categorizar productos
+- ✅ Reordenar con arrastrar y soltar
 - ✅ Buscar productos en lista
+- ✅ Navegar productos paginados con controles accesibles
 
 ### Inteligencia Artificial
 - ✅ Categorización automática de productos
