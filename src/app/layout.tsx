@@ -1,7 +1,4 @@
-import './globals.css'
-import type { Metadata } from 'next'
-import { DM_Sans, Inter } from 'next/font/google'
-
+import { AppProviders } from '@/components/providers/app-providers'
 import { ThemeProvider } from '@/components/theme-provider'
 
 const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-sans' })
@@ -21,10 +18,13 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={`${inter.variable} ${dmSans.variable} min-h-screen bg-background font-sans antialiased`}>
-        <ThemeProvider>
-          <main className="min-h-screen bg-background text-foreground">{children}</main>
-        </ThemeProvider>
+        <AppProviders>
+          <ThemeProvider>
+            <main className="min-h-screen bg-background text-foreground">{children}</main>
+          </ThemeProvider>
+        </AppProviders>
       </body>
     </html>
   )
 }
+

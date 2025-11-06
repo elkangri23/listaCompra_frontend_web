@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, Heading, Text } from '@/components/ui'
-import { auth } from '@/lib/auth/next-auth'
+import { SessionStatus } from '@/features/auth/components/session/session-status'
 
 export const metadata: Metadata = {
   title: 'Panel principal | ListaCompra',
@@ -23,9 +22,7 @@ export default async function DashboardPage() {
             rápidos.
           </Text>
         </div>
-        <Badge variant="success" className="w-fit">
-          Sesión activa
-        </Badge>
+        <SessionStatus />
       </header>
 
       <div className="grid gap-6 md:grid-cols-2">
