@@ -12,9 +12,18 @@ import {
 } from '@/components/ui/pagination';
 import { useLists, useCreateList } from '@/features/lists/hooks/use-lists';
 import { useDebounce } from '@/hooks/use-debounce';
-import { ListsTable } from '@/features/lists/components/lists-table';
-import { CreateListDialog } from '@/features/lists/components/create-list-dialog';
 import { CreateListDto } from '@/types/dtos/lists';
+import dynamic from 'next/dynamic';
+
+const ListsTable = dynamic(
+  () => import('@/features/lists/components/lists-table').then((mod) => mod.ListsTable),
+  { ssr: false }
+);
+
+const CreateListDialog = dynamic(
+  () => import('@/features/lists/components/create-list-dialog').then((mod) => mod.CreateListDialog),
+  { ssr: false }
+);
 
 export default function ListsPage() {
   const [searchTerm, setSearchTerm] = useState('');

@@ -1,16 +1,21 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+'use client';
+
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui';
 import { Input } from '@/components/ui/input';
 import { Trash2, GripVertical, Minus, Plus } from 'lucide-react';
 import { ProductoListDto } from '@/types/dtos/products';
-import { EditProductDialog } from './edit-product-dialog';
 import { ProductFormValues } from './product-form';
 import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/use-debounce';
+import { useVirtualList } from '@/hooks/use-virtual-list';
+import dynamic from 'next/dynamic';
 
-interface ProductsTableProps {
+const EditProductDialog = dynamic(() => import('./edit-product-dialog').then((mod) => mod.EditProductDialog));
+
+export interface ProductsTableProps {
   products: ProductoListDto[];
   categories: Array<{ id: string; nombre: string }>;
   categoriesMap: Record<string, string>;
@@ -40,7 +45,7 @@ interface ProductRowProps {
   onDragEnd: () => Promise<void>;
 }
 
-function ProductRow({
+const ProductRow = memo(function ProductRow({
   product,
   categories,
   categoryLabel,
@@ -183,7 +188,7 @@ function ProductRow({
       </TableCell>
     </TableRow>
   );
-}
+});
 
 export function ProductsTable({
   products,
@@ -202,12 +207,24 @@ export function ProductsTable({
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [hasOrderChanged, setHasOrderChanged] = useState(false);
   const isDragging = useRef(false);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!isDragging.current) {
       setOrderedProducts(products);
     }
   }, [products]);
+
+  const tableRows = useMemo(() => orderedProducts, [orderedProducts]);
+  const shouldVirtualize = tableRows.length > 25;
+
+  const { virtualItems, paddingTop, paddingBottom } = useVirtualList({
+    itemCount: shouldVirtualize ? tableRows.length : 0,
+    itemHeight: 88,
+    overscan: 8,
+    scrollRef: scrollContainerRef,
+    initialViewportHeight: 560,
+  });
 
   const handleDragStart = (productId: string) => () => {
     setDraggingId(productId);
@@ -254,8 +271,6 @@ export function ProductsTable({
   const isPending = (productId: string) =>
     isActionPending && pendingProductId === productId;
 
-  const tableRows = useMemo(() => orderedProducts, [orderedProducts]);
-
   if (tableRows.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-muted-foreground/40 p-8 text-center text-sm text-muted-foreground">
@@ -265,45 +280,68 @@ export function ProductsTable({
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-12" aria-label="Reordenar productos" />
-          <TableHead>Producto</TableHead>
-          <TableHead>Cantidad</TableHead>
-          <TableHead>Precio</TableHead>
-          <TableHead>Estado</TableHead>
-          <TableHead>Categoría</TableHead>
-          <TableHead className="text-right">Acciones</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {tableRows.map((product) => {
-          const categoryLabel = product.categoriaId
-            ? categoriesMap[product.categoriaId] ?? 'Sin categoría'
-            : 'Sin categoría';
-          const isProductPending = isPending(product.id);
+    <div
+      ref={scrollContainerRef}
+      className="max-h-[640px] overflow-y-auto"
+      data-testid="products-table-virtual-scroll"
+    >
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-12" aria-label="Reordenar productos" />
+            <TableHead>Producto</TableHead>
+            <TableHead>Cantidad</TableHead>
+            <TableHead>Precio</TableHead>
+            <TableHead>Estado</TableHead>
+            <TableHead>Categoría</TableHead>
+            <TableHead className="text-right">Acciones</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {shouldVirtualize && paddingTop > 0 && (
+            <TableRow aria-hidden style={{ height: paddingTop }}>
+              <TableCell colSpan={7} />
+            </TableRow>
+          )}
+          {(shouldVirtualize
+            ? virtualItems
+                .map((virtualRow) => tableRows[virtualRow.index])
+                .filter((product): product is ProductoListDto => Boolean(product))
+            : tableRows
+          ).map(
+            (product) => {
+              const categoryLabel = product.categoriaId
+                ? categoriesMap[product.categoriaId] ?? 'Sin categoría'
+                : 'Sin categoría';
+              const isProductPending = isPending(product.id);
 
-          return (
-            <ProductRow
-              key={product.id}
-              product={product}
-              categories={categories}
-              categoryLabel={categoryLabel}
-              isProductPending={isProductPending}
-              draggingId={draggingId}
-              isReordering={isReordering}
-              onTogglePurchased={onTogglePurchased}
-              onDelete={onDelete}
-              onEdit={onEdit}
-              onAdjustQuantity={onAdjustQuantity}
-              onDragStart={handleDragStart}
-              onDragOver={handleDragOver}
-              onDragEnd={handleDragEnd}
-            />
-          );
-        })}
-      </TableBody>
-    </Table>
+              return (
+                <ProductRow
+                  key={product.id}
+                  product={product}
+                  categories={categories}
+                  categoryLabel={categoryLabel}
+                  isProductPending={isProductPending}
+                  draggingId={draggingId}
+                  isReordering={isReordering}
+                  onTogglePurchased={onTogglePurchased}
+                  onDelete={onDelete}
+                  onEdit={onEdit}
+                  onAdjustQuantity={onAdjustQuantity}
+                  onDragStart={handleDragStart}
+                  onDragOver={handleDragOver}
+                  onDragEnd={handleDragEnd}
+                />
+              );
+            }
+          )}
+          {shouldVirtualize && paddingBottom > 0 && (
+            <TableRow aria-hidden style={{ height: paddingBottom }}>
+              <TableCell colSpan={7} />
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
