@@ -2,23 +2,50 @@
 
 **Sistema frontend moderno y escalable** construido con **Next.js 15**, **TypeScript** y **Tailwind CSS** siguiendo **arquitectura limpia** y **principios SOLID**.
 
-## 🚀 Descripción General
+## � Estado del Proyecto
+
+**Última actualización**: 6 de noviembre de 2025  
+**Progreso general**: ~40% completado  
+**Fase actual**: Fase 2 - Autenticación y Autorización (80% completada)
+
+### ✅ Completado
+- ✅ Configuración base de Next.js 15 con TypeScript
+- ✅ Sistema de diseño con Tailwind CSS 4.x y componentes shadcn/ui
+- ✅ Integración de tipos del backend mediante MCP servers
+- ✅ Sistema de autenticación con NextAuth.js v5
+- ✅ Páginas de login, registro y recuperación de contraseña
+- ✅ Validación de formularios con Zod
+- ✅ Configuración de seguridad (CSP, headers)
+- ✅ Testing setup (Jest + React Testing Library)
+- ✅ Dashboard protegido
+
+### 🚧 En Progreso
+- 🚧 Gestión de sesión y perfiles de usuario
+- 🚧 Accesibilidad WCAG 2.2
+
+### 🔜 Próximamente
+- 🔜 Gestión de listas colaborativas (CRUD)
+- 🔜 Gestión de productos y categorías
+- 🔜 Funcionalidades de IA (categorización, recomendaciones)
+- 🔜 Sistema de notificaciones en tiempo real
+
+## �🚀 Descripción General
 
 Frontend para la aplicación de "Lista de la Compra Colaborativa" que consume la API REST del backend. Construido con las últimas tecnologías web y siguiendo las mejores prácticas de la industria.
 
 ## ✨ Stack Tecnológico
 
-- **Framework**: Next.js 15 (App Router)
-- **Lenguaje**: TypeScript 5.x
-- **Estilos**: Tailwind CSS 4.x
-- **Testing**: Jest + React Testing Library
-- **Autenticación**: NextAuth.js v5
-- **State Management**: Zustand / React Context
-- **Validación**: Zod
+- **Framework**: Next.js 15.5.6 (App Router)
+- **Lenguaje**: TypeScript 5.9.3
+- **Estilos**: Tailwind CSS 4.1.16 + PostCSS
+- **Testing**: Jest + React Testing Library + Playwright (próximamente)
+- **Autenticación**: NextAuth.js v5 (beta)
+- **Validación**: Zod 3.25.76
 - **HTTP Client**: Axios
 - **UI Components**: shadcn/ui + Radix UI
 - **Icons**: Lucide React
 - **Formateo**: Prettier + ESLint
+- **MCP Integration**: Model Context Protocol para compartir tipos con backend
 
 ## 📦 Instalación Rápida
 
@@ -167,49 +194,56 @@ listaCompra_frontend_web/
 
 ## 🗺️ Roadmap de Desarrollo
 
-### Fase 1: Fundamentos y Configuración (Semanas 1-2)
+### Fase 1: Fundamentos y Configuración ✅ (Completada)
 
-#### Sprint 1.1: Setup Inicial
+#### Sprint 1.1: Setup Inicial ✅
 - [x] Inicializar proyecto Next.js 15 con TypeScript
-- [x] Configurar Tailwind CSS y sistema de diseño
+- [x] Configurar Tailwind CSS 4.x con @tailwindcss/postcss
 - [x] Configurar ESLint + Prettier
 - [x] Configurar Jest + React Testing Library
-- [x] Crear estructura de carpetas base
-- [x] Configurar variables de entorno
+- [x] Crear estructura de carpetas base (features, components, lib)
+- [x] Configurar variables de entorno (.env.local, .env.example)
 - [x] Implementar CSP y security headers
 - [x] Configurar análisis de código estático
+- [x] Integrar tipos del backend mediante MCP servers
 
-#### Sprint 1.2: Sistema de Diseño Base
-- [x] Integrar shadcn/ui
-- [x] Crear componentes atómicos (Button, Input, Card, etc.)
-- [x] Implementar sistema de colores y tipografía
-- [x] Configurar temas (light/dark mode)
-- [x] Crear documentación de componentes con Storybook
-- [x] Implementar tokens de diseño
-- [x] Tests unitarios de componentes UI
+#### Sprint 1.2: Sistema de Diseño Base ✅
+- [x] Integrar shadcn/ui + Radix UI
+- [x] Crear componentes atómicos (Button, Input, Card, Badge, Label, Heading, Text)
+- [x] Implementar sistema de colores con CSS variables (HSL)
+- [x] Configurar temas (light/dark mode) con ThemeToggle
+- [x] Implementar tokens de diseño (designTokens)
+- [x] Configurar Tailwind con custom utilities y theme extension
+- [x] Página de demostración del sistema de diseño
 
-### Fase 2: Autenticación y Autorización (Semanas 3-4)
+### Fase 2: Autenticación y Autorización 🚧 (En Progreso - 80%)
 
-#### Sprint 2.1: Sistema de Autenticación
-- [x] Configurar NextAuth.js v5
-- [x] Implementar login con email/password
-- [x] Implementar registro de usuarios
-- [x] Implementar recuperación de contraseña
-- [x] Crear middleware de autenticación
-- [x] Implementar refresh token automático
-- [x] Manejo de errores de autenticación
-- [x] Tests de flujos de autenticación
+#### Sprint 2.1: Sistema de Autenticación ✅
+- [x] Instalar y configurar NextAuth.js v5 (beta)
+- [x] Instalar Axios como HTTP client
+- [x] Configurar CredentialsProvider para email/password
+- [x] Implementar callbacks (jwt, session) con refresh token
+- [x] Crear auth-service.ts con funciones login, refreshAccessToken
+- [x] Implementar LoginForm con validación Zod
+- [x] Implementar ForgotPasswordForm con validación
+- [x] Crear páginas de login (/login) y registro (/register)
+- [x] Crear página de recuperación de contraseña (/forgot-password)
+- [x] Configurar route groups: (auth) y (unauth)
+- [x] Implementar middleware de autenticación
+- [x] Manejo de errores de autenticación con toast/mensajes
+- [x] Suspense boundaries para useSearchParams
 
-#### Sprint 2.2: Gestión de Sesiones
-- [ ] Implementar ProtectedRoute HOC
-- [ ] Crear página de perfil de usuario
+#### Sprint 2.2: Gestión de Sesión y Perfiles 🚧 (En Progreso)
+- [x] Implementar dashboard protegido (/dashboard)
+- [ ] Crear página de perfil de usuario (/profile)
+- [ ] Implementar edición de perfil (nombre, email)
 - [ ] Implementar cambio de contraseña
-- [ ] Implementar cierre de sesión
-- [ ] Persistencia de sesión con cookies seguras
-- [ ] Validación de tokens JWT
-- [ ] Tests de autorización
+- [ ] Crear componente ProtectedRoute
+- [x] Implementar logout con limpieza de sesión en cliente
+- [x] Persistencia de sesión con cookies seguras (HttpOnly, SameSite, Secure) por NextAuth
+- [ ] Tests E2E de flujos de autenticación
 
-### Fase 3: Gestión de Listas (Semanas 5-6)
+### Fase 3: Gestión de Listas 📋 (Pendiente)
 
 #### Sprint 3.1: CRUD de Listas
 - [ ] Implementar listado de listas del usuario
