@@ -10,6 +10,8 @@ import type {
   RefreshTokenRequest,
   RegisterRequest,
 } from '@/features/auth/types'
+import type { ProfileFormValues } from '@/features/auth/validators/profile-schema'
+import type { ChangePasswordFormValues } from '@/features/auth/validators/password-schema'
 
 export class AuthApiError extends Error {
   statusCode?: number
@@ -163,5 +165,68 @@ export async function refreshAccessToken(request: RefreshTokenRequest): Promise<
     }
   } catch (error) {
     throw buildAuthApiError(error, 'No se pudo renovar la sesión. Inicia sesión nuevamente.')
+  }
+}
+
+/**
+ * Obtiene los datos del usuario autenticado actual
+ */
+export async function getCurrentUser(): Promise<AuthResponse['user']> {
+  try {
+    const { data } = await axiosInstance.get('/users/me')
+    const parsed = userSchema.parse(data)
+
+    return {
+      id: parsed.id,
+      email: parsed.email,
+      name: parsed.name,
+      roles: parsed.roles,
+      image: parsed.image ?? null,
+    }
+  } catch (error) {
+    throw buildAuthApiError(error, 'No se pudo obtener la información del usuario.')
+  }
+}
+
+/**
+ * Actualiza el perfil del usuario autenticado
+ */
+export async function updateProfile(values: ProfileFormValues): Promise<AuthResponse['user']> {
+  try {
+    const payload = {
+      name: values.nombre.trim(),
+      email: normalizeEmail(values.email),
+      ...(values.bio && { bio: values.bio.trim() }),
+    }
+
+    const { data } = await axiosInstance.patch('/users/me', payload)
+    const parsed = userSchema.parse(data)
+
+    return {
+      id: parsed.id,
+      email: parsed.email,
+      name: parsed.name,
+      roles: parsed.roles,
+      image: parsed.image ?? null,
+    }
+  } catch (error) {
+    throw buildAuthApiError(error, 'No se pudo actualizar el perfil. Inténtalo nuevamente.')
+  }
+}
+
+/**
+ * Cambia la contraseña del usuario autenticado
+ */
+export async function changePassword(values: ChangePasswordFormValues): Promise<void> {
+  try {
+    const payload = {
+      currentPassword: values.currentPassword,
+      newPassword: values.newPassword,
+    }
+
+    const response = await axiosInstance.patch('/users/me/password', payload)
+    messageResponseSchema.parse(response.data ?? {})
+  } catch (error) {
+    throw buildAuthApiError(error, 'No se pudo cambiar la contraseña. Verifica tu contraseña actual.')
   }
 }

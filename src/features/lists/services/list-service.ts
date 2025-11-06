@@ -37,10 +37,16 @@ const deleteList = async (id: string): Promise<void> => {
   await axiosInstance.delete(`/lists/${id}`);
 };
 
+const getListSummary = async (id: string): Promise<ListSummary> => {
+  const response = await axiosInstance.get<ListSummary>(`/lists/${id}/summary`);
+  return response.data;
+};
+
 export const listService = {
   getLists,
   getListById,
   createList,
   updateList,
   deleteList,
+  getListSummary,
 };

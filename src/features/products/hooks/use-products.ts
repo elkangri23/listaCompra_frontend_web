@@ -158,6 +158,18 @@ export const useToggleProductPurchased = (listId: string) => {
   });
 };
 
+export const useAdjustQuantity = (listId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ productId, cantidad }: { productId: string; cantidad: number }) =>
+      productService.updateProduct(listId, productId, { cantidad }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lists', listId, 'products'] });
+    },
+  });
+};
+
 export const useReorderProducts = (listId: string) => {
   const queryClient = useQueryClient();
 

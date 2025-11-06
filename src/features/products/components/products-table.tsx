@@ -1,21 +1,14 @@
-'use client';
-
-import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui';
+import { Input } from '@/components/ui/input';
 import { Trash2, GripVertical, Minus, Plus } from 'lucide-react';
 import { ProductoListDto } from '@/types/dtos/products';
 import { EditProductDialog } from './edit-product-dialog';
 import { ProductFormValues } from './product-form';
 import { cn } from '@/lib/utils';
+import { useDebounce } from '@/hooks/use-debounce';
 
 interface ProductsTableProps {
   products: ProductoListDto[];
@@ -140,6 +133,20 @@ export function ProductsTable({
             await onAdjustQuantity(product.id, product.cantidad + 1);
           };
 
+          const [quantityInput, setQuantityInput] = useState(product.cantidad.toString());
+          const debouncedQuantity = useDebounce(quantityInput, 500);
+
+          useEffect(() => {
+            setQuantityInput(product.cantidad.toString());
+          }, [product.cantidad]);
+
+          useEffect(() => {
+            const newQuantity = parseInt(debouncedQuantity);
+            if (!isNaN(newQuantity) && newQuantity > 0 && newQuantity !== product.cantidad) {
+              onAdjustQuantity(product.id, newQuantity);
+            }
+          }, [debouncedQuantity]);
+
           return (
             <TableRow
               key={product.id}
@@ -179,7 +186,21 @@ export function ProductsTable({
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <span className="w-10 text-center font-medium">{product.cantidad}</span>
+                  <Input
+                    type="number"
+                    value={quantityInput}
+                    onChange={(e) => setQuantityInput(e.target.value)}
+                    onBlur={() => {
+                      const newQuantity = parseInt(quantityInput);
+                      if (isNaN(newQuantity) || newQuantity <= 0) {
+                        setQuantityInput(product.cantidad.toString()); // Revert to original if invalid
+                      }
+                    }}
+                    className="w-16 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    disabled={isProductPending}
+                    aria-label={`Cantidad de ${product.nombre}`}
+                    min="1"
+                  />
                   <Button
                     type="button"
                     variant="ghost"
