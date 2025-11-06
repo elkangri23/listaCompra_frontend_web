@@ -2,6 +2,16 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { SessionStatus } from '@/features/auth/components/session/session-status'
+import { auth } from '@/lib/auth/next-auth'
+import {
+  Heading,
+  Text,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui'
 
 export const metadata: Metadata = {
   title: 'Panel principal | ListaCompra',
