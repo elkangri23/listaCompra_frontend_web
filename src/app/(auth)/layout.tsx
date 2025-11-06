@@ -6,9 +6,9 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex">
+    <div className="flex bg-background text-foreground min-h-screen">
       <Sidebar />
-      <main className="flex-1 p-4">{children}</main>
+      <main className="flex-1 p-4 bg-background">{children}</main>
     </div>
   );
 }
