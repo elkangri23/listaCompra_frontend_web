@@ -4,9 +4,9 @@
 
 ## 📊 Estado del Proyecto
 
-**Última actualización**: 7 de enero de 2025
-**Progreso general**: ~75% completado
-**Fase actual**: Fase 4 - Productos (100%) | Fase 5 - IA (Sprint 5.1 completado ✅)
+**Última actualización**: 7 de enero de 2025  
+**Progreso general**: ~75% completado  
+**Fase actual**: Fase 5 - IA (Sprint 5.1 completado ✅ | Sprint 5.2 pendiente)
 
 ### ✅ Completado
 - ✅ Configuración base de Next.js 15 con TypeScript
@@ -38,6 +38,19 @@
 - ✅ **Sistema de notificaciones Sonner (toasts)**
 - ✅ Componentes de paginación reutilizables
 - ✅ Corrección de errores de compilación (imports, props, providers)
+- ✅ **Centro de notificaciones en UI (Sprint 6.1)**
+- ✅ **Notificaciones en tiempo real (polling/SSE) (Sprint 6.1)**
+- ✅ **Marcar notificaciones como leídas (Sprint 6.1)**
+- ✅ **Eliminar notificaciones (Sprint 6.1)**
+- ✅ **Badge de notificaciones no leídas (Sprint 6.1)**
+- ✅ **Filtros de notificaciones (Sprint 6.1)**
+- ✅ **Implementar lazy loading de componentes (Sprint 7.1)**
+- ✅ **Optimizar imágenes con next/image (Sprint 7.1)**
+- ✅ **Implementar debouncing en búsquedas (Sprint 7.1)**
+- ✅ **Implementar virtual scrolling para listas largas (Sprint 7.1)**
+- ✅ **Code splitting estratégico (Sprint 7.1)**
+- ✅ **Análisis de bundle size (Sprint 7.1)**
+- ✅ **Optimización de Lighthouse score (Sprint 7.1)**
 
 ### 🚧 En Progreso
 - 🚧 Tests unitarios de componentes AI
@@ -45,9 +58,7 @@
 
 ### 🔜 Próximamente
 - 🔜 Recomendaciones de productos con IA (Sprint 5.2)
-- 🔜 Sistema de notificaciones en tiempo real
 - 🔜 Tests E2E con Playwright
-- 🔜 Optimizaciones de rendimiento avanzadas
 
 ## �🚀 Descripción General
 
@@ -532,15 +543,15 @@ listaCompra_frontend_web/
 - [ ] Historial de recomendaciones
 - [ ] Tests de recomendaciones
 
-### Fase 6: Notificaciones (Semanas 11-12)
+### Fase 6: Notificaciones (Semanas 11-12) ✅ (Completado)
 
-#### Sprint 6.1: Sistema de Notificaciones
-- [ ] Centro de notificaciones en UI
-- [ ] Notificaciones en tiempo real (polling/SSE)
-- [ ] Marcar notificaciones como leídas
-- [ ] Eliminar notificaciones
-- [ ] Badge de notificaciones no leídas
-- [ ] Filtros de notificaciones
+#### Sprint 6.1: Sistema de Notificaciones ✅ (Completado)
+- [x] Centro de notificaciones en UI
+- [x] Notificaciones en tiempo real (polling/SSE)
+- [x] Marcar notificaciones como leídas
+- [x] Eliminar notificaciones
+- [x] Badge de notificaciones no leídas
+- [x] Filtros de notificaciones
 - [ ] Tests de notificaciones
 
 #### Sprint 6.2: Tipos de Notificaciones
@@ -551,16 +562,16 @@ listaCompra_frontend_web/
 - [ ] Configuración de preferencias
 - [ ] Tests de tipos de notificaciones
 
-### Fase 7: Optimización y Performance (Semanas 13-14)
+### Fase 7: Optimización y Performance (Semanas 13-14) ✅ (Completado)
 
-#### Sprint 7.1: Optimización Cliente
-- [ ] Implementar lazy loading de componentes
-- [ ] Optimizar imágenes con next/image
-- [ ] Implementar debouncing en búsquedas
-- [ ] Implementar virtual scrolling para listas largas
-- [ ] Code splitting estratégico
-- [ ] Análisis de bundle size
-- [ ] Optimización de Lighthouse score
+#### Sprint 7.1: Optimización Cliente ✅ (Completado)
+- [x] Implementar lazy loading de componentes
+- [x] Optimizar imágenes con next/image
+- [x] Implementar debouncing en búsquedas
+- [x] Implementar virtual scrolling para listas largas
+- [x] Code splitting estratégico
+- [x] Análisis de bundle size
+- [x] Optimización de Lighthouse score
 - [ ] Tests de performance
 
 #### Sprint 7.2: Caching y Estado
