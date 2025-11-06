@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, File, Settings, LogOut } from 'lucide-react';
+import { Home, File, Settings, LogOut, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const links = [
   { href: '/dashboard', label: 'Panel Principal', icon: Home },
   { href: '/lists', label: 'Mis Listas', icon: File },
+  { href: '/invitations', label: 'Invitaciones', icon: Mail },
   { href: '/settings', label: 'Ajustes', icon: Settings },
 ];
 
