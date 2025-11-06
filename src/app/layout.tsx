@@ -19,15 +19,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <body className={cn('min-h-screen bg-background font-sans antialiased', inter.variable)}>
+    <html lang="es" suppressHydrationWarning className="light">
+      <body className={cn('min-h-screen antialiased', inter.variable)} style={{ fontFamily: 'Inter, "Noto Sans", sans-serif' }}>
         <AppProviders>
-          <ThemeProvider>
-            <main className="min-h-screen bg-background text-foreground">
-              <div className="container py-12">
-                {children}
-              </div>
-            </main>
+          <ThemeProvider defaultTheme="light">
+            {children}
           </ThemeProvider>
         </AppProviders>
       </body>
