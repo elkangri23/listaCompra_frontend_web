@@ -2,9 +2,9 @@
 
 ## Estado del Proyecto: 🚧 En Desarrollo Activo
 
-**Última actualización**: 6 de noviembre de 2025
-**Progreso general**: ~70% completado
-**Fase actual**: Fase 2 - Autenticación completa (100%) | Fase 3 - Gestión de Listas (85%)
+**Última actualización**: 7 de enero de 2025
+**Progreso general**: ~75% completado
+**Fase actual**: Fase 4 - Productos (100%) | Fase 5 - IA (Sprint 5.1 completado ✅)
 
 ---
 
@@ -135,23 +135,38 @@
   - ✅ Visualización en cards con badge de frecuencia
   - ✅ Botón rápido para agregar sugerencias (máximo 6)
 
-## 4. Inteligencia Artificial en la Interfaz 🤖 (0% Completado)
+## 4. Inteligencia Artificial en la Interfaz 🤖 (40% Completado)
 
-- [ ] **Como usuario, al añadir un producto, la IA categoriza automáticamente el producto y sugiere una categoría.**
-  - 🔜 Pendiente: Integración con endpoint /ai/categorize
-  - 🔜 Pendiente: UI de sugerencias de categoría
+- [x] **Como usuario, al añadir un producto, la IA categoriza automáticamente el producto y sugiere una categoría.**
+  - ✅ Integración con endpoint POST /ai/categorize
+  - ✅ AIProductForm wrapper implementado con Switch toggle
+  - ✅ Auto-categorización con debounce 800ms al escribir nombre
+  - ✅ Sugerencias con confidence scoring (%)
+  - ✅ Auto-selección si confianza > 70%
+  - ✅ Hasta 3 sugerencias ordenadas por confianza
+  - ✅ Botones para seleccionar manualmente sugerencias
+  - ✅ Feedback visual: loader (Analizando producto...), badges de confianza
+  - ✅ Tooltips con razones de categorización
+  - ✅ Toast notifications para confirmación
+  - ✅ Cache inteligente (30min staleTime, 1hr gcTime)
+  - ✅ Manejo de errores con degradación a selección manual
+  - ✅ Componente desacoplado (wrapper pattern)
   
 - [ ] **Como usuario, recibo sugerencias de productos y listas frecuentes, gracias a IA.**
-  - 🔜 Pendiente: Widget de sugerencias
-  - 🔜 Pendiente: Integración con endpoint /ai/suggestions
+  - ✅ Widget de sugerencias basado en frecuencia (Sprint 4.2)
+  - 🔜 Pendiente: Integración con endpoint /ai/recommendations para sugerencias avanzadas
+  - 🔜 Pendiente: Sugerencias de listas completas por IA
   
 - [ ] **Como usuario, recibo recomendaciones personalizadas según mi historial.**
-  - 🔜 Pendiente: Panel de recomendaciones
-  - 🔜 Pendiente: Algoritmo de personalización
+  - 🔜 Pendiente: Panel de recomendaciones personalizadas
+  - 🔜 Pendiente: Algoritmo ML en backend + integración frontend
   
-- [ ] **Como usuario, veo feedback visual cuando la IA categoriza productos o recomienda acciones.**
-  - 🔜 Pendiente: Animaciones de IA trabajando
-  - 🔜 Pendiente: Tooltips informativos
+- [x] **Como usuario, veo feedback visual cuando la IA categoriza productos o recomienda acciones.**
+  - ✅ Animaciones de spinner durante procesamiento IA
+  - ✅ Badges con % de confianza en sugerencias
+  - ✅ Iconos visuales (Sparkles para IA, CheckCircle para seleccionado)
+  - ✅ Toast notifications con descripciones claras
+  - ✅ Estados de error con iconos AlertCircle
 
 ## 5. Notificaciones y Colaboración 🔔 (0% Completado)
 
