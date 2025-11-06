@@ -83,7 +83,8 @@ describe('ProductsTable', () => {
       />
     );
 
-    const increaseButton = screen.getByLabelText('Aumentar cantidad de Manzanas');
+        const product1Row = screen.getByTestId('product-row-prod-1');
+    const increaseButton = within(product1Row).getByLabelText('Aumentar cantidad');
     fireEvent.click(increaseButton);
 
     await waitFor(() => {

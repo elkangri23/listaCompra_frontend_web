@@ -6,29 +6,29 @@
 import type { Result } from '@shared/result';
 import { success, failure } from '@shared/result';
 import { isValidPassword } from '@shared/utils';
-import { InvalidPasswordError } from '@shared/errors';
+import { InvalidValueError } from '@domain/errors/DomainError';
 
 export class Password {
   private constructor(private readonly _value: string) {}
 
-  static create(password: string): Result<Password, InvalidPasswordError> {
+  static create(password: string): Result<Password, InvalidValueError> {
     // Validación básica
     if (!password || typeof password !== 'string') {
-      return failure(InvalidPasswordError.emptyPassword());
+      return failure(new InvalidValueError('La contraseña no puede estar vacía', 'password', password));
     }
 
     // Validar longitud mínima y máxima
     if (password.length < 8) {
-      return failure(InvalidPasswordError.weakPassword());
+      return failure(new InvalidValueError('La contraseña debe tener al menos 8 caracteres', 'password', password));
     }
 
     if (password.length > 128) {
-      return failure(InvalidPasswordError.tooLong());
+      return failure(new InvalidValueError('La contraseña es demasiado larga', 'password', password));
     }
 
     // Validar complejidad
     if (!isValidPassword(password)) {
-      return failure(InvalidPasswordError.weakPassword());
+      return failure(new InvalidValueError('La contraseña no cumple con los requisitos de complejidad', 'password', password));
     }
 
     return success(new Password(password));
@@ -39,7 +39,7 @@ export class Password {
     if (result.success === false) {
       throw result.error;
     }
-    return result.value;
+    return result.value as Password;
   }
 
   get value(): string {

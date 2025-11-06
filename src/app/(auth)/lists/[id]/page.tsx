@@ -11,6 +11,7 @@ import { InviteUserFormValues } from '@/features/invitations/components/invite-u
 import { CollaboratorsList } from '@/features/lists/components/collaborators-list';
 import { useCollaborators } from '@/features/lists/hooks/use-collaborators';
 import { useIsListOwner } from '@/features/lists/hooks/use-permissions';
+import { ProductsManagement } from '@/features/products/components/products-management';
 import { Users, ShoppingCart } from 'lucide-react';
 
 export default function ListDetailPage() {
@@ -79,19 +80,7 @@ export default function ListDetailPage() {
         </TabsList>
 
         <TabsContent value="products" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Gestión de Productos</CardTitle>
-              <CardDescription>
-                Administra los productos de tu lista de compras
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Text className="text-muted-foreground">
-                La funcionalidad completa de productos estará disponible pronto.
-              </Text>
-            </CardContent>
-          </Card>
+          <ProductsManagement listId={listId} />
         </TabsContent>
 
         <TabsContent value="collaborators" className="space-y-4">
