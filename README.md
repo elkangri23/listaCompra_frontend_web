@@ -249,17 +249,46 @@ listaCompra_frontend_web/
 - [x] Manejo de errores de autenticación con toast/mensajes
 - [x] Suspense boundaries para useSearchParams
 
-#### Sprint 2.2: Gestión de Sesión y Perfiles ✅ (Completada)
+#### Sprint 2.2: Gestión de Sesión y Perfiles 🚧 (70% Completada)
 - [x] Implementar dashboard protegido (/dashboard)
 - [x] QueryClientProvider y SessionProvider configurados
 - [x] Página de invitaciones (/invitations)
 - [x] Componentes de sesión y navegación
 - [x] Manejo de errores y loading states
-- [ ] Crear página de perfil de usuario (/profile) - Pendiente
-- [ ] Implementar edición de perfil (nombre, email) - Pendiente
-- [ ] Implementar cambio de contraseña - Pendiente
 - [x] Implementar logout con limpieza de sesión en cliente
 - [x] Persistencia de sesión con cookies seguras (HttpOnly, SameSite, Secure) por NextAuth
+- [ ] Crear página de perfil de usuario (/profile) - **Mover a Sprint 2.3**
+- [ ] Implementar edición de perfil (nombre, email) - **Mover a Sprint 2.3**
+- [ ] Implementar cambio de contraseña - **Mover a Sprint 2.3**
+
+#### Sprint 2.3: Gestión de Perfil de Usuario 📋 (Próximo Sprint - 0% Completado)
+
+**Objetivo**: Completar la funcionalidad de gestión de perfil de usuario con edición de datos personales y cambio de contraseña.
+
+**Tareas Principales**:
+1. [ ] Crear página `/profile` con diseño responsive
+2. [ ] Implementar ProfileForm con campos: nombre, email, imagen
+3. [ ] Crear ChangePasswordForm con validación de contraseña actual
+4. [ ] Integrar con endpoint PATCH `/users/me`
+5. [ ] Implementar upload de imagen de perfil (opcional)
+6. [ ] Agregar validaciones:
+   - Email único (verificar con backend)
+   - Contraseña actual correcta
+   - Nueva contraseña cumple requisitos
+7. [ ] Manejo de errores específicos (email duplicado, contraseña incorrecta)
+8. [ ] Loading states y feedback visual
+9. [ ] Tests unitarios de ProfileForm y ChangePasswordForm
+
+**Estimación**: 2-3 días de desarrollo
+
+**Criterios de Aceptación**:
+- ✓ Usuario puede ver su perfil actual
+- ✓ Usuario puede editar nombre y email
+- ✓ Usuario puede cambiar su contraseña
+- ✓ Validaciones funcionan correctamente
+- ✓ Mensajes de error/éxito son claros
+- ✓ Componentes son accesibles (WCAG 2.2 AA)
+- ✓ Tests cubren casos principales
 
 ### Fase 3: Gestión de Listas ✅ (85% Completada)
 
@@ -308,6 +337,68 @@ listaCompra_frontend_web/
 - [ ] Historial de productos comprados
 - [ ] Sugerencias de productos
 - [ ] Optimización de queries con React Query
+
+#### Sprint 4.3: Página Detalle de Lista Completa 📋 (Próximo Sprint - 0% Completado)
+
+**Objetivo**: Completar la página `/lists/[id]` con todas las funcionalidades de gestión de productos, filtros y colaboración.
+
+**Contexto**: Actualmente es un placeholder temporal debido a 50+ errores de variables no definidas.
+
+**Tareas Principales**:
+1. [ ] Definir todos los estados necesarios:
+   - `searchTerm`, `statusFilter`, `categoryFilter`
+   - `page`, `totalPages`, `activeProductId`
+   - Estados de loading y error
+2. [ ] Implementar hooks personalizados:
+   - `useProducts(listId)` - obtener productos de la lista
+   - `useCategories()` - obtener categorías
+   - `useListSummary(listId)` - resumen de la lista
+3. [ ] Implementar handlers de productos:
+   - `handleCreateProduct` - crear producto
+   - `handleEditProduct` - editar producto
+   - `handleDeleteProduct` - eliminar producto
+   - `handleTogglePurchased` - marcar comprado/pendiente
+   - `handleAdjustQuantity` - ajustar cantidad
+   - `handleReorderProducts` - reordenar con drag & drop
+4. [ ] Integrar componentes existentes:
+   - `ProductsTable` con todos los props
+   - `CreateProductDialog`
+   - `InviteUserDialog`
+   - `Pagination`
+5. [ ] Implementar filtros y búsqueda:
+   - Input de búsqueda con debounce
+   - Selectores de categoría y estado
+   - Función `resetPagination` cuando cambian filtros
+6. [ ] Mostrar resumen de lista:
+   - Productos comprados
+   - Productos pendientes
+   - Productos urgentes
+   - Valor total estimado
+7. [ ] Manejo de estados:
+   - Loading mientras carga datos
+   - Error si falla la carga
+   - Empty state si no hay productos
+8. [ ] Tests de integración de la página completa
+
+**Estimación**: 3-4 días de desarrollo
+
+**Dependencias**:
+- ProductsTable (✅ Completado)
+- CreateProductDialog (✅ Completado)
+- Pagination (✅ Completado)
+- use-products hook (✅ Completado)
+- use-categories hook (✅ Completado)
+
+**Criterios de Aceptación**:
+- ✓ Página carga y muestra todos los productos de la lista
+- ✓ Búsqueda y filtros funcionan correctamente
+- ✓ CRUD de productos funciona desde la página
+- ✓ Paginación funcional con navegación
+- ✓ Resumen actualizado en tiempo real
+- ✓ Invitaciones se pueden enviar desde la página
+- ✓ Drag & drop para reordenar productos
+- ✓ Loading states en todas las operaciones
+- ✓ Manejo de errores claro y accesible
 - [ ] Gestionar permisos de colaboradores
 - [ ] Eliminar colaboradores
 - [ ] Vista de miembros de lista
