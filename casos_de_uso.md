@@ -3,8 +3,8 @@
 ## Estado del Proyecto: 🚧 En Desarrollo Activo
 
 **Última actualización**: 6 de noviembre de 2025  
-**Progreso general**: ~40% completado  
-**Fase actual**: Fase 2 - Autenticación y Autorización (80% completada)
+**Progreso general**: ~60% completado  
+**Fase actual**: Fase 3.2 - Colaboración en Listas (Pendiente)
 
 ---
 
@@ -41,15 +41,15 @@
   - ✅ Dashboard personalizado
   - 🔜 Pendiente: Vista de perfil responsive
 
-## 2. Gestión de Listas Colaborativas 📋 (0% Completado)
+## 2. Gestión de Listas Colaborativas 📋 (50% Completado)
 
-- [ ] **Como usuario autenticado, puedo crear una lista de la compra.**
-  - 🔜 Pendiente: Formulario de creación de listas
-  - 🔜 Pendiente: Integración con endpoint POST /lists
+- [x] **Como usuario autenticado, puedo crear una lista de la compra.**
+  - ✅ Formulario de creación de listas
+  - ✅ Integración con endpoint POST /lists
   
-- [ ] **Como usuario, puedo ver todas mis listas y sus productos asociados.**
-  - 🔜 Pendiente: Vista de listado de listas
-  - 🔜 Pendiente: Integración con endpoint GET /lists
+- [x] **Como usuario, puedo ver todas mis listas y sus productos asociados.**
+  - ✅ Vista de listado de listas
+  - ✅ Integración con endpoint GET /lists
   
 - [ ] **Como usuario, puedo invitar a otros por email a una lista específica.**
   - 🔜 Pendiente: Modal de invitación
@@ -236,7 +236,7 @@
 | Módulo | Progreso | Estado |
 |--------|----------|--------|
 | 1. Autenticación | 80% | 🚧 En progreso |
-| 2. Listas | 0% | 🔜 Pendiente |
+| 2. Listas | 50% | 🚧 En progreso |
 | 3. Productos | 0% | 🔜 Pendiente |
 | 4. IA | 0% | 🔜 Pendiente |
 | 5. Notificaciones | 0% | 🔜 Pendiente |
@@ -246,22 +246,15 @@
 | 9. Performance | 30% | 🚧 En progreso |
 | 10. Recursos | 100% | ✅ Completado |
 
-**Progreso Total**: ~40% completado
+**Progreso Total**: ~60% completado
 
 ---
 
 ## 🎯 Próximos Pasos (Sprint Actual)
 
-### Sprint 2.2: Gestión de Sesión y Perfiles
-1. Implementar dashboard protegido (`/dashboard`)
-2. Crear página de perfil (`/profile`)
-3. Implementar logout con revocación de tokens
-4. Tests E2E de flujos completos de autenticación
-5. Documentar APIs de autenticación
-
-### Sprint 3.1: CRUD de Listas (Siguiente)
-1. Implementar listado de listas
-2. Formulario de creación de listas
-3. Integración con backend `/lists`
-4. Vista detalle de lista
-5. Tests de componentes de listas
+### Sprint 3.2: Colaboración en Listas
+1. Invitar usuarios a lista (por email)
+2. Aceptar/rechazar invitaciones
+3. Gestionar permisos de colaboradores
+4. Eliminar colaboradores
+5. Vista de miembros de lista
