@@ -5,8 +5,8 @@
 ## � Estado del Proyecto
 
 **Última actualización**: 6 de noviembre de 2025  
-**Progreso general**: ~40% completado  
-**Fase actual**: Fase 2 - Autenticación y Autorización (80% completada)
+**Progreso general**: ~50% completado  
+**Fase actual**: Fase 3 - Gestión de Listas 📋 (Pendiente)
 
 ### ✅ Completado
 - ✅ Configuración base de Next.js 15 con TypeScript
@@ -20,7 +20,6 @@
 - ✅ Dashboard protegido
 
 ### 🚧 En Progreso
-- 🚧 Gestión de sesión y perfiles de usuario
 - 🚧 Accesibilidad WCAG 2.2
 
 ### 🔜 Próximamente
@@ -216,7 +215,7 @@ listaCompra_frontend_web/
 - [x] Configurar Tailwind con custom utilities y theme extension
 - [x] Página de demostración del sistema de diseño
 
-### Fase 2: Autenticación y Autorización 🚧 (En Progreso - 80%)
+### Fase 2: Autenticación y Autorización ✅ (Completada)
 
 #### Sprint 2.1: Sistema de Autenticación ✅
 - [x] Instalar y configurar NextAuth.js v5 (beta)
@@ -233,15 +232,15 @@ listaCompra_frontend_web/
 - [x] Manejo de errores de autenticación con toast/mensajes
 - [x] Suspense boundaries para useSearchParams
 
-#### Sprint 2.2: Gestión de Sesión y Perfiles 🚧 (En Progreso)
+#### Sprint 2.2: Gestión de Sesión y Perfiles ✅ (Completada)
 - [x] Implementar dashboard protegido (/dashboard)
-- [ ] Crear página de perfil de usuario (/profile)
-- [ ] Implementar edición de perfil (nombre, email)
-- [ ] Implementar cambio de contraseña
-- [ ] Crear componente ProtectedRoute
+- [x] Crear página de perfil de usuario (/profile)
+- [x] Implementar edición de perfil (nombre, email)
+- [x] Implementar cambio de contraseña
+- [x] Crear componente ProtectedRoute
 - [x] Implementar logout con limpieza de sesión en cliente
 - [x] Persistencia de sesión con cookies seguras (HttpOnly, SameSite, Secure) por NextAuth
-- [ ] Tests E2E de flujos de autenticación
+- [x] Tests E2E de flujos de autenticación
 
 ### Fase 3: Gestión de Listas 📋 (Pendiente)
 
