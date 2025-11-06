@@ -1,0 +1,9 @@
+.cancelButton {
+  margin-top: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .cancelButton {
+    margin-top: 0;
+  }
+}

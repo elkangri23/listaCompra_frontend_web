@@ -1,6 +1,7 @@
 import * as React from 'react'
+import { clsx } from 'clsx'
 
-import { cn } from '@/lib/utils'
+import styles from './typography.module.css'
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6
 
@@ -9,12 +10,12 @@ export interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
 }
 
 const headingStyles: Record<HeadingLevel, string> = {
-  1: 'scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl',
-  2: 'scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0',
-  3: 'scroll-m-20 text-2xl font-semibold tracking-tight',
-  4: 'scroll-m-20 text-xl font-semibold tracking-tight',
-  5: 'scroll-m-20 text-lg font-semibold tracking-tight',
-  6: 'scroll-m-20 text-base font-semibold tracking-tight uppercase',
+  1: clsx(styles.headingBase, styles.heading1),
+  2: clsx(styles.headingBase, styles.heading2),
+  3: clsx(styles.headingBase, styles.heading3),
+  4: clsx(styles.headingBase, styles.heading4),
+  5: clsx(styles.headingBase, styles.heading5),
+  6: clsx(styles.headingBase, styles.heading6),
 }
 
 type HeadingTag = `h${HeadingLevel}`
@@ -22,12 +23,12 @@ type HeadingTag = `h${HeadingLevel}`
 export const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
   ({ className, level = 2, children, ...props }, ref) => {
     const Component = (`h${level}` as HeadingTag) || 'h2'
-    const styles = headingStyles[level] ?? headingStyles[2]
+    const headingClassName = headingStyles[level] ?? headingStyles[2]
 
     return (
       <Component
         ref={ref}
-        className={cn(styles, className)}
+        className={clsx(headingClassName, className)}
         {...props}
       >
         {children}
@@ -42,17 +43,17 @@ export interface TextProps extends React.HTMLAttributes<HTMLParagraphElement> {
 }
 
 const textStyles: Record<NonNullable<TextProps['variant']>, string> = {
-  default: 'leading-relaxed text-base text-foreground',
-  lead: 'text-lg text-muted-foreground',
-  muted: 'text-sm text-muted-foreground',
-  small: 'text-xs font-medium text-muted-foreground uppercase tracking-wide',
+  default: clsx(styles.textBase, styles.textDefault),
+  lead: clsx(styles.textBase, styles.textLead),
+  muted: clsx(styles.textBase, styles.textMuted),
+  small: clsx(styles.textBase, styles.textSmall),
 }
 
 export const Text = React.forwardRef<HTMLParagraphElement, TextProps>(
   ({ className, variant = 'default', children, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn(textStyles[variant], className)}
+      className={clsx(textStyles[variant], className)}
       {...props}
     >
       {children}
