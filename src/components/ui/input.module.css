@@ -1,0 +1,43 @@
+.inputBase {
+  align-items: center;
+  appearance: none;
+  background-color: transparent;
+  border: 1px solid color-mix(in oklch, var(--input) 85%, transparent);
+  border-radius: 0.75rem;
+  color: inherit;
+  display: flex;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+  min-height: 2.875rem;
+  padding: 0.625rem 0.875rem;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+  width: 100%;
+}
+
+.inputBase::placeholder {
+  color: color-mix(in oklch, var(--muted-foreground) 82%, transparent);
+  font-weight: 400;
+}
+
+.inputBase:focus-visible {
+  border-color: color-mix(in oklch, var(--primary) 75%, transparent);
+  box-shadow:
+    0 0 0 3px color-mix(in oklch, var(--background) 94%, transparent),
+    0 0 0 5px color-mix(in oklch, var(--ring) 72%, transparent);
+  outline: none;
+}
+
+.inputBase:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.inputBase::-webkit-file-upload-button {
+  display: none;
+}
+
+.inputBase::file-selector-button {
+  display: none;
+}

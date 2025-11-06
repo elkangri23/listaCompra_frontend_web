@@ -16,15 +16,15 @@ describe('Button', () => {
     expect(handleClick).toHaveBeenCalledTimes(1)
   })
 
-  it('applies variant styles', () => {
+  it('exposes variant metadata for styling validation', () => {
     const { rerender } = render(
       <Button variant="secondary">Secundario</Button>,
     )
 
-    expect(screen.getByRole('button')).toHaveClass('bg-secondary')
+    expect(screen.getByRole('button').dataset.variant).toBe('secondary')
 
     rerender(<Button variant="outline">Outline</Button>)
 
-    expect(screen.getByRole('button')).toHaveClass('border')
+    expect(screen.getByRole('button').dataset.variant).toBe('outline')
   })
 })

@@ -1,29 +1,26 @@
 import * as React from 'react'
+import { clsx } from 'clsx'
 
-import { cn } from '@/lib/utils'
+import styles from './badge.module.css'
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'secondary' | 'outline' | 'success' | 'warning' | 'destructive'
 }
 
 const badgeStyles: Record<NonNullable<BadgeProps['variant']>, string> = {
-  default: 'bg-primary text-primary-foreground',
-  secondary: 'bg-secondary text-secondary-foreground',
-  outline: 'border border-border text-foreground',
-  success: 'bg-emerald-500/90 text-white',
-  warning: 'bg-amber-400 text-black',
-  destructive: 'bg-destructive text-destructive-foreground',
+  default: styles.variantDefault,
+  secondary: styles.variantSecondary,
+  outline: styles.variantOutline,
+  success: styles.variantSuccess,
+  warning: styles.variantWarning,
+  destructive: styles.variantDestructive,
 }
 
 export const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
   ({ className, children, variant = 'default', ...props }, ref) => (
     <div
       ref={ref}
-      className={cn(
-        'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide',
-        badgeStyles[variant],
-        className,
-      )}
+      className={clsx(styles.badgeBase, badgeStyles[variant], className)}
       {...props}
     >
       {children}
