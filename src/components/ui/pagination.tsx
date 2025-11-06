@@ -44,17 +44,15 @@ type PaginationLinkProps = {
 const PaginationLink = ({
   className,
   isActive,
-  isDisabled,
   size = 'icon',
   children,
-  disabled, // Destructure disabled prop
+  disabled,
   ...props
 }: PaginationLinkProps) => (
   <a
     aria-current={isActive ? 'page' : undefined}
-    aria-label={ariaLabel}
-    aria-disabled={isDisabled || undefined}
-    tabIndex={isDisabled ? -1 : undefined}
+    aria-disabled={disabled || undefined}
+    tabIndex={disabled ? -1 : undefined}
     className={cn(
       buttonVariants({
         variant: isActive ? 'outline' : 'ghost',
