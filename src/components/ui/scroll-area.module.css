@@ -1,0 +1,45 @@
+.root {
+  position: relative;
+  overflow: hidden;
+}
+
+.viewport {
+  border-radius: inherit;
+  height: 100%;
+  width: 100%;
+}
+
+.scrollbar {
+  display: flex;
+  touch-action: none;
+  user-select: none;
+  transition: background-color 160ms ease;
+}
+
+.scrollbar[data-orientation='vertical'] {
+  height: 100%;
+  padding: 1px;
+  width: 0.6rem;
+}
+
+.scrollbar[data-orientation='horizontal'] {
+  flex-direction: column;
+  height: 0.6rem;
+  padding: 1px;
+  width: 100%;
+}
+
+.thumb {
+  background: color-mix(in oklch, var(--border) 86%, transparent);
+  border-radius: 999px;
+  flex: 1;
+  position: relative;
+}
+
+.thumb::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: inherit;
+  background: color-mix(in oklch, var(--muted-foreground) 40%, transparent);
+}
