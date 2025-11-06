@@ -23,7 +23,11 @@ export default function RootLayout({
       <body className={cn('min-h-screen bg-background font-sans antialiased', inter.variable)}>
         <AppProviders>
           <ThemeProvider>
-            <main className="min-h-screen bg-background text-foreground">{children}</main>
+            <main className="min-h-screen bg-background text-foreground">
+              <div className="container py-12">
+                {children}
+              </div>
+            </main>
           </ThemeProvider>
         </AppProviders>
       </body>
