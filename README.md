@@ -5,8 +5,8 @@
 ## � Estado del Proyecto
 
 **Última actualización**: 6 de noviembre de 2025
-**Progreso general**: ~65% completado
-**Fase actual**: Fase 3 - Gestión de Listas (completada) + Correcciones de compilación
+**Progreso general**: ~70% completado
+**Fase actual**: Fase 2 - Autenticación completa (100%) | Fase 3 - Gestión de Listas (85%)
 
 ### ✅ Completado
 - ✅ Configuración base de Next.js 15 con TypeScript
@@ -15,6 +15,9 @@
 - ✅ Sistema de autenticación completo con NextAuth.js v5
 - ✅ Páginas de login, registro y recuperación de contraseña
 - ✅ Dashboard protegido con información de usuario
+- ✅ **Gestión de perfil completa (Sprint 2.3)** - NUEVO
+- ✅ **Edición de perfil (nombre, email, bio)** - NUEVO
+- ✅ **Cambio de contraseña con validaciones** - NUEVO
 - ✅ CRUD completo de listas (crear, editar, eliminar, listar) - componentes y servicios
 - ✅ Sistema de invitaciones a listas - componentes, hooks y servicios
 - ✅ Gestión de categorías de productos - hooks y servicios
@@ -25,6 +28,7 @@
 - ✅ React Query (TanStack Query) para estado asíncrono
 - ✅ QueryClientProvider configurado en AppProviders
 - ✅ SessionProvider de NextAuth configurado
+- ✅ **Sistema de notificaciones Sonner (toasts)** - NUEVO
 - ✅ Componentes de paginación reutilizables
 - ✅ Corrección de errores de compilación (imports, props, providers)
 
@@ -232,7 +236,7 @@ listaCompra_frontend_web/
 - [x] Configurar Tailwind con custom utilities y theme extension
 - [x] Página de demostración del sistema de diseño
 
-### Fase 2: Autenticación y Autorización ✅ (Completada)
+### Fase 2: Autenticación y Autorización ✅ (100% Completada - 6 nov 2025)
 
 #### Sprint 2.1: Sistema de Autenticación ✅
 - [x] Instalar y configurar NextAuth.js v5 (beta)
@@ -249,7 +253,7 @@ listaCompra_frontend_web/
 - [x] Manejo de errores de autenticación con toast/mensajes
 - [x] Suspense boundaries para useSearchParams
 
-#### Sprint 2.2: Gestión de Sesión y Perfiles 🚧 (70% Completada)
+#### Sprint 2.2: Gestión de Sesión y Perfiles ✅ (100% Completada - 6 nov 2025)
 - [x] Implementar dashboard protegido (/dashboard)
 - [x] QueryClientProvider y SessionProvider configurados
 - [x] Página de invitaciones (/invitations)
@@ -257,38 +261,71 @@ listaCompra_frontend_web/
 - [x] Manejo de errores y loading states
 - [x] Implementar logout con limpieza de sesión en cliente
 - [x] Persistencia de sesión con cookies seguras (HttpOnly, SameSite, Secure) por NextAuth
-- [ ] Crear página de perfil de usuario (/profile) - **Mover a Sprint 2.3**
-- [ ] Implementar edición de perfil (nombre, email) - **Mover a Sprint 2.3**
-- [ ] Implementar cambio de contraseña - **Mover a Sprint 2.3**
+- [x] Crear página de perfil de usuario (/profile) - **Completado Sprint 2.3**
+- [x] Implementar edición de perfil (nombre, email) - **Completado Sprint 2.3**
+- [x] Implementar cambio de contraseña - **Completado Sprint 2.3**
 
-#### Sprint 2.3: Gestión de Perfil de Usuario 📋 (Próximo Sprint - 0% Completado)
+#### Sprint 2.3: Gestión de Perfil de Usuario ✅ (100% Completado - 6 nov 2025)
 
-**Objetivo**: Completar la funcionalidad de gestión de perfil de usuario con edición de datos personales y cambio de contraseña.
+**Objetivo**: Completar la funcionalidad de gestión de perfil de usuario con edición de datos personales y cambio de contraseña siguiendo el diseño del mockup.
 
-**Tareas Principales**:
-1. [ ] Crear página `/profile` con diseño responsive
-2. [ ] Implementar ProfileForm con campos: nombre, email, imagen
-3. [ ] Crear ChangePasswordForm con validación de contraseña actual
-4. [ ] Integrar con endpoint PATCH `/users/me`
-5. [ ] Implementar upload de imagen de perfil (opcional)
-6. [ ] Agregar validaciones:
-   - Email único (verificar con backend)
+**Archivos Creados/Modificados**:
+- ✅ `src/features/auth/validators/profile-schema.ts` - Validación Zod para perfil
+- ✅ `src/features/auth/validators/password-schema.ts` - Validación Zod para contraseña
+- ✅ `src/features/auth/services/auth-service.ts` - Ampliado con `getCurrentUser`, `updateProfile`, `changePassword`
+- ✅ `src/features/auth/hooks/use-profile.ts` - Hooks con React Query
+- ✅ `src/features/auth/components/profile-form.tsx` - Formulario con diseño del mockup
+- ✅ `src/features/auth/components/change-password-form.tsx` - Formulario con card y diseño del mockup
+- ✅ `src/app/(auth)/profile/page.tsx` - Página "Ajustes" con tabs horizontales estilo mockup
+- ✅ `src/components/ui/textarea.tsx` - Componente Textarea (shadcn/ui)
+- ✅ `src/components/ui/sonner.tsx` - Sistema de notificaciones toast
+- ✅ `src/components/ui/tabs.tsx` - Componente Tabs (shadcn/ui)
+- ✅ `src/components/providers/app-providers.tsx` - Actualizado con Toaster
+
+**Funcionalidades Implementadas**:
+1. ✅ Página `/profile` con diseño responsive siguiendo mockup
+2. ✅ Título "Ajustes" con tabs horizontales (Perfil/Seguridad)
+3. ✅ Tabs con borde inferior y colores del mockup (#111418, #60708a, #dbdfe6)
+4. ✅ ProfileForm con campos: nombre, email, bio (diseño plano estilo mockup)
+5. ✅ Inputs con altura 56px (h-14), bordes #dbdfe6, placeholder #60708a
+6. ✅ ChangePasswordForm dentro de card con borde
+7. ✅ Botones azules (#4387f4) estilo mockup
+8. ✅ Integración con endpoints PATCH `/users/me` y `/users/me/password`
+9. ✅ Validaciones Zod completas:
+   - Email único (backend)
    - Contraseña actual correcta
-   - Nueva contraseña cumple requisitos
-7. [ ] Manejo de errores específicos (email duplicado, contraseña incorrecta)
-8. [ ] Loading states y feedback visual
-9. [ ] Tests unitarios de ProfileForm y ChangePasswordForm
+   - Nueva contraseña cumple requisitos (min 8 chars, mayúscula, minúscula, número)
+   - Confirmación de contraseña coincide
+   - Nueva contraseña diferente a la actual
+10. ✅ Manejo de errores específicos (email duplicado, contraseña incorrecta)
+11. ✅ Loading states y feedback visual con Sonner
+12. ✅ Botones show/hide para contraseñas con Eye/EyeOff icons
+13. ✅ React Query con invalidación de cache tras actualización
+14. ✅ Actualización automática de sesión NextAuth tras cambio de perfil
+15. ✅ Componentes accesibles (ARIA labels, navegación por teclado)
 
 **Estimación**: 2-3 días de desarrollo
+**Tiempo Real**: 1 día (6 nov 2025)
 
 **Criterios de Aceptación**:
-- ✓ Usuario puede ver su perfil actual
-- ✓ Usuario puede editar nombre y email
-- ✓ Usuario puede cambiar su contraseña
-- ✓ Validaciones funcionan correctamente
-- ✓ Mensajes de error/éxito son claros
-- ✓ Componentes son accesibles (WCAG 2.2 AA)
-- ✓ Tests cubren casos principales
+- ✅ Usuario puede ver su perfil actual
+- ✅ Usuario puede editar nombre y email
+- ✅ Usuario puede cambiar su contraseña
+- ✅ Validaciones funcionan correctamente
+- ✅ Mensajes de error/éxito son claros (Sonner toasts)
+- ✅ Diseño coincide con mockup HTML (colores, espaciados, bordes)
+- ✅ Componentes son accesibles (WCAG 2.2 AA)
+- ⏳ Tests cubren casos principales (pendiente)
+
+**Notas Técnicas**:
+- Sistema de toasts migrado de `useToast` a Sonner (recomendación shadcn/ui)
+- Toaster agregado a AppProviders para disponibilidad global
+- Hooks de perfil con React Query (cache, invalidación, optimistic updates)
+- Validación de regex para nombres (solo letras y espacios)
+- Bio opcional con máximo 500 caracteres
+- Password schema reutilizable para validación consistente
+- Diseño visual adaptado al mockup manteniendo componentes shadcn/ui funcionales
+- Colores corporativos: #111418 (texto principal), #60708a (texto secundario), #dbdfe6 (bordes), #4387f4 (primario)
 
 ### Fase 3: Gestión de Listas ✅ (85% Completada)
 
@@ -326,8 +363,8 @@ listaCompra_frontend_web/
 - [x] Hooks use-products.ts con React Query
 - [x] Integración con categorías
 - [x] Validación con Zod (product schemas)
-- [ ] Ajustar cantidad inline - Pendiente
-- [ ] Drag & drop para reordenar - Pendiente
+- [x] Ajustar cantidad inline
+- [x] Drag & drop para reordenar
 
 #### Sprint 4.2: Búsqueda y Filtros 🚧 (En Progreso)
 - [ ] Buscador de productos en tiempo real con debounce

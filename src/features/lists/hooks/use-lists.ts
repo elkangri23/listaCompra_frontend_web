@@ -51,3 +51,11 @@ export const useUpdateList = () => {
     },
   });
 };
+
+export const useListSummary = (id: string) => {
+  return useQuery({
+    queryKey: ['lists', id, 'summary'],
+    queryFn: () => listService.getListSummary(id),
+    enabled: !!id,
+  });
+};

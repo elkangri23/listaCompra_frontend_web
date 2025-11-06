@@ -8,6 +8,14 @@ import { success, failure } from '@shared/result';
 import { InvalidValueError, BusinessRuleViolationError } from '@domain/errors/DomainError';
 import { createDate, generateUUID } from '@shared/utils';
 
+export interface ListSummary {
+  totalProductos: number;
+  productosComprados: number;
+  productosPendientes: number;
+  valorTotalEstimado: number;
+  productosUrgentes: number;
+}
+
 export interface ListaProps {
   id?: string;
   nombre: string;
