@@ -1,28 +1,27 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 
 import { ForgotPasswordForm } from '@/features/auth/components/forgot-password-form'
+import styles from './forgot-password.module.css'
 
 export const metadata: Metadata = {
   title: 'Recuperar contraseña | ListaCompra',
-  description:
-    'Solicita un enlace de recuperación seguro para restablecer tu contraseña y seguir colaborando en tus listas.',
+  description: 'Solicita recuperación de contraseña por email.',
 }
 
 export default function ForgotPasswordPage() {
+  const heroUrl = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBUKmKFcOwLBHtR9WmpIiNK5cYkxO8QGTPTIkMiTSGi8WuRnTpC2zBCIyIMbMZWZB2a3EoIu_Na-NtFW8T5rWYULfqT2RZv1oQUj9JSqWy8SbpwQ4AfVc6D94PFud8aTy3sdff8dJ64e520BSaPTFxlD-NSvt5wIY-UuMmEv4tXL_G2MLV2QnCqBPNDqE5tjzv3JJ4V81ulnxujzGg8YzPcxZQrKGBvpMkz7cO_XnvONAGnstnT-ikQDNOIJExzWvT9OeTrUyKsW1a0'
+
   return (
-    <div>
-      <header>
-        <h2>Recuperar contraseña</h2>
-        <p>Ingresa tu correo y te enviaremos un enlace para restablecerla.</p>
-      </header>
-      <div>
-        <ForgotPasswordForm />
+    <div className={styles.root}>
+      <div className={styles.card} style={{ maxWidth: 520 }}>
+        <div className={styles.hero} style={{ backgroundImage: `url(${heroUrl})` }} />
+        <div className={styles.form}>
+          <Suspense fallback={<div className={styles.fallback}>Cargando...</div>}>
+            <ForgotPasswordForm />
+          </Suspense>
+        </div>
       </div>
-      <footer>
-        <p>
-          Mantén tu cuenta segura utilizando contraseñas únicas y siguiendo las recomendaciones de seguridad.
-        </p>
-      </footer>
     </div>
   )
 }

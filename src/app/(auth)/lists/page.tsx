@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { signOut } from 'next-auth/react';
-import { useLists } from '@/features/lists/hooks/use-lists';
+import { useLists, useCreateList } from '@/features/lists/hooks/use-lists';
 import { useDebounce } from '@/hooks/use-debounce';
 import styles from './lists.module.css';
 
@@ -19,6 +19,9 @@ export default function ListsPage() {
   );
 
   const lists = data?.data ?? [];
+
+  const createListMutation = useCreateList();
+  const [newListName, setNewListName] = useState('');
 
   // Mock list images (can be replaced with actual list images from backend)
   const listImages = [
@@ -73,9 +76,32 @@ export default function ListsPage() {
       <main className={styles.main}>
         <header className={styles.header}>
           <h1 className={styles.title}>Mis Listas</h1>
-          <Link href="/lists/new" className={styles.createButton}>
-            Crear Nueva Lista
-          </Link>
+          <div className={styles.createContainer}>
+            <input
+              aria-label="Nombre de nueva lista"
+              placeholder="Nueva lista"
+              value={newListName}
+              onChange={(e) => setNewListName(e.target.value)}
+              className={styles.createInput}
+            />
+            <button
+              className={styles.createButton}
+              onClick={() => {
+                if (!newListName.trim()) return;
+                createListMutation.mutate({ nombre: newListName.trim() }, {
+                  onSuccess: () => {
+                    setNewListName('');
+                    setPage(1);
+                  },
+                });
+              }}
+            >
+              Crear
+            </button>
+            <Link href="/lists/new" className={styles.ghostLink}>
+              Crear con plantilla
+            </Link>
+          </div>
         </header>
 
         {isLoading && <p style={{ padding: '16px' }}>Cargando...</p>}
@@ -104,6 +130,29 @@ export default function ListsPage() {
                 </div>
               </Link>
             ))}
+          </div>
+        )}
+
+        {/* Pagination controls */}
+        {!isLoading && data && (
+          <div className={styles.pagination}>
+            <button
+              className={styles.pageButton}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+            >
+              Anterior
+            </button>
+            <span className={styles.pageInfo}>
+              Página {data.page} de {Math.ceil((data.total || 0) / data.limit || 1)}
+            </span>
+            <button
+              className={styles.pageButton}
+              onClick={() => setPage((p) => p + 1)}
+              disabled={data.page * data.limit >= data.total}
+            >
+              Siguiente
+            </button>
           </div>
         )}
       </main>

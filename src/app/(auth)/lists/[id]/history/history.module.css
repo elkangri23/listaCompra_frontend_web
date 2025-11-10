@@ -1,0 +1,6 @@
+.root { padding: 1rem; }
+.header { display:flex; gap:1rem; align-items:center; margin-bottom:1rem }
+.backButton { background: transparent; border: none; color: #111418; cursor: pointer }
+.title { font-size:1.25rem; font-weight:600 }
+.content { padding:1rem; background:#fff; border-radius:8px }
+.footer { margin-top:1rem }

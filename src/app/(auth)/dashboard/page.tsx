@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import React from 'react'
+import styles from './dashboard.module.css'
 
 export default function DashboardPage() {
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col bg-white group/design-root overflow-x-hidden" style={{ fontFamily: 'Inter, "Noto Sans", sans-serif' }}>
+  <div className={styles.root} style={{ fontFamily: 'Inter, "Noto Sans", sans-serif' }}>
       <div className="layout-container flex h-full grow flex-col">
         <div className="gap-1 px-6 flex flex-1 justify-center py-5">
           <div className="layout-content-container flex flex-col w-80">

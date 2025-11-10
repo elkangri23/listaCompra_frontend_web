@@ -1,96 +1,68 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import styles from './list-detail.module.css';
-
-interface Product {
-  id: string;
-  nombre: string;
-  cantidad: string;
-  checked: boolean;
-  categoriaId: string;
-}
-
-interface Category {
-  id: string;
-  nombre: string;
-  productos: Product[];
-}
+import { useList } from '@/features/lists/hooks/use-lists';
+import { useProducts, useCreateProduct, useDeleteProduct, useToggleProductPurchased } from '@/features/products/hooks/use-products';
+import { useCategories } from '@/features/categories/hooks/use-categories';
 
 export default function ListDetailPage() {
   const params = useParams();
   const listId = params?.id as string;
 
-  // Mock data - replace with actual API calls
-  const [categories, setCategories] = useState<Category[]>([
-    {
-      id: '1',
-      nombre: 'Frutas y Verduras',
-      productos: [
-        { id: 'p1', nombre: 'Manzanas', cantidad: '2 kg', checked: false, categoriaId: '1' },
-        { id: 'p2', nombre: 'Plátanos', cantidad: '1 kg', checked: false, categoriaId: '1' },
-        { id: 'p3', nombre: 'Tomates', cantidad: '500 g', checked: false, categoriaId: '1' },
-      ],
-    },
-    {
-      id: '2',
-      nombre: 'Lácteos',
-      productos: [
-        { id: 'p4', nombre: 'Leche', cantidad: '1 L', checked: false, categoriaId: '2' },
-        { id: 'p5', nombre: 'Queso', cantidad: '200 g', checked: false, categoriaId: '2' },
-        { id: 'p6', nombre: 'Huevos', cantidad: '12 unidades', checked: false, categoriaId: '2' },
-      ],
-    },
-    {
-      id: '3',
-      nombre: 'Carnes y Pescados',
-      productos: [
-        { id: 'p7', nombre: 'Pollo', cantidad: '500 g', checked: false, categoriaId: '3' },
-        { id: 'p8', nombre: 'Salmón', cantidad: '300 g', checked: false, categoriaId: '3' },
-      ],
-    },
-  ]);
-
   const [newProduct, setNewProduct] = useState('');
   const [activeTab, setActiveTab] = useState<'suggestions' | 'details'>('details');
 
-  const handleCheckProduct = (categoryId: string, productId: string) => {
-    setCategories((prevCategories) =>
-      prevCategories.map((category) =>
-        category.id === categoryId
-          ? {
-              ...category,
-              productos: category.productos.map((product) =>
-                product.id === productId ? { ...product, checked: !product.checked } : product
-              ),
-            }
-          : category
-      )
-    );
-  };
+  const { data: listData } = useList(listId);
 
-  const handleDeleteProduct = (categoryId: string, productId: string) => {
-    setCategories((prevCategories) =>
-      prevCategories.map((category) =>
-        category.id === categoryId
-          ? {
-              ...category,
-              productos: category.productos.filter((product) => product.id !== productId),
-            }
-          : category
-      )
-    );
-  };
+  // Fetch products for the list
+  const { data: productsData } = useProducts(listId, { page: 1, limit: 200 });
+
+  // Fetch categories (use tiendaId from list if available)
+  const tiendaId = (listData as any)?.tiendaId;
+  const { data: categoriesResp } = useCategories(tiendaId ? { tiendaId } : undefined);
+
+  const createProductMutation = useCreateProduct(listId);
+  const deleteProductMutation = useDeleteProduct(listId);
+  const togglePurchasedMutation = useToggleProductPurchased(listId);
+
+  const products = productsData?.items ?? [];
+
+  const categoriesMap = useMemo(() => {
+    const map = new Map<string, string>();
+    if (categoriesResp?.categorias) {
+      categoriesResp.categorias.forEach((c: any) => map.set(c.id, c.nombre));
+    }
+    return map;
+  }, [categoriesResp]);
+
+  const grouped = useMemo(() => {
+    const byCat: Record<string, any[]> = {};
+    products.forEach((p: any) => {
+      const key = p.categoriaId || '__nocat__';
+      if (!byCat[key]) byCat[key] = [];
+      byCat[key].push(p);
+    });
+    return byCat;
+  }, [products]);
 
   const handleAddProduct = () => {
     if (!newProduct.trim()) return;
-    // TODO: Implement add product logic
+    createProductMutation.mutate({ nombre: newProduct.trim(), cantidad: 1, urgente: false });
     setNewProduct('');
   };
 
+  const handleDeleteProduct = (productoId: string) => {
+    deleteProductMutation.mutate(productoId);
+  };
+
+  const handleToggle = (productId: string, current: boolean) => {
+    togglePurchasedMutation.mutate({ productId, purchased: !current });
+  };
+
   const handleShare = () => {
-    // TODO: Implement share logic
+    // placeholder until share endpoint implemented
     alert('Funcionalidad de compartir lista (por implementar)');
   };
 
@@ -123,29 +95,29 @@ export default function ListDetailPage() {
               </label>
             </div>
 
-            {categories.map((category) => (
-              <div key={category.id}>
-                <h2 className={styles.categoryTitle}>{category.nombre}</h2>
-                {category.productos.map((product) => (
+            {Object.entries(grouped).map(([catId, productos]) => (
+              <div key={catId}>
+                <h2 className={styles.categoryTitle}>{categoriesMap.get(catId) ?? (catId === '__nocat__' ? 'Sin categoría' : catId)}</h2>
+                {productos.map((product: any) => (
                   <div key={product.id} className={styles.productItem}>
                     <div className={styles.productLeft}>
                       <div className={styles.checkboxWrapper}>
                         <input
                           type="checkbox"
                           className={styles.checkbox}
-                          checked={product.checked}
-                          onChange={() => handleCheckProduct(category.id, product.id)}
+                          checked={Boolean(product.comprado)}
+                          onChange={() => handleToggle(product.id, Boolean(product.comprado))}
                           aria-label={`Marcar ${product.nombre} como comprado`}
                         />
                       </div>
                       <div className={styles.productInfo}>
                         <p className={styles.productName}>{product.nombre}</p>
-                        <p className={styles.productQuantity}>{product.cantidad}</p>
+                        <p className={styles.productQuantity}>{product.cantidad}{product.unidad ? ` ${product.unidad}` : ''}</p>
                       </div>
                     </div>
                     <button
                       className={styles.deleteButton}
-                      onClick={() => handleDeleteProduct(category.id, product.id)}
+                      onClick={() => handleDeleteProduct(product.id)}
                       aria-label={`Eliminar ${product.nombre}`}
                     >
                       <svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
