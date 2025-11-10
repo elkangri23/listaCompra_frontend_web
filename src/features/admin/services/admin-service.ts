@@ -17,6 +17,26 @@ export const getAdminUsers = async (
   return response.data;
 };
 
+export const updateUserStatus = async (
+  userId: string,
+  status: 'Activo' | 'Inactivo'
+): Promise<void> => {
+  await axiosInstance.patch(`/admin/users/${userId}/status`, { status });
+};
+
+export const getAuditLogs = async (
+  page = 1,
+  limit = 20
+): Promise<PaginatedResponse<any>> => {
+  const response = await axiosInstance.get<PaginatedResponse<any>>('/admin/audit-logs', {
+    params: { page, limit },
+  });
+
+  return response.data;
+};
+
 export const adminService = {
   getAdminUsers,
+  updateUserStatus,
+  getAuditLogs,
 };
