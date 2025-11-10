@@ -1,4 +1,5 @@
 import { Sidebar } from '@/components/layout/sidebar';
+import styles from './layout.module.css';
 
 export default function AuthLayout({
   children,
@@ -6,9 +7,9 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex bg-background text-foreground min-h-screen">
+    <div className={styles.root}>
       <Sidebar />
-      <main className="flex-1 p-4 bg-background">{children}</main>
+      <main className={styles.main}>{children}</main>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import styles from './layout.module.css'
 
 interface AuthLayoutProps {
   children: React.ReactNode
@@ -6,7 +7,7 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className={styles.root}>
       {children}
     </div>
   )

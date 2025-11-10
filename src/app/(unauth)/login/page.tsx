@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import { LoginForm } from '@/features/auth/components/login-form'
+import { Hero, FormContainer } from '@/components/layout'
 import styles from './login.module.css'
 
 export const metadata: Metadata = {
@@ -18,14 +19,14 @@ export default function LoginPage() {
       <div className={styles.container}>
         <div className={styles.content}>
           <div className={styles.heroWrapper}>
-            <div className={styles.hero} style={{ backgroundImage: `url(${heroUrl})` }} />
+            <Hero imageUrl={heroUrl} alt="Imagen de bienvenida" height="md" />
           </div>
 
-          <div className={styles.formWrapper}>
+          <FormContainer>
             <Suspense fallback={<div className={styles.fallback}>Cargando...</div>}>
               <LoginForm />
             </Suspense>
-          </div>
+          </FormContainer>
         </div>
       </div>
     </div>

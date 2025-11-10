@@ -1,0 +1,26 @@
+.hero {
+  width: 100%;
+  border-radius: var(--radius-md);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: var(--color-white);
+}
+
+.hero--sm {
+  min-height: 160px;
+}
+
+.hero--md {
+  min-height: 218px;
+}
+
+.hero--lg {
+  min-height: 320px;
+}
+
+@media (max-width: 640px) {
+  .hero--lg {
+    min-height: 220px;
+  }
+}
