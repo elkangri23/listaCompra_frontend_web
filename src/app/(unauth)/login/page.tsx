@@ -17,7 +17,9 @@ export default function LoginPage() {
     <div className={styles.root}>
       <div className={styles.container}>
         <div className={styles.content}>
-          <div className={styles.hero} style={{ backgroundImage: `url(${heroUrl})` }} />
+          <div className={styles.heroWrapper}>
+            <div className={styles.hero} style={{ backgroundImage: `url(${heroUrl})` }} />
+          </div>
 
           <div className={styles.formWrapper}>
             <Suspense fallback={<div className={styles.fallback}>Cargando...</div>}>
