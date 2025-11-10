@@ -1,0 +1,5 @@
+.root { min-height:100vh; background:#fff; padding:1rem }
+.sidebar { width:260px }
+.content { padding:1rem }
+.title { font-size:1.125rem; font-weight:700 }
+.card { background:#fff; border-radius:8px; padding:0.75rem }
