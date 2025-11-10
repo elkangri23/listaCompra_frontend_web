@@ -1,0 +1,23 @@
+.root {
+  display: flex;
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  font-family: var(--font-display);
+}
+
+.main {
+  flex: 1 1 auto;
+  padding: var(--spacing-md);
+  background: var(--color-white);
+}
+
+@media (max-width: 768px) {
+  .root {
+    flex-direction: column;
+  }
+  
+  .main {
+    padding: var(--spacing-sm);
+  }
+}

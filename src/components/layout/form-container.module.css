@@ -1,0 +1,36 @@
+.container {
+  width: 100%;
+  max-width: 480px;
+  padding: 0 var(--spacing-md);
+}
+
+.header {
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+}
+
+.title {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  line-height: normal;
+  margin-bottom: var(--spacing-sm);
+}
+
+.description {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.footer {
+  margin-top: var(--spacing-lg);
+  text-align: center;
+}
