@@ -81,7 +81,7 @@ export function ProfileForm() {
           <FormField
             control={form.control}
             name="nombre"
-            render={({ field }) => (
+            render={({ field }: any) => (
               <FormItem className="flex flex-col min-w-40 flex-1">
                 <FormLabel className="text-[#111418] text-base font-medium leading-normal pb-2">
                   Nombre Completo
@@ -106,7 +106,7 @@ export function ProfileForm() {
           <FormField
             control={form.control}
             name="email"
-            render={({ field }) => (
+            render={({ field }: any) => (
               <FormItem className="flex flex-col min-w-40 flex-1">
                 <FormLabel className="text-[#111418] text-base font-medium leading-normal pb-2">
                   Email
@@ -132,7 +132,7 @@ export function ProfileForm() {
           <FormField
             control={form.control}
             name="bio"
-            render={({ field }) => (
+            render={({ field }: any) => (
               <FormItem className="flex flex-col min-w-40 flex-1">
                 <FormLabel className="text-[#111418] text-base font-medium leading-normal pb-2">
                   Biografía (opcional)

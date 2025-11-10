@@ -3,7 +3,7 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Trash2, GripVertical, Minus, Plus } from 'lucide-react';
 import { ProductoListDto } from '@/types/dtos/products';
@@ -127,7 +127,7 @@ const ProductRow = memo(function ProductRow({
           <Input
             type="number"
             value={quantityInput}
-            onChange={(e) => setQuantityInput(e.target.value)}
+            onChange={(e: any) => setQuantityInput(e.target.value)}
             className="h-8 w-16 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             disabled={isProductPending}
             min="1"

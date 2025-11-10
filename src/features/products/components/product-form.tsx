@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 
@@ -121,14 +121,14 @@ export function ProductForm({
         <FormField
           control={form.control}
           name="nombre"
-          render={({ field }) => (
+          render={({ field }: any) => (
             <FormItem>
               <FormLabel>Nombre</FormLabel>
               <FormControl>
                 <Input 
                   placeholder="Leche semidesnatada" 
                   {...field}
-                  onChange={(e) => {
+                  onChange={(e: any) => {
                     field.onChange(e);
                     onFieldChange?.('nombre', e.target.value);
                   }}
@@ -142,14 +142,14 @@ export function ProductForm({
         <FormField
           control={form.control}
           name="descripcion"
-          render={({ field }) => (
+          render={({ field }: any) => (
             <FormItem>
               <FormLabel>Descripción</FormLabel>
               <FormControl>
                 <Input 
                   placeholder="Opcional" 
                   {...field}
-                  onChange={(e) => {
+                  onChange={(e: any) => {
                     field.onChange(e);
                     onFieldChange?.('descripcion', e.target.value);
                   }}
@@ -164,7 +164,7 @@ export function ProductForm({
           <FormField
             control={form.control}
             name="cantidad"
-            render={({ field }) => (
+            render={({ field }: any) => (
               <FormItem>
                 <FormLabel>Cantidad</FormLabel>
                 <FormControl>
@@ -174,7 +174,7 @@ export function ProductForm({
                     step={1}
                     {...field}
                     value={field.value ?? ''}
-                    onChange={(event) => {
+                    onChange={(event: any) => {
                       const rawValue = event.target.value;
                       field.onChange(
                         rawValue === '' ? undefined : Number(rawValue)
@@ -190,7 +190,7 @@ export function ProductForm({
           <FormField
             control={form.control}
             name="unidad"
-            render={({ field }) => (
+            render={({ field }: any) => (
               <FormItem>
                 <FormLabel>Unidad</FormLabel>
                 <FormControl>
@@ -206,7 +206,7 @@ export function ProductForm({
           <FormField
             control={form.control}
             name="precio"
-            render={({ field }) => (
+            render={({ field }: any) => (
               <FormItem>
                 <FormLabel>Precio</FormLabel>
                 <FormControl>
@@ -217,7 +217,7 @@ export function ProductForm({
                     inputMode="decimal"
                     {...field}
                     value={field.value ?? ''}
-                    onChange={(event) => {
+                    onChange={(event: any) => {
                       const rawValue = event.target.value;
                       field.onChange(
                         rawValue === '' ? undefined : Number(rawValue)
@@ -233,7 +233,7 @@ export function ProductForm({
           <FormField
             control={form.control}
             name="categoriaId"
-            render={({ field }) => (
+            render={({ field }: any) => (
               <FormItem>
                 <FormLabel>Categoría</FormLabel>
                 <FormControl>
@@ -262,7 +262,7 @@ export function ProductForm({
         <FormField
           control={form.control}
           name="urgente"
-          render={({ field }) => (
+          render={({ field }: any) => (
             <FormItem>
               <FormLabel className="flex items-center gap-2">
                 <input

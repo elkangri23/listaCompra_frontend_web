@@ -1,7 +1,11 @@
 'use client'
 
 import { useSession, signOut } from 'next-auth/react'
-import { Button, Badge, Text } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+
+// Text component stub
+const Text = ({ children, ...props }: any) => <span {...props}>{children}</span>
 
 export function SessionStatus() {
   const { data: session, status } = useSession()

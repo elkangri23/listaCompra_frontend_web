@@ -1,26 +1,12 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Lista } from '@/types/Lista.types';
+import { useState } from 'react';
 
-const formSchema = z.object({
-  nombre: z.string().min(1, 'El nombre es requerido'),
-  descripcion: z.string().optional(),
-});
-
-export type EditListFormValues = z.infer<typeof formSchema>;
+export type EditListFormValues = {
+  nombre: string;
+  descripcion?: string;
+};
 
 interface EditListFormProps {
   list: Lista;
@@ -28,45 +14,37 @@ interface EditListFormProps {
 }
 
 export function EditListForm({ list, onSubmit }: EditListFormProps) {
-  const form = useForm<EditListFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      nombre: list.nombre,
-      descripcion: list.descripcion ?? '',
-    },
-  });
+  const [nombre, setNombre] = useState(list.nombre);
+  const [descripcion, setDescripcion] = useState(list.descripcion ?? '');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({ nombre, descripcion });
+  };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="nombre"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nombre</FormLabel>
-              <FormControl>
-                <Input placeholder="Mi nueva lista" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="nombre">Nombre</label>
+        <input
+          id="nombre"
+          type="text"
+          placeholder="Mi nueva lista"
+          value={nombre}
+          onChange={(e: any) => setNombre(e.target.value)}
         />
-        <FormField
-          control={form.control}
-          name="descripcion"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Descripción</FormLabel>
-              <FormControl>
-                <Input placeholder="Una breve descripción" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+      </div>
+      <div>
+        <label htmlFor="descripcion">Descripción</label>
+        <input
+          id="descripcion"
+          type="text"
+          placeholder="Una breve descripción"
+          value={descripcion}
+          onChange={(e: any) => setDescripcion(e.target.value)}
         />
-        <Button type="submit">Guardar</Button>
-      </form>
-    </Form>
+      </div>
+      <button type="submit">Guardar</button>
+    </form>
   );
 }

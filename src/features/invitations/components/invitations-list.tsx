@@ -1,19 +1,7 @@
 'use client';
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { InvitationDto } from '@/types/dtos/invitations/InvitationDto';
 import { useAcceptInvitation, useDeclineInvitation } from '../hooks/use-invitations';
-import { Check, X, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
 import { useState } from 'react';
 
 interface InvitationsListProps {
@@ -29,9 +17,9 @@ export function InvitationsList({ invitations }: InvitationsListProps) {
     setProcessingId(invitationId);
     try {
       await acceptInvitationMutation.mutateAsync(invitationId);
-      toast.success(`Te has unido a "${listName}" exitosamente`);
+      alert(`Te has unido a "${listName}" exitosamente`); // Reemplazado toast con alert
     } catch (error) {
-      toast.error('Error al aceptar la invitación');
+      alert('Error al aceptar la invitación'); // Reemplazado toast con alert
     } finally {
       setProcessingId(null);
     }
@@ -41,9 +29,9 @@ export function InvitationsList({ invitations }: InvitationsListProps) {
     setProcessingId(invitationId);
     try {
       await declineInvitationMutation.mutateAsync(invitationId);
-      toast.success(`Has rechazado la invitación a "${listName}"`);
+      alert(`Has rechazado la invitación a "${listName}"`); // Reemplazado toast con alert
     } catch (error) {
-      toast.error('Error al rechazar la invitación');
+      alert('Error al rechazar la invitación'); // Reemplazado toast con alert
     } finally {
       setProcessingId(null);
     }
@@ -51,12 +39,9 @@ export function InvitationsList({ invitations }: InvitationsListProps) {
 
   if (invitations.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <div className="rounded-full bg-muted p-4 mb-4">
-          <Check className="h-8 w-8 text-muted-foreground" />
-        </div>
-        <h3 className="text-lg font-medium mb-2">No tienes invitaciones pendientes</h3>
-        <p className="text-sm text-muted-foreground">
+      <div>
+        <h3>No tienes invitaciones pendientes</h3>
+        <p>
           Cuando alguien te invite a una lista, aparecerá aquí.
         </p>
       </div>
@@ -64,74 +49,62 @@ export function InvitationsList({ invitations }: InvitationsListProps) {
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Lista</TableHead>
-            <TableHead>Invitado por</TableHead>
-            <TableHead>Fecha</TableHead>
-            <TableHead>Estado</TableHead>
-            <TableHead className="text-right">Acciones</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Lista</th>
+            <th>Invitado por</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
           {invitations.map((invitation) => (
-            <TableRow key={invitation.id}>
-              <TableCell className="font-medium">{invitation.listName}</TableCell>
-              <TableCell>{invitation.from}</TableCell>
-              <TableCell>
+            <tr key={invitation.id}>
+              <td>{invitation.listName}</td>
+              <td>{invitation.from}</td>
+              <td>
                 {new Date(invitation.createdAt).toLocaleDateString('es-ES', {
                   day: 'numeric',
                   month: 'short',
                   year: 'numeric',
                 })}
-              </TableCell>
-              <TableCell>
-                <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+              </td>
+              <td>
+                <span>
                   Pendiente
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
-                  <Button
-                    variant="default"
-                    size="sm"
+                </span>
+              </td>
+              <td>
+                <div>
+                  <button
                     onClick={() => handleAccept(invitation.id, invitation.listName)}
                     disabled={processingId === invitation.id}
-                    className="bg-green-600 hover:bg-green-700"
                   >
                     {processingId === invitation.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      'Agregando...'
                     ) : (
-                      <>
-                        <Check className="h-4 w-4 mr-1" />
-                        Aceptar
-                      </>
+                      'Aceptar'
                     )}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
+                  </button>
+                  <button
                     onClick={() => handleDecline(invitation.id, invitation.listName)}
                     disabled={processingId === invitation.id}
-                    className="hover:bg-red-50 hover:text-red-700"
                   >
                     {processingId === invitation.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      'Rechazando...'
                     ) : (
-                      <>
-                        <X className="h-4 w-4 mr-1" />
-                        Rechazar
-                      </>
+                      'Rechazar'
                     )}
-                  </Button>
+                  </button>
                 </div>
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           ))}
-        </TableBody>
-      </Table>
+        </tbody>
+      </table>
     </div>
   );
 }
