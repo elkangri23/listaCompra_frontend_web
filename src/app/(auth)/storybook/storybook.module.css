@@ -1,0 +1,44 @@
+.root{display:flex;min-height:100vh;width:100%;flex-direction:column;background:#fff;font-family:Inter, 'Noto Sans', sans-serif}
+.container{display:flex;height:100%;flex-direction:column}
+.header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f2f5;padding:12px 40px}
+.brand{display:flex;align-items:center;gap:16px}
+.logo{width:40px;height:40px}
+.appName{color:#111418;font-size:1rem;font-weight:700}
+.headerRight{display:flex;align-items:center;gap:24px}
+.topNav{display:flex;gap:20px}
+.topNav a{color:#111418;text-decoration:none}
+.headerActions{display:flex;align-items:center;gap:12px}
+.iconBtn{background:#f0f2f5;border-radius:10px;padding:6px}
+.avatar{width:40px;height:40px;border-radius:9999px;background-size:cover;background-position:center}
+.main{padding:24px 40px}
+.content{max-width:960px;margin:0 auto}
+.pageTitle{font-size:20px;font-weight:700;color:#111418;margin-bottom:12px}
+.section{margin-bottom:20px}
+.sectionTitle{font-size:18px;font-weight:700;margin-bottom:8px}
+.colorList{display:flex;flex-direction:column;gap:8px}
+.colorRow{display:flex;justify-content:space-between}
+.mono{font-family:monospace}
+.row{display:flex;gap:12px}
+.primary{background:#0d80f2;color:white;padding:8px 16px;border-radius:10px}
+.secondary{background:#f0f2f5;color:#111418;padding:8px 16px;border-radius:10px}
+.formRow{display:flex;gap:12px;flex-wrap:wrap}
+.input,.textarea,.select{border:1px solid #dbe0e6;padding:12px;border-radius:10px}
+.textarea{min-height:100px}
+.checkboxRow{display:flex;gap:12px}
+.checkboxItem{display:flex;align-items:center;gap:8px}
+.radioGroup{display:flex;gap:12px}
+.radioItem{display:flex;align-items:center;gap:8px}
+.toggleRow{display:flex;align-items:center;justify-content:space-between}
+.toggle{width:52px;height:30px;border-radius:9999px;background:#f0f2f5;display:inline-flex;align-items:center;padding:4px}
+.card{background:#fff;border-radius:12px;padding:12px;box-shadow:0 0 8px rgba(0,0,0,0.06)}
+.cardTitle{font-weight:700}
+.tabs{display:flex;gap:8px;margin-top:12px}
+.tab{background:transparent;padding:8px 12px;border-radius:8px}
+.tabActive{background:#111418;color:#fff;padding:8px 12px;border-radius:8px}
+.progressRow{display:flex;align-items:center;gap:12px;margin-top:12px}
+.progressLabel{flex:1}
+.progressBar{flex:4;background:#dbe0e6;height:10px;border-radius:999px;overflow:hidden}
+.progressFill{background:#111418;height:100%}
+.progressPct{width:40px;text-align:right}
+.avatarRow{display:flex;gap:8px}
+.avatarSmall{width:34px;height:34px;border-radius:9999px;background-size:cover;background-position:center}
