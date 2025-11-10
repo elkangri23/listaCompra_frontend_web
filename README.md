@@ -1,6 +1,14 @@
 # 🛒 Lista de la Compra Colaborativa - Frontend
 
-**Sistema frontend moderno y escalable** construido con **Next.js 15**, **TypeScript** y **Tailwind CSS** siguiendo **arquitectura limpia** y **principios SOLID**.
+**Sistema frontend moderno y escalable** construido con **Next.js 15**, **TypeScript** y **CSS modular** siguiendo **arquitectura limpia** y **principios SOLID**.
+
+## 🎨 Cambios Recientes (10 nov 2025)
+
+- ✅ **Página de inicio rediseñada** con mockup aplicado (sin Tailwind CSS)
+- ✅ Estilos implementados con **CSS Modules** (`homepage.module.css`)
+- ✅ Stubs temporales de componentes UI para mantener compatibilidad
+- ✅ Corrección de errores de accesibilidad (aria-label en formularios)
+- ✅ Build exitoso sin errores de compilación ni ESLint
 
 ## 📊 Estado del Proyecto
 

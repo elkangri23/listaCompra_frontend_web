@@ -39,7 +39,7 @@ export function CreateListForm({ onSubmit }: CreateListFormProps) {
         <FormField
           control={form.control}
           name="nombre"
-          render={({ field }) => (
+          render={({ field }: any) => (
             <FormItem>
               <FormLabel>Nombre</FormLabel>
               <FormControl>
@@ -52,7 +52,7 @@ export function CreateListForm({ onSubmit }: CreateListFormProps) {
         <FormField
           control={form.control}
           name="descripcion"
-          render={({ field }) => (
+          render={({ field }: any) => (
             <FormItem>
               <FormLabel>Descripción</FormLabel>
               <FormControl>

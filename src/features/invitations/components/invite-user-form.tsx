@@ -38,7 +38,7 @@ export function InviteUserForm({ onSubmit }: InviteUserFormProps) {
         <FormField
           control={form.control}
           name="email"
-          render={({ field }) => (
+          render={({ field }: any) => (
             <FormItem>
               <FormLabel>Correo Electrónico</FormLabel>
               <FormControl>

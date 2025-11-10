@@ -3,6 +3,7 @@
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
+import Link from 'next/link'
 
 import { loginSchema, type LoginSchema } from '@/features/auth/validators/schemas'
 
@@ -105,72 +106,68 @@ export function LoginForm() {
   )
 
   return (
-    <form noValidate className="space-y-3" onSubmit={handleSubmit}>
-      {/* Email Input */}
-      <div className="flex w-full flex-wrap items-end gap-4 py-3">
-        <label htmlFor="email" className="flex flex-col min-w-40 flex-1">
-          <span className="sr-only">Email</span>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            placeholder="Email"
-            value={values.email}
-            onChange={handleChange}
-            className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
-            aria-invalid={fieldErrors.email ? 'true' : 'false'}
-            aria-describedby={fieldErrors.email ? 'email-error' : undefined}
-          />
-        </label>
-      </div>
-      {fieldErrors.email ? (
-        <p id="email-error" role="alert" className="text-sm text-red-600 px-4">
-          {fieldErrors.email}
+    <form noValidate onSubmit={handleSubmit}>
+        <div className="flex w-full max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+          <label htmlFor="email" className="flex flex-col min-w-40 flex-1" aria-label="Correo electrónico">
+            <input
+              id="email"
+              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
+              placeholder="Email"
+              value={values.email}
+              onChange={handleChange}
+              name="email"
+              type="email"
+              autoComplete="email"
+              aria-invalid={fieldErrors.email ? 'true' : 'false'}
+              aria-describedby={fieldErrors.email ? 'email-error' : undefined}
+            />
+          </label>
+        </div>
+        {fieldErrors.email ? (
+          <p id="email-error" role="alert" className="text-sm text-red-600 px-4">
+            {fieldErrors.email}
+          </p>
+        ) : null}
+        <div className="flex w-full max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+          <label htmlFor="password" className="flex flex-col min-w-40 flex-1" aria-label="Contraseña">
+            <input
+              id="password"
+              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
+              placeholder="Contraseña"
+              value={values.password}
+              onChange={handleChange}
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              aria-invalid={fieldErrors.password ? 'true' : 'false'}
+              aria-describedby={fieldErrors.password ? 'password-error' : undefined}
+            />
+          </label>
+        </div>
+        {fieldErrors.password ? (
+          <p id="password-error" role="alert" className="text-sm text-red-600 px-4">
+            {fieldErrors.password}
+          </p>
+        ) : null}
+        {errorMessage ? (
+          <p role="alert" className="text-sm text-red-600 px-4 py-2">
+            {errorMessage}
+          </p>
+        ) : null}
+        <div className="flex w-full max-w-[480px] px-4 py-3">
+          <button
+            type="submit"
+            disabled={isPending}
+            className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+          >
+            <span className="truncate">{isPending ? 'Iniciando sesión…' : 'Iniciar Sesión'}</span>
+          </button>
+        </div>
+        <p className="text-[#60708a] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center w-full max-w-[480px]">
+          <Link href="/register" className="underline">
+            ¿No tienes cuenta? Regístrate
+          </Link>
         </p>
-      ) : null}
-
-      {/* Password Input */}
-      <div className="flex w-full flex-wrap items-end gap-4 py-3">
-        <label htmlFor="password" className="flex flex-col min-w-40 flex-1">
-          <span className="sr-only">Contraseña</span>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            placeholder="Contraseña"
-            value={values.password}
-            onChange={handleChange}
-            className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
-            aria-invalid={fieldErrors.password ? 'true' : 'false'}
-            aria-describedby={fieldErrors.password ? 'password-error' : undefined}
-          />
-        </label>
-      </div>
-      {fieldErrors.password ? (
-        <p id="password-error" role="alert" className="text-sm text-red-600 px-4">
-          {fieldErrors.password}
-        </p>
-      ) : null}
-
-      {/* Error Message */}
-      {errorMessage ? (
-        <p role="alert" className="text-sm text-red-600 px-4 py-2">
-          {errorMessage}
-        </p>
-      ) : null}
-
-      {/* Submit Button */}
-      <div className="flex w-full py-3">
-        <button
-          type="submit"
-          disabled={isPending}
-          className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#3577e4] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          <span className="truncate">{isPending ? 'Iniciando sesión…' : 'Iniciar Sesión'}</span>
-        </button>
-      </div>
     </form>
   )
 }

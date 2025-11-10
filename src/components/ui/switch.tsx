@@ -1,21 +1,2 @@
-import * as React from 'react'
-import { clsx } from 'clsx'
-import * as SwitchPrimitives from '@radix-ui/react-switch'
-
-import styles from './switch.module.css'
-
-const Switch = React.forwardRef<
-  React.ElementRef<typeof SwitchPrimitives.Root>,
-  React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>
->(({ className, ...props }, ref) => (
-  <SwitchPrimitives.Root
-    className={clsx(styles.root, className)}
-    {...props}
-    ref={ref}
-  >
-    <SwitchPrimitives.Thumb className={styles.thumb} />
-  </SwitchPrimitives.Root>
-))
-Switch.displayName = SwitchPrimitives.Root.displayName
-
-export { Switch }
+// Stub - TODO: Implement proper switch component
+export const Switch = ({ ...props }: any) => <input type="checkbox" {...props} />

@@ -244,7 +244,7 @@ export function ProductsManagement({ listId }: ProductsManagementProps) {
               placeholder="Buscar productos..."
               className="pl-9"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e: any) => setSearchTerm(e.target.value)}
             />
           </div>
 

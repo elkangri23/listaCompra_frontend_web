@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import * as React from 'react'
 
-import { Button, Input, Label, Text } from '@/components/ui'
 import { requestPasswordReset } from '@/features/auth/services/auth-service'
 import { forgotPasswordSchema, type ForgotPasswordSchema } from '@/features/auth/validators/schemas'
 
@@ -76,12 +75,12 @@ export function ForgotPasswordForm() {
   )
 
   return (
-    <form noValidate className="space-y-5" onSubmit={handleSubmit}>
-      <div className="space-y-2">
-        <Label htmlFor="email" isRequired>
+    <form noValidate onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="email">
           Correo electrónico
-        </Label>
-        <Input
+        </label>
+        <input
           id="email"
           name="email"
           type="email"
@@ -93,38 +92,38 @@ export function ForgotPasswordForm() {
           aria-describedby={fieldErrors.email ? 'email-error' : undefined}
         />
         {fieldErrors.email ? (
-          <Text id="email-error" role="alert" className="text-sm text-destructive">
+          <p id="email-error" role="alert">
             {fieldErrors.email}
-          </Text>
+          </p>
         ) : null}
       </div>
 
       {errorMessage ? (
-        <Text role="alert" className="text-sm text-destructive">
+        <p role="alert">
           {errorMessage}
-        </Text>
+        </p>
       ) : null}
 
       {statusMessage ? (
-        <Text role="status" className="text-sm text-emerald-600">
+        <p role="status">
           {statusMessage}
-        </Text>
+        </p>
       ) : null}
 
-      <Button className="w-full" type="submit" disabled={isPending}>
+      <button type="submit" disabled={isPending}>
         {isPending ? 'Enviando enlace…' : 'Enviar instrucciones'}
-      </Button>
+      </button>
 
-      <div className="text-center text-sm text-muted-foreground">
+      <div>
         <p>
           ¿Recordaste tu contraseña?{' '}
-          <Link className="font-medium text-primary underline-offset-4 hover:underline" href="/login">
+          <Link href="/login">
             Inicia sesión
           </Link>
         </p>
         <p>
           ¿No tienes cuenta?{' '}
-          <Link className="font-medium text-primary underline-offset-4 hover:underline" href="/register">
+          <Link href="/register">
             Regístrate
           </Link>
         </p>
