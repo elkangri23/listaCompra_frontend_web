@@ -1,4 +1,4 @@
-import { Sidebar } from '@/components/layout/sidebar';
+import { AppHeader } from '@/components/layout/app-header';
 import styles from './layout.module.css';
 
 export default function AuthLayout({
@@ -8,7 +8,7 @@ export default function AuthLayout({
 }) {
   return (
     <div className={styles.root}>
-      <Sidebar />
+      <AppHeader />
       <main className={styles.main}>{children}</main>
     </div>
   );
