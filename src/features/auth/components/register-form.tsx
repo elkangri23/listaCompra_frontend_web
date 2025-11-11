@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import * as React from 'react'
 
 import { registerUser } from '@/features/auth/services/auth-service'
@@ -20,6 +21,7 @@ const initialValues: RegisterSchema = {
 }
 
 export function RegisterForm() {
+  const router = useRouter()
   const [values, setValues] = React.useState<RegisterSchema>(initialValues)
   const [fieldErrors, setFieldErrors] = React.useState<RegisterFieldErrors>({})
   const [statusMessage, setStatusMessage] = React.useState<string | null>(null)
@@ -71,8 +73,13 @@ export function RegisterForm() {
             email: formData.email,
             password: formData.password,
           })
-          setStatusMessage('Registro completado. Revisa tu correo para confirmar la cuenta o inicia sesión directamente.')
+          setStatusMessage('Registro completado. Redirigiendo al inicio de sesión...')
           setValues({ ...initialValues })
+          
+          // Redirigir al login después de 2 segundos
+          setTimeout(() => {
+            router.push('/login')
+          }, 2000)
         } catch (error) {
           const message = error instanceof Error ? error.message : 'No se pudo completar el registro.'
           setErrorMessage(message)
