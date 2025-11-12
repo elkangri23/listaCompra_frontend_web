@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import styles from './list-detail.module.css';
@@ -73,9 +74,14 @@ export default function ListDetailPage() {
           <div className={styles.mainContent}>
             <div className={styles.header}>
               <h1 className={styles.title}>Lista de la compra familiar</h1>
-              <button className={styles.shareButton} onClick={handleShare}>
-                <span>Compartir</span>
-              </button>
+              <div className={styles.headerActions}>
+                <Link href={`/lists/${listId}/history`} className={styles.historyButton}>
+                  <span>Ver Historial</span>
+                </Link>
+                <button className={styles.shareButton} onClick={handleShare}>
+                  <span>Compartir</span>
+                </button>
+              </div>
             </div>
 
             <div className={styles.addProductForm}>

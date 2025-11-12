@@ -48,6 +48,12 @@
   min-width: 288px;
 }
 
+.headerActions {
+  display: flex;
+  gap: 12px;
+}
+
+.historyButton,
 .shareButton {
   display: flex;
   min-width: 84px;
@@ -66,8 +72,10 @@
   line-height: normal;
   border: none;
   transition: background-color 0.2s;
+  text-decoration: none;
 }
 
+.historyButton:hover,
 .shareButton:hover {
   background-color: #e4e7eb;
 }
