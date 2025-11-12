@@ -14,7 +14,8 @@ export default auth((request) => {
   }
 
   const isPublicRoute = publicRoutes.has(nextUrl.pathname)
-  const isAuthenticated = Boolean(request.auth)
+  const session = request.auth
+  const isAuthenticated = !!session && !session.error
 
   if (isPublicRoute) {
     if (isAuthenticated && authRoutes.has(nextUrl.pathname)) {
