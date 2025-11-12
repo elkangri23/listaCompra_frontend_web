@@ -1,8 +1,7 @@
 # 📊 Estado Completo del Proyecto - listaCompra Frontend
 
-**Fecha**: 10 de noviembre de 2025  
-**Versión**: 2.0.0  
-**Progreso General**: 75% completado
+**Fecha**: 11 de noviembre de 2025
+**Versión**: 2.1.0**Progreso General**: 85% completado
 
 ---
 
@@ -15,9 +14,9 @@ Este documento unifica toda la información del proyecto: casos de uso implement
 | Métrica | Estado | Completado |
 |---------|--------|------------|
 | **Casos de Uso** | 46/56 | 82% |
-| **Endpoints Frontend** | 32/57 | 56% |
-| **Páginas Implementadas** | 13/13 mockups | 100% |
-| **Navegación Funcional** | Enlaces básicos | 75% |
+| **Endpoints Frontend** | 47/57 | 82% |
+| **Páginas Implementadas** | 15/15 mockups | 100% |
+| **Navegación Funcional** | Enlaces corregidos | 95% |
 | **Tests Unitarios** | Setup configurado | 20% |
 | **Tests E2E** | Setup configurado | 10% |
 | **Cobertura de Código** | Por definir | 0% |
@@ -300,11 +299,11 @@ Basado en `AUDIT_ENDPOINTS.md` y `InfoDoc/API_Testing_Guide.md`.
 | **Listas** | 5 | 5 | 100% | ✅ CORE |
 | **Productos** | 6 | 5 | 120% | ✅ CORE |
 | **Colaboradores** | 3 | 3 | 100% | ✅ CORE |
-| **Categorías** | 1 | 6 | 17% | 🔥 ALTA |
-| **Invitaciones** | 4 | 7 | 57% | 🔥 ALTA |
+| **Categorías** | 6 | 6 | 100% | ✅ CORE |
+| **Invitaciones** | 7 | 7 | 100% | ✅ CORE |
 | **Admin** | 3 | 5 | 60% | 🔶 MEDIA |
 | **IA Core** | 1 | 4 | 25% | 🔶 MEDIA |
-| **Tiendas** | 0 | 7 | 0% | 🔥 ALTA |
+| **Tiendas** | 7 | 7 | 100% | ✅ CORE |
 | **Blueprints** | 0 | 8 | 0% | 🔥 ALTA |
 | **IA Ocasiones** | 0 | 3 | 0% | 🔶 MEDIA |
 | **IA Recomendaciones** | 0 | 3 | 0% | 🔶 MEDIA |
@@ -312,43 +311,33 @@ Basado en `AUDIT_ENDPOINTS.md` y `InfoDoc/API_Testing_Guide.md`.
 | **Cache Analytics** | 0 | 5 | 0% | 🔵 BAJA |
 | **Cache Integrity** | 0 | 5 | 0% | 🔵 BAJA |
 | **Dev Utils** | 0 | 3 | 0% | 🔵 BAJA |
-| **TOTAL** | **32** | **57** | **56%** | - |
+| **TOTAL** | **47** | **57** | **82%** | - |
 
-### 2.2 Endpoints Implementados (32)
+### 2.2 Endpoints Implementados (47)
 
 ✅ **Auth (6/5)**: register, login, refresh, me, profile, password  
 ✅ **Listas (5/5)**: POST, GET, GET/:id, PUT/:id, DELETE/:id  
 ✅ **Productos (6/5)**: POST, GET, PUT, PATCH purchased, DELETE, PATCH reorder  
 ✅ **Colaboradores (3/3)**: GET, DELETE, PATCH role  
-✅ **Categorías (1/6)**: GET (falta CRUD completo)  
-✅ **Invitaciones (4/7)**: POST share, GET pending, POST accept, POST decline  
+✅ **Categorías (6/6)**: GET, POST, PUT, DELETE, PATCH toggle-status, PUT move-to-store 
+✅ **Tiendas (7/7)**: POST, GET, GET/:id, PUT/:id, DELETE/:id, PATCH toggle-status, GET categories 
+✅ **Invitaciones (7/7)**: POST share, GET pending, POST accept, POST decline, GET /:hash/access, GET /:listId/list, PUT /:listId/permissions/:userId
 ✅ **Admin (3/5)**: GET users, PATCH status, GET audit-logs  
 ✅ **IA (1/4)**: POST category-suggestions
 
-### 2.3 Endpoints Faltantes Prioritarios (25)
+### 2.3 Endpoints Faltantes Prioritarios (10)
 
-🔥 **ALTA PRIORIDAD** (15 endpoints):
+🔥 **ALTA PRIORIDAD** (8 endpoints):
 
-**Categorías (5)**:
-- POST /categories
-- PUT /categories/:id
-- DELETE /categories/:id
-- PATCH /categories/:id/toggle-status
-- PUT /categories/:id/move-to-store
-
-**Tiendas (7)**:
-- POST /stores
-- GET /stores
-- GET /stores/:id
-- PUT /stores/:id
-- DELETE /stores/:id
-- PATCH /stores/:id/toggle-status
-- GET /stores/:id/categories
-
-**Invitaciones (3)**:
-- GET /invitations/:hash/access (acceso público)
-- GET /invitations/:listId/list (listar activas)
-- PUT /invitations/:listId/permissions/:userId (cambiar permisos)
+**Blueprints (8)**:
+- POST /blueprints
+- GET /blueprints
+- GET /blueprints/publicos
+- GET /blueprints/buscar
+- GET /blueprints/:id
+- PUT /blueprints/:id
+- DELETE /blueprints/:id
+- POST /blueprints/:id/crear-lista
 
 🔶 **MEDIA PRIORIDAD** (10 endpoints):
 
@@ -378,41 +367,38 @@ Ver detalle completo en `AUDIT_ENDPOINTS.md`.
 <a name="paginas-implementadas"></a>
 ## 3. 📄 PÁGINAS IMPLEMENTADAS
 
-### 3.1 Todas las Páginas del Mockup ✅ (13/13)
+### 3.1 Todas las Páginas del Mockup ✅ (15/15)
+Se han añadido páginas placeholder para las rutas que no existían y se han creado las páginas de gestión.
 
-| # | Ruta | Nombre | Estado | CSS Module | Funcionalidad |
-|---|------|--------|--------|------------|---------------|
-| 1 | `/` | Homepage | ✅ | `homepage.module.css` | Landing page con hero y features |
-| 2 | `/login` | Login | ✅ | `login.module.css` | Autenticación con NextAuth |
-| 3 | `/register` | Registro | ✅ | `register.module.css` | Creación de cuenta |
-| 4 | `/forgot-password` | Recuperar contraseña | ✅ | `forgot-password.module.css` | Reset password |
-| 5 | `/dashboard` | Dashboard | ✅ | `dashboard.module.css` | Vista principal autenticada |
-| 6 | `/lists` | Mis Listas | ✅ | `lists.module.css` | Listado de listas con search |
-| 7 | `/lists/[id]` | Detalle Lista | ✅ | `list-detail.module.css` | CRUD productos completo |
-| 8 | `/lists/[id]/history` | Historial | ✅ | `history.module.css` | Productos comprados |
-| 9 | `/invitations` | Invitaciones | ✅ | `invitations.module.css` | Aceptar/rechazar invitaciones |
-| 10 | `/invitations/[token]` | Invitación Pública | ✅ | - | Acceso vía hash (placeholder) |
-| 11 | `/profile` | Perfil | ✅ | `profile.module.css` | Editar perfil y contraseña |
-| 12 | `/admin/users` | Admin Users | ✅ | `admin-users.module.css` | Gestión usuarios (mock data) |
-| 13 | `/storybook` | Storybook | ✅ | - | Documentación componentes |
+| # | Ruta | Nombre | Estado |
+|---|---|---|---|
+| 1 | `/` | Homepage | ✅ |
+| 2 | `/login` | Login | ✅ |
+| 3 | `/register` | Registro | ✅ |
+| 4 | `/forgot-password` | Recuperar contraseña | ✅ |
+| 5 | `/dashboard` | Dashboard | ✅ |
+| 6 | `/lists` | Mis Listas | ✅ |
+| 7 | `/lists/[id]` | Detalle Lista | ✅ |
+| 8 | `/lists/[id]/history` | Historial | ✅ |
+| 9 | `/invitations` | Invitaciones | ✅ |
+| 10 | `/invitations/[token]` | Invitación Pública | ✅ |
+| 11 | `/profile` | Perfil | ✅ |
+| 12 | `/admin/users` | Admin Users | ✅ |
+| 13 | `/storybook` | Storybook | ✅ |
+| 14 | `/categories` | Gestionar Categorías | ✅ |
+| 15 | `/stores` | Gestionar Tiendas | ✅ |
 
-**Total**: 13 páginas creadas con CSS modules aplicados desde mockups.
+**Total**: 15 páginas creadas.
 
-### 3.2 Páginas Referenciadas pero NO Existen ❌ (2)
+### 3.2 Páginas Referenciadas pero NO Existen ❌ (0)
+Todas las páginas referenciadas ahora existen.
 
-| Ruta | Referenciado desde | Acción requerida |
-|------|-------------------|------------------|
-| `/templates` | Dashboard, Lists, Profile sidebars | Crear página de blueprints/plantillas |
-| `/lists/create` | Dashboard "Crear Nueva Lista" button | Crear página o convertir en modal |
-
-### 3.3 Páginas Existen pero SIN Navegación (4)
+### 3.3 Páginas Existen pero SIN Navegación (2)
 
 | Ruta | Estado | Agregar navegación desde |
 |------|--------|-------------------------|
-| `/lists/[id]/history` | ✅ Existe | List detail - botón "Ver historial" |
 | `/admin/users` | ✅ Existe | Dashboard/navbar (solo admin) |
 | `/invitations` | ✅ Existe | Navbar - badge con contador |
-| `/storybook` | ✅ Existe | Solo dev/documentación |
 
 ---
 
@@ -435,18 +421,18 @@ Login (/login)
 
 Register (/register)
   ├─ Link "Inicia Sesión" → /login ✅
-  └─ Registro exitoso → mensaje (NO redirige) ⚠️
+  └─ Registro exitoso → Redirige a /login ✅ (Corregido)
 
 Dashboard (/dashboard)
   ├─ Sidebar "Dashboard" → /dashboard ✅
-  ├─ Sidebar "Templates" → /templates ❌ NO EXISTE
+  ├─ Sidebar "Templates" → /templates ✅ (Corregido)
   ├─ Sidebar "Profile" → /profile ✅
   ├─ Botón "Sign out" → /login ✅
-  ├─ Botón "Crear Lista" → /lists/create ❌ NO EXISTE
+  ├─ Botón "Crear Lista" → /lists/create ✅ (Corregido)
   └─ Cards de lista → /lists/[id] ✅
 ```
 
-#### Flujo Listas (90%)
+#### Flujo Listas (95%)
 ```
 Lists (/lists)
   ├─ Sidebar navegación → ✅
@@ -456,26 +442,12 @@ Lists (/lists)
 List Detail (/lists/[id])
   ├─ CRUD productos → ✅ Funciona
   ├─ Botón "Compartir" → alert placeholder ⚠️
-  └─ Historial → /lists/[id]/history ❌ SIN LINK
+  └─ Historial → /lists/[id]/history ✅ (Corregido)
 ```
 
 ### 4.2 Problemas de Navegación Identificados
 
-#### 🔴 ALTA PRIORIDAD
-
-1. **Página `/templates` no existe** (3 referencias)
-   - Dashboard sidebar
-   - Lists sidebar  
-   - Profile sidebar
-   - **Solución**: Crear página o redirigir a `/lists`
-
-2. **Página `/lists/create` no existe** (1 referencia)
-   - Dashboard botón "Crear Nueva Lista"
-   - **Solución**: Crear página o modal inline
-
-3. **Historial sin navegación** (1 página)
-   - `/lists/[id]/history` existe pero no hay botón desde list detail
-   - **Solución**: Agregar tab o botón "Ver historial"
+#### 🔴 ALTA PRIORIDAD - ✅ CORREGIDO
 
 #### ⚠️ MEDIA PRIORIDAD
 
@@ -523,81 +495,31 @@ List Detail (/lists/[id])
 <a name="tareas-pendientes"></a>
 ## 5. 🎯 TAREAS PENDIENTES PRIORITARIAS
 
-### 5.1 CRÍTICO - Correcciones de Navegación (1-2 días)
+### 5.1 CRÍTICO - Correcciones de Navegación (0 días)
+✅ **COMPLETADO**
 
-**Prioridad**: 🔥🔥🔥 URGENTE
+### 5.2 ALTA PRIORIDAD - Endpoints Faltantes (2-3 días)
 
-1. **Crear página `/templates` (Blueprints)** o redirigir
-   - Opción A: Página completa con listado de blueprints
-   - Opción B: Redirigir todos los links a `/lists`
-   - **Archivos**: `src/app/(auth)/templates/page.tsx`
+✅ **Fase 1.1: Completar Categorías - COMPLETADO**
+✅ **Fase 1.2: Implementar Tiendas - COMPLETADO**
+✅ **Fase 1.3: Completar Invitaciones - COMPLETADO**
 
-2. **Crear página `/lists/create`** o convertir en modal
-   - Opción A: Página dedicada con formulario completo
-   - Opción B: Modal inline en dashboard
-   - **Archivos**: `src/app/(auth)/lists/create/page.tsx` o componente modal
-
-3. **Agregar navegación a Historial**
-   - Botón "Ver Historial" en list detail
-   - **Archivo**: `src/app/(auth)/lists/[id]/page.tsx`
-
-4. **Corregir sidebar Profile**
-   - Cambiar link "Plantillas" de `/lists` a `/templates`
-   - **Archivo**: `src/app/(auth)/profile/page.tsx`
-
-5. **Redirección automática en Register**
-   - Redirigir a `/login` después de registro exitoso
-   - **Archivo**: `src/features/auth/components/register-form.tsx`
-
-### 5.2 ALTA PRIORIDAD - Endpoints Faltantes (5-7 días)
-
-**Fase 1.1: Completar Categorías (2 días)**
-
-Archivos a crear/modificar:
-- `src/features/categories/services/category-service.ts` (expandir)
-- `src/features/categories/hooks/use-categories.ts` (expandir)
-- `src/app/(auth)/categories/page.tsx` (nueva)
-
-Implementar:
-- [x] GET /categories (ya existe)
-- [ ] POST /categories
-- [ ] PUT /categories/:id
-- [ ] DELETE /categories/:id
-- [ ] PATCH /categories/:id/toggle-status
-- [ ] PUT /categories/:id/move-to-store
-
-**Fase 1.2: Implementar Tiendas (3 días)**
-
+🔥 **Fase 1.4: Implementar Blueprints (3 días)**
 Archivos a crear:
-- `src/features/stores/services/store-service.ts`
-- `src/features/stores/hooks/use-stores.ts`
-- `src/app/(auth)/stores/page.tsx`
-- `src/types/dtos/stores/`
+- `src/features/blueprints/services/blueprint-service.ts`
+- `src/features/blueprints/hooks/use-blueprints.ts`
+- `src/app/(auth)/templates/page.tsx` (expandir)
+- `src/app/(auth)/templates/[id]/page.tsx`
 
-Implementar 7 endpoints:
-- [ ] POST /stores
-- [ ] GET /stores
-- [ ] GET /stores/:id
-- [ ] PUT /stores/:id
-- [ ] DELETE /stores/:id
-- [ ] PATCH /stores/:id/toggle-status
-- [ ] GET /stores/:id/categories
-
-**Fase 1.3: Completar Invitaciones (2 días)**
-
-Archivos a modificar:
-- `src/features/invitations/services/invitation-service.ts`
-- `src/features/invitations/hooks/use-invitations.ts`
-- `src/app/(unauth)/invitations/[hash]/page.tsx` (nueva)
-
-Implementar:
-- [x] POST /invitations/:listId/share (ya existe)
-- [x] GET /invitations/pending (ya existe)
-- [x] POST /invitations/:id/accept (ya existe)
-- [x] POST /invitations/:id/decline (ya existe)
-- [ ] GET /invitations/:hash/access
-- [ ] GET /invitations/:listId/list
-- [ ] PUT /invitations/:listId/permissions/:userId
+Implementar 8 endpoints:
+- [ ] POST /blueprints
+- [ ] GET /blueprints
+- [ ] GET /blueprints/publicos
+- [ ] GET /blueprints/buscar
+- [ ] GET /blueprints/:id
+- [ ] PUT /blueprints/:id
+- [ ] DELETE /blueprints/:id
+- [ ] POST /blueprints/:id/crear-lista
 
 ### 5.3 MEDIA PRIORIDAD - Funcionalidades IA (4-6 días)
 
@@ -837,9 +759,9 @@ Estos endpoints deben estar implementados y funcionales en el backend:
 | Documento | Ubicación | Estado |
 |-----------|-----------|--------|
 | Este documento | `ESTADO_PROYECTO.md` | ✅ Actualizado |
-| Auditoría endpoints | `AUDIT_ENDPOINTS.md` | ✅ Actualizado |
-| Casos de uso | `casos_de_uso.md` | ⚠️ Desactualizado |
-| Pendientes | `PENDIENTES.md` | ⚠️ Desactualizado |
+| Auditoría endpoints | `AUDIT_ENDPOINTS.md` | 🗑️ Archivado (obsoleto) |
+| Casos de uso | `casos_de_uso.md` | 🗑️ Archivado (obsoleto) |
+| Pendientes | `PENDIENTES.md` | 🗑️ Archivado (obsoleto) |
 | README | `README.md` | ⚠️ Desactualizado |
 | API Guide | `InfoDoc/API_Testing_Guide.md` | ✅ Actualizado |
 | Postman Collection | `InfoDoc/postman_collection.json` | ✅ Actualizado |

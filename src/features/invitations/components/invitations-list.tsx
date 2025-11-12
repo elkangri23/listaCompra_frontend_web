@@ -1,6 +1,6 @@
 'use client';
 
-import { InvitationDto } from '@/types/dtos/invitations/InvitationDto';
+import { InvitationDto } from '@/types/dtos/invitations';
 import { useAcceptInvitation, useDeclineInvitation } from '../hooks/use-invitations';
 import { useState } from 'react';
 
