@@ -81,7 +81,8 @@ export async function refreshToken(request: RefreshTokenRequest): Promise<{ toke
 export async function registerUser(request: RegisterRequest): Promise<void> {
   try {
     const payload = {
-      name: request.name.trim(),
+      nombre: request.nombre.trim(),
+      apellidos: request.apellidos.trim(),
       email: normalizeEmail(request.email),
       password: request.password,
     }

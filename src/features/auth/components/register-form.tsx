@@ -14,7 +14,8 @@ type FormEvent = React.FormEvent<HTMLFormElement>
 type ChangeEvent = React.ChangeEvent<HTMLInputElement>
 
 const initialValues: RegisterSchema = {
-  name: '',
+  nombre: '',
+  apellidos: '',
   email: '',
   password: '',
   confirmPassword: '',
@@ -69,7 +70,8 @@ export function RegisterForm() {
       startTransition(async () => {
         try {
           await registerUser({
-            name: formData.name,
+            nombre: formData.nombre,
+            apellidos: formData.apellidos,
             email: formData.email,
             password: formData.password,
           })
@@ -86,7 +88,7 @@ export function RegisterForm() {
         }
       })
     },
-    [values],
+    [values, router],
   )
 
   return (
@@ -95,24 +97,46 @@ export function RegisterForm() {
         <h2 className="text-[#111418] text-lg font-bold leading-normal mb-4">Datos Personales</h2>
 
         <div className="flex max-w-[480px] flex-wrap items-end gap-4 py-3">
-          <label htmlFor="name" className="flex flex-col min-w-40 flex-1" aria-label="Nombre completo">
+          <label htmlFor="nombre" className="flex flex-col min-w-40 flex-1" aria-label="Nombre">
             <input
-              id="name"
+              id="nombre"
               className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
-              placeholder="Nombre Completo"
-              value={values.name}
+              placeholder="Nombre"
+              value={values.nombre}
               onChange={handleChange}
-              name="name"
+              name="nombre"
               type="text"
-              autoComplete="name"
-              aria-invalid={fieldErrors.name ? 'true' : 'false'}
-              aria-describedby={fieldErrors.name ? 'name-error' : undefined}
+              autoComplete="given-name"
+              aria-invalid={fieldErrors.nombre ? 'true' : 'false'}
+              aria-describedby={fieldErrors.nombre ? 'nombre-error' : undefined}
             />
           </label>
         </div>
-        {fieldErrors.name ? (
-          <p id="name-error" role="alert" className="text-sm text-red-600 px-4">
-            {fieldErrors.name}
+        {fieldErrors.nombre ? (
+          <p id="nombre-error" role="alert" className="text-sm text-red-600 px-4">
+            {fieldErrors.nombre}
+          </p>
+        ) : null}
+
+        <div className="flex max-w-[480px] flex-wrap items-end gap-4 py-3">
+          <label htmlFor="apellidos" className="flex flex-col min-w-40 flex-1" aria-label="Apellidos">
+            <input
+              id="apellidos"
+              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
+              placeholder="Apellidos"
+              value={values.apellidos}
+              onChange={handleChange}
+              name="apellidos"
+              type="text"
+              autoComplete="family-name"
+              aria-invalid={fieldErrors.apellidos ? 'true' : 'false'}
+              aria-describedby={fieldErrors.apellidos ? 'apellidos-error' : undefined}
+            />
+          </label>
+        </div>
+        {fieldErrors.apellidos ? (
+          <p id="apellidos-error" role="alert" className="text-sm text-red-600 px-4">
+            {fieldErrors.apellidos}
           </p>
         ) : null}
 

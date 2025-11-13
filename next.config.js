@@ -13,7 +13,7 @@ const nextConfig = {
           {
             key: 'Content-Security-Policy',
             value:
-              "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data: lh3.googleusercontent.com; font-src 'self' fonts.gstatic.com; object-src 'none'; frame-ancestors 'none';",
+              "default-src 'self'; connect-src 'self' http://localhost:3333; script-src 'self' 'unsafe-eval' 'unsafe-inline' cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data: lh3.googleusercontent.com; font-src 'self' fonts.gstatic.com; object-src 'none'; frame-ancestors 'none';",
           },
           {
             key: 'Referrer-Policy',
