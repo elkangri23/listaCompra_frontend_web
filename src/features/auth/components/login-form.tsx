@@ -107,7 +107,10 @@ export function LoginForm() {
 
   return (
     <form noValidate onSubmit={handleSubmit}>
-        <div className="flex w-full max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+      <div className="mt-8 px-4">
+        <h2 className="text-[#111418] text-lg font-bold leading-normal mb-4">Seguridad</h2>
+
+        <div className="flex w-full max-w-[480px] flex-wrap items-end gap-4 py-3">
           <label htmlFor="email" className="flex flex-col min-w-40 flex-1" aria-label="Correo electrónico">
             <input
               id="email"
@@ -128,7 +131,7 @@ export function LoginForm() {
             {fieldErrors.email}
           </p>
         ) : null}
-        <div className="flex w-full max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+        <div className="flex w-full max-w-[480px] flex-wrap items-end gap-4 py-3">
           <label htmlFor="password" className="flex flex-col min-w-40 flex-1" aria-label="Contraseña">
             <input
               id="password"
@@ -149,25 +152,27 @@ export function LoginForm() {
             {fieldErrors.password}
           </p>
         ) : null}
-        {errorMessage ? (
-          <p role="alert" className="text-sm text-red-600 px-4 py-2">
-            {errorMessage}
-          </p>
-        ) : null}
-        <div className="flex w-full max-w-[480px] px-4 py-3">
-          <button
-            type="submit"
-            disabled={isPending}
-            className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em]"
-          >
-            <span className="truncate">{isPending ? 'Iniciando sesión…' : 'Iniciar Sesión'}</span>
-          </button>
-        </div>
-        <p className="text-[#60708a] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center w-full max-w-[480px]">
-          <Link href="/register" className="underline">
-            ¿No tienes cuenta? Regístrate
-          </Link>
+      </div>
+
+      {errorMessage ? (
+        <p role="alert" className="text-sm text-red-600 px-4 py-2">
+          {errorMessage}
         </p>
+      ) : null}
+      <div className="flex px-4 py-3 mt-6">
+        <button
+          type="submit"
+          disabled={isPending}
+          className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+        >
+          <span className="truncate">{isPending ? 'Iniciando sesión…' : 'Iniciar Sesión'}</span>
+        </button>
+      </div>
+      <p className="text-[#60708a] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center w-full max-w-[480px]">
+        <Link href="/register" className="underline">
+          ¿No tienes cuenta? Regístrate
+        </Link>
+      </p>
     </form>
   )
 }

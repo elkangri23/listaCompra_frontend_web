@@ -70,8 +70,16 @@ const moveCategoryToStore = async (
   return response.data;
 };
 
+const getCategoryById = async (
+  id: string
+): Promise<CategoryResponseDto> => {
+  const response = await axiosInstance.get<CategoryResponseDto>(`/categories/${id}`);
+  return response.data;
+};
+
 export const categoryService = {
   getCategories,
+  getCategoryById,
   createCategory,
   updateCategory,
   deleteCategory,

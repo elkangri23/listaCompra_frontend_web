@@ -19,6 +19,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" suppressHydrationWarning className="light">
+      <head>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+      </head>
       <body className={inter.variable} style={{ fontFamily: 'Inter, "Noto Sans", sans-serif' }}>
         <AppProviders>
           <ThemeProvider defaultTheme="light">

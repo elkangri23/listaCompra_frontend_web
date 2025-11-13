@@ -1,79 +1,92 @@
 import NextAuth, { type NextAuthConfig } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 
-import { login, refreshAccessToken } from '@/features/auth/services/auth-service'
+import { login, refreshToken } from '@/features/auth/services/auth-service'
 import { loginSchema } from '@/features/auth/validators/schemas'
+
+// Helper to decode JWT without external libraries
+function decodeJwt(token: string) {
+  try {
+    const base64Url = token.split('.')[1]
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+    // Use Buffer for robust Base64 decoding in Node.js environment
+    const jsonPayload = Buffer.from(base64, 'base64').toString('utf8');
+    return JSON.parse(jsonPayload)
+  } catch (e) {
+    console.error('Failed to decode JWT:', e)
+    return null
+  }
+}
 
 const callbacks: NextAuthConfig['callbacks'] = {
   async jwt({ token, user }) {
-    if (user) {
-      const enrichedUser = user as typeof user & {
-        accessToken?: string
-        refreshToken?: string
-        expiresAt?: number
-        roles?: string[]
-      }
+    // Initial sign-in
+    if (user && user.token) {
+      const decoded = decodeJwt(user.token as string)
+      if (!decoded) return { ...token, error: 'InvalidTokenError' }
 
-      token.accessToken = enrichedUser.accessToken
-      token.refreshToken = enrichedUser.refreshToken
-      token.expiresAt = enrichedUser.expiresAt
+      token.accessToken = user.token
+      token.expiresAt = decoded.exp * 1000 // exp is in seconds
       token.user = {
-        id: user.id ?? '',
-        email: user.email ?? '',
-        name: user.name ?? '',
-        image: user.image ?? undefined,
-        roles: enrichedUser.roles ?? [],
+        id: decoded.sub, // Assuming 'sub' is the user ID
+        email: decoded.email,
+        name: decoded.name,
+        roles: decoded.roles ?? [],
       }
       return token
     }
 
-    if (!token.expiresAt || typeof token.expiresAt !== 'number') {
-      return token
-    }
+    // Return previous token if it has not expired yet
+    // if (Date.now() < (token.expiresAt as number)) {
+    //   return token
+    // }
 
-    const shouldRefresh = Date.now() + 60_000 > token.expiresAt
-    if (!shouldRefresh) {
-      return token
-    }
+    // // Expired token, try to refresh it
+    // try {
+    //   const refreshed = await refreshToken({
+    //     refreshToken: token.accessToken as string, // Using the expired token as the refresh token
+    //   })
 
-    try {
-      const refreshed = await refreshAccessToken({
-        refreshToken: typeof token.refreshToken === 'string' ? token.refreshToken : undefined,
-      })
+    //   const decoded = decodeJwt(refreshed.token)
+    //   if (!decoded) return { ...token, error: 'InvalidTokenError' }
 
-      token.accessToken = refreshed.accessToken
-      token.refreshToken = refreshed.refreshToken
-      token.expiresAt = refreshed.expiresAt
-    } catch (error) {
-      token.error = 'RefreshAccessTokenError'
-    }
+    //   token.accessToken = refreshed.token
+    //   token.expiresAt = decoded.exp * 1000
+    //   // User info should persist from the original token, but we can re-set it
+    //   token.user = {
+    //     id: decoded.sub,
+    //     email: decoded.email,
+    //     name: decoded.name,
+    //     roles: decoded.roles ?? [],
+    //   }
+    //   // Clear any previous error
+    //   delete token.error
+
+    // } catch (error) {
+    //   console.error('RefreshAccessTokenError', error)
+    //   token.error = 'RefreshAccessTokenError'
+    // }
 
     return token
   },
   async session({ session, token }) {
-    if (token.user && typeof token.user === 'object') {
-      session.user = {
-        ...session.user,
-        ...token.user,
-      }
+    if (token.user) {
+      session.user = token.user as any
     }
-
-    if (token.accessToken && typeof token.accessToken === 'string') {
-      session.accessToken = token.accessToken
+    if (token.accessToken) {
+      session.accessToken = token.accessToken as string
     }
-
-    if (token.error && typeof token.error === 'string') {
-      session.error = token.error
+    if (token.error) {
+      session.error = token.error as string
     }
-
     return session
   },
 }
 
 export const authConfig: NextAuthConfig = {
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
-    maxAge: 60 * 60 * 24, // 1 día
   },
   pages: {
     signIn: '/login',
@@ -97,33 +110,18 @@ export const authConfig: NextAuthConfig = {
 
         try {
           const authResponse = await login({ email, password })
-
+          // The user object passed to the jwt callback
           return {
-            id: authResponse.user.id,
-            email: authResponse.user.email,
-            name: authResponse.user.name,
-            image: authResponse.user.image ?? null,
-            accessToken: authResponse.tokens.accessToken,
-            refreshToken: authResponse.tokens.refreshToken,
-            expiresAt: authResponse.tokens.expiresAt,
-            roles: authResponse.user.roles,
+            token: authResponse.token,
           }
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'No se pudieron validar las credenciales.'
-          throw new Error(message)
+          console.error('Authorize error:', error)
+          return null // Returning null triggers a failed login
         }
       },
     }),
   ],
   callbacks,
-  events: {
-    async signOut(message) {
-      // Check if it's a JWT strategy signOut (has token)
-      if ('token' in message && message.token?.refreshToken) {
-        // In future we can notify backend to revoke refresh token
-      }
-    },
-  },
 }
 
 export const { auth, handlers, signIn, signOut } = NextAuth(authConfig)
