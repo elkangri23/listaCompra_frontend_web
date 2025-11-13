@@ -9,6 +9,14 @@ export const useCategories = (params?: GetCategoriesByStoreDto) => {
   });
 };
 
+export const useCategory = (id: string) => {
+  return useQuery({
+    queryKey: ['categories', id],
+    queryFn: () => categoryService.getCategoryById(id),
+    enabled: !!id,
+  });
+};
+
 export const useCreateCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
