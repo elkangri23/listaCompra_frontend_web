@@ -1,0 +1,462 @@
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
+
+    <title>Stitch Design</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+  <body>
+    <div
+      class="relative flex h-auto min-h-screen w-full flex-col bg-white group/design-root overflow-x-hidden"
+      style="--checkbox-tick-svg: url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27rgb(255,255,255)%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath d=%27M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z%27/%3e%3c/svg%3e'); --radio-dot-svg: url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27rgb(17,20,24)%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3ccircle cx=%278%27 cy=%278%27 r=%273%27/%3e%3c/svg%3e'); --select-button-svg: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(96,117,138)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e'); font-family: Inter, &quot;Noto Sans&quot;, sans-serif;"
+    >
+      <div class="layout-container flex h-full grow flex-col">
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f5] px-10 py-3">
+          <div class="flex items-center gap-4 text-[#111418]">
+            <div class="size-4">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M13.8261 17.4264C16.7203 18.1174 20.2244 18.5217 24 18.5217C27.7756 18.5217 31.2797 18.1174 34.1739 17.4264C36.9144 16.7722 39.9967 15.2331 41.3563 14.1648L24.8486 40.6391C24.4571 41.267 23.5429 41.267 23.1514 40.6391L6.64374 14.1648C8.00331 15.2331 11.0856 16.7722 13.8261 17.4264Z"
+                  fill="currentColor"
+                ></path>
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M39.998 12.236C39.9944 12.2537 39.9875 12.2845 39.9748 12.3294C39.9436 12.4399 39.8949 12.5741 39.8346 12.7175C39.8168 12.7597 39.7989 12.8007 39.7813 12.8398C38.5103 13.7113 35.9788 14.9393 33.7095 15.4811C30.9875 16.131 27.6413 16.5217 24 16.5217C20.3587 16.5217 17.0125 16.131 14.2905 15.4811C12.0012 14.9346 9.44505 13.6897 8.18538 12.8168C8.17384 12.7925 8.16216 12.767 8.15052 12.7408C8.09919 12.6249 8.05721 12.5114 8.02977 12.411C8.00356 12.3152 8.00039 12.2667 8.00004 12.2612C8.00004 12.261 8 12.2607 8.00004 12.2612C8.00004 12.2359 8.0104 11.9233 8.68485 11.3686C9.34546 10.8254 10.4222 10.2469 11.9291 9.72276C14.9242 8.68098 19.1919 8 24 8C28.8081 8 33.0758 8.68098 36.0709 9.72276C37.5778 10.2469 38.6545 10.8254 39.3151 11.3686C39.9006 11.8501 39.9857 12.1489 39.998 12.236ZM4.95178 15.2312L21.4543 41.6973C22.6288 43.5809 25.3712 43.5809 26.5457 41.6973L43.0534 15.223C43.0709 15.1948 43.0878 15.1662 43.104 15.1371L41.3563 14.1648C43.104 15.1371 43.1038 15.1374 43.104 15.1371L43.1051 15.135L43.1065 15.1325L43.1101 15.1261L43.1199 15.1082C43.1276 15.094 43.1377 15.0754 43.1497 15.0527C43.1738 15.0075 43.2062 14.9455 43.244 14.8701C43.319 14.7208 43.4196 14.511 43.5217 14.2683C43.6901 13.8679 44 13.0689 44 12.2609C44 10.5573 43.003 9.22254 41.8558 8.2791C40.6947 7.32427 39.1354 6.55361 37.385 5.94477C33.8654 4.72057 29.133 4 24 4C18.867 4 14.1346 4.72057 10.615 5.94478C8.86463 6.55361 7.30529 7.32428 6.14419 8.27911C4.99695 9.22255 3.99999 10.5573 3.99999 12.2609C3.99999 13.1275 4.29264 13.9078 4.49321 14.3607C4.60375 14.6102 4.71348 14.8196 4.79687 14.9689C4.83898 15.0444 4.87547 15.1065 4.9035 15.1529C4.91754 15.1762 4.92954 15.1957 4.93916 15.2111L4.94662 15.223L4.95178 15.2312ZM35.9868 18.996L24 38.22L12.0131 18.996C12.4661 19.1391 12.9179 19.2658 13.3617 19.3718C16.4281 20.1039 20.0901 20.5217 24 20.5217C27.9099 20.5217 31.5719 20.1039 34.6383 19.3718C35.082 19.2658 35.5339 19.1391 35.9868 18.996Z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+            </div>
+            <h2 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em]">Grocery App</h2>
+          </div>
+          <div class="flex flex-1 justify-end gap-8">
+            <div class="flex items-center gap-9">
+              <a class="text-[#111418] text-sm font-medium leading-normal" href="#">Home</a>
+              <a class="text-[#111418] text-sm font-medium leading-normal" href="#">Lists</a>
+              <a class="text-[#111418] text-sm font-medium leading-normal" href="#">Recipes</a>
+              <a class="text-[#111418] text-sm font-medium leading-normal" href="#">Settings</a>
+            </div>
+            <button
+              class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#f0f2f5] text-[#111418] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
+            >
+              <div class="text-[#111418]" data-icon="Bell" data-size="20px" data-weight="regular">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                  <path
+                    d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"
+                  ></path>
+                </svg>
+              </div>
+            </button>
+            <div
+              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBseiBmOmpmTPshxnbArYqSnE1z7cqUGI7ss7BdGVsii57B-mx_g5RWY6kg3OUH4QW0skfh62KqWSQI-bUlCCa2ui-eGSm27CtCrkSRjR2IMnsCtfSTsfFv-H9gsoaoQXPNpjVETet1fvsANWZ941TF6cDVGgDSlp_ZJVW76M53bcDQLgliN2uaBxZrnIF346Phoi25QU1VkwHeRl8Gx-lge8FqSDqkb8ViYT1tcs6Aw2DBv-pzWbl0H7oZlXtmuApZ0Jf7-XQ0UhEB");'
+            ></div>
+          </div>
+        </header>
+        <div class="px-40 flex flex-1 justify-center py-5">
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <div class="flex flex-wrap justify-between gap-3 p-4">
+              <p class="text-[#111418] tracking-light text-[32px] font-bold leading-tight min-w-72">Design System / Storybook</p>
+            </div>
+            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">1. Contenedores y Layout</h2>
+            <p class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4">
+              Grid: The main grid uses a 12-column layout. Containers: Content is organized within containers. Two-Column Layout: For side-by-side content, a two-column layout is
+              used.
+            </p>
+            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">2. Tipografía y Colores</h2>
+            <div class="p-4">
+              <div class="flex justify-between gap-x-6 py-2">
+                <p class="text-[#60758a] text-sm font-normal leading-normal">Primary</p>
+                <p class="text-[#111418] text-sm font-normal leading-normal text-right">#6200EE</p>
+              </div>
+              <div class="flex justify-between gap-x-6 py-2">
+                <p class="text-[#60758a] text-sm font-normal leading-normal">Secondary</p>
+                <p class="text-[#111418] text-sm font-normal leading-normal text-right">#03DAC5</p>
+              </div>
+              <div class="flex justify-between gap-x-6 py-2">
+                <p class="text-[#60758a] text-sm font-normal leading-normal">Neutrals</p>
+                <p class="text-[#111418] text-sm font-normal leading-normal text-right">#F2F2F7</p>
+              </div>
+              <div class="flex justify-between gap-x-6 py-2">
+                <p class="text-[#60758a] text-sm font-normal leading-normal">Success</p>
+                <p class="text-[#111418] text-sm font-normal leading-normal text-right">#4CAF50</p>
+              </div>
+              <div class="flex justify-between gap-x-6 py-2">
+                <p class="text-[#60758a] text-sm font-normal leading-normal">Error</p>
+                <p class="text-[#111418] text-sm font-normal leading-normal text-right">#F44336</p>
+              </div>
+            </div>
+            <h3 class="text-[#111418] tracking-light text-2xl font-bold leading-tight px-4 text-left pb-2 pt-5">Heading 1</h3>
+            <h1 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 text-left pb-3 pt-5">Heading 2</h1>
+            <h2 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em] px-4 text-left pb-2 pt-4">Heading 3</h2>
+            <p class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4">Paragraph</p>
+            <p class="text-[#60758a] text-sm font-normal leading-normal pb-3 pt-1 px-4">Link</p>
+            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">3. Componentes Interactivos</h2>
+            <h3 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Buttons</h3>
+            <div class="flex justify-stretch">
+              <div class="flex flex-1 gap-3 flex-wrap px-4 py-3 justify-start">
+                <button
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#0d80f2] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+                >
+                  <span class="truncate">Primary</span>
+                </button>
+                <button
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f0f2f5] text-[#111418] text-sm font-bold leading-normal tracking-[0.015em]"
+                >
+                  <span class="truncate">Secondary</span>
+                </button>
+              </div>
+            </div>
+            <div class="flex justify-stretch">
+              <div class="flex flex-1 gap-3 flex-wrap px-4 py-3 justify-start">
+                <button
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#0d80f2] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+                >
+                  <span class="truncate">Hover</span>
+                </button>
+                <button
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f0f2f5] text-[#111418] text-sm font-bold leading-normal tracking-[0.015em]"
+                >
+                  <span class="truncate">Hover</span>
+                </button>
+              </div>
+            </div>
+            <div class="flex justify-stretch">
+              <div class="flex flex-1 gap-3 flex-wrap px-4 py-3 justify-start">
+                <button
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#0d80f2] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+                >
+                  <span class="truncate">Disabled</span>
+                </button>
+                <button
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f0f2f5] text-[#111418] text-sm font-bold leading-normal tracking-[0.015em]"
+                >
+                  <span class="truncate">Disabled</span>
+                </button>
+              </div>
+            </div>
+            <div class="flex px-4 py-3 justify-start">
+              <button
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-transparent text-[#111418] text-sm font-bold leading-normal tracking-[0.015em]"
+              >
+                <span class="truncate">Text Button</span>
+              </button>
+            </div>
+            <div class="flex px-4 py-3 justify-start">
+              <button
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#0d80f2] text-white gap-2 pl-4 text-sm font-bold leading-normal tracking-[0.015em]"
+              >
+                <div class="text-white" data-icon="ShoppingCart" data-size="20px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16h18L59.56,172.29a24,24,0,0,0,5.33,11.27,28,28,0,1,0,44.4,8.44h45.42A27.75,27.75,0,0,0,152,204a28,28,0,1,0,28-28H83.17a8,8,0,0,1-7.87-6.57L72.13,152h116a24,24,0,0,0,23.61-19.71l12.16-66.86A8,8,0,0,0,222.14,58.87ZM96,204a12,12,0,1,1-12-12A12,12,0,0,1,96,204Zm96,0a12,12,0,1,1-12-12A12,12,0,0,1,192,204Zm4-74.57A8,8,0,0,1,188.1,136H69.22L57.59,72H206.41Z"
+                    ></path>
+                  </svg>
+                </div>
+                <span class="truncate">Button with Icon</span>
+              </button>
+            </div>
+            <h3 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Forms</h3>
+            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+              <label class="flex flex-col min-w-40 flex-1">
+                <input
+                  placeholder="Input Field"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
+                  value=""
+                />
+              </label>
+            </div>
+            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+              <label class="flex flex-col min-w-40 flex-1">
+                <textarea
+                  placeholder="Text Area"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] min-h-36 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
+                ></textarea>
+              </label>
+            </div>
+            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+              <label class="flex flex-col min-w-40 flex-1">
+                <select
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 bg-[image:--select-button-svg] placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
+                >
+                  <option value="one">Select</option>
+                  <option value="two">two</option>
+                  <option value="three">three</option>
+                </select>
+              </label>
+            </div>
+            <div class="px-4">
+              <label class="flex gap-x-3 py-3 flex-row">
+                <input
+                  type="checkbox"
+                  class="h-5 w-5 rounded border-[#dbe0e6] border-2 bg-transparent text-[#0d80f2] checked:bg-[#0d80f2] checked:border-[#0d80f2] checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-[#dbe0e6] focus:outline-none"
+                />
+                <p class="text-[#111418] text-base font-normal leading-normal">Checkbox 1</p>
+              </label>
+              <label class="flex gap-x-3 py-3 flex-row">
+                <input
+                  type="checkbox"
+                  class="h-5 w-5 rounded border-[#dbe0e6] border-2 bg-transparent text-[#0d80f2] checked:bg-[#0d80f2] checked:border-[#0d80f2] checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-[#dbe0e6] focus:outline-none"
+                />
+                <p class="text-[#111418] text-base font-normal leading-normal">Checkbox 2</p>
+              </label>
+            </div>
+            <div class="flex flex-col gap-3 p-4">
+              <label class="flex items-center gap-4 rounded-xl border border-solid border-[#dbe0e6] p-[15px]">
+                <input
+                  type="radio"
+                  class="h-5 w-5 border-2 border-[#dbe0e6] bg-transparent text-transparent checked:border-[#111418] checked:bg-[image:--radio-dot-svg] focus:outline-none focus:ring-0 focus:ring-offset-0 checked:focus:border-[#111418]"
+                  name="9aed4399-d967-4d9f-86cd-8d591c682178"
+                  checked=""
+                />
+                <div class="flex grow flex-col"><p class="text-[#111418] text-sm font-medium leading-normal">Radio Button 1</p></div>
+              </label>
+              <label class="flex items-center gap-4 rounded-xl border border-solid border-[#dbe0e6] p-[15px]">
+                <input
+                  type="radio"
+                  class="h-5 w-5 border-2 border-[#dbe0e6] bg-transparent text-transparent checked:border-[#111418] checked:bg-[image:--radio-dot-svg] focus:outline-none focus:ring-0 focus:ring-offset-0 checked:focus:border-[#111418]"
+                  name="9aed4399-d967-4d9f-86cd-8d591c682178"
+                />
+                <div class="flex grow flex-col"><p class="text-[#111418] text-sm font-medium leading-normal">Radio Button 2</p></div>
+              </label>
+            </div>
+            <div class="flex items-center gap-4 bg-white px-4 min-h-14 justify-between">
+              <p class="text-[#111418] text-base font-normal leading-normal flex-1 truncate">Toggle</p>
+              <div class="shrink-0">
+                <label
+                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#f0f2f5] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#0d80f2]"
+                >
+                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
+                  <input type="checkbox" class="invisible absolute" />
+                </label>
+              </div>
+            </div>
+            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+              <label class="flex flex-col min-w-40 flex-1">
+                <div class="flex w-full flex-1 items-stretch rounded-xl">
+                  <input
+                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] rounded-r-none border-r-0 pr-2 text-base font-normal leading-normal"
+                    value=""
+                  />
+                  <div
+                    class="text-[#60758a] flex border border-[#dbe0e6] bg-white items-center justify-center pr-[15px] rounded-r-xl border-l-0"
+                    data-icon="XCircle"
+                    data-size="24px"
+                    data-weight="regular"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+              </label>
+            </div>
+            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+              <label class="flex flex-col min-w-40 flex-1">
+                <div class="flex w-full flex-1 items-stretch rounded-xl">
+                  <input
+                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] rounded-r-none border-r-0 pr-2 text-base font-normal leading-normal"
+                    value=""
+                  />
+                  <div
+                    class="text-[#60758a] flex border border-[#dbe0e6] bg-white items-center justify-center pr-[15px] rounded-r-xl border-l-0"
+                    data-icon="CheckCircle"
+                    data-size="24px"
+                    data-weight="regular"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+              </label>
+            </div>
+            <h3 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Alerts &amp; Notifications</h3>
+            <div class="flex items-center gap-4 bg-white px-4 min-h-14 justify-between">
+              <p class="text-[#111418] text-base font-normal leading-normal flex-1 truncate">Success Alert</p>
+              <div class="shrink-0">
+                <div class="flex size-7 items-center justify-center"><div class="size-3 rounded-full bg-[#078838]"></div></div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4 bg-white px-4 min-h-14 justify-between">
+              <p class="text-[#111418] text-base font-normal leading-normal flex-1 truncate">Error Alert</p>
+              <div class="shrink-0">
+                <div class="flex size-7 items-center justify-center"><div class="size-3 rounded-full bg-[#078838]"></div></div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4 bg-white px-4 min-h-14 justify-between">
+              <p class="text-[#111418] text-base font-normal leading-normal flex-1 truncate">Warning Alert</p>
+              <div class="shrink-0">
+                <div class="flex size-7 items-center justify-center"><div class="size-3 rounded-full bg-[#078838]"></div></div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4 bg-white px-4 min-h-14 justify-between">
+              <p class="text-[#111418] text-base font-normal leading-normal flex-1 truncate">Info Alert</p>
+              <div class="shrink-0">
+                <div class="flex size-7 items-center justify-center"><div class="size-3 rounded-full bg-[#078838]"></div></div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4 bg-white px-4 min-h-14 justify-between">
+              <p class="text-[#111418] text-base font-normal leading-normal flex-1 truncate">Toast Notification</p>
+              <div class="shrink-0">
+                <div class="flex size-7 items-center justify-center"><div class="size-3 rounded-full bg-[#078838]"></div></div>
+              </div>
+            </div>
+            <h3 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Modals</h3>
+            <div class="p-4">
+              <div
+                class="bg-cover bg-center flex flex-col items-stretch justify-end rounded-xl pt-[132px] shadow-[0_0_4px_rgba(0,0,0,0.1)]"
+                style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuB2wcCXuppudVIXLyZUtwgPGj7iU_Xb0dGuqhFBV6F1wB66mQqLs0BbZ48R1UmrE-VZX56IrB11O27k8cw7vCm63mFKqJlVVyVB2jTduekdib4L9zDVyskU6vNS7ILLfjwKoxYjZwVNi7DxI5ROvopkVfRm3NIW8C5f2P-e-9bJ5yOfWM9W4wPrzwAQ4NrZy_Hj79Of86X5UMiRv28i8yxNX6Whg5asHW7-qzuSTDO7XpCnON0zZaYYdIW4Ij9ObdRSvwFw2Pi-nn2-");'
+              >
+                <div class="flex w-full items-end justify-between gap-4 p-4">
+                  <div class="flex max-w-[440px] flex-1 flex-col gap-1">
+                    <p class="text-white tracking-light text-2xl font-bold leading-tight max-w-[440px]">Modal Title</p>
+                    <p class="text-white text-base font-medium leading-normal">Modal Content. Includes action buttons like 'Cancel' and 'Accept'.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Tabs</h3>
+            <div class="pb-3">
+              <div class="flex border-b border-[#dbe0e6] px-4 gap-8">
+                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-[#111418] text-[#111418] pb-[13px] pt-4" href="#">
+                  <p class="text-[#111418] text-sm font-bold leading-normal tracking-[0.015em]">Tab 1</p>
+                </a>
+                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#60758a] pb-[13px] pt-4" href="#">
+                  <p class="text-[#60758a] text-sm font-bold leading-normal tracking-[0.015em]">Tab 2</p>
+                </a>
+                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#60758a] pb-[13px] pt-4" href="#">
+                  <p class="text-[#60758a] text-sm font-bold leading-normal tracking-[0.015em]">Tab 3</p>
+                </a>
+              </div>
+            </div>
+            <h3 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Progress Bars</h3>
+            <div class="flex flex-col gap-3 p-4">
+              <div class="flex gap-6 justify-between">
+                <p class="text-[#111418] text-base font-medium leading-normal">Progress</p>
+                <p class="text-[#111418] text-sm font-normal leading-normal">60%</p>
+              </div>
+              <div class="rounded bg-[#dbe0e6]"><div class="h-2 rounded bg-[#111418]" style="width: 60%;"></div></div>
+            </div>
+            <h3 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Spinners/Loaders</h3>
+            <div class="flex items-center gap-4 bg-white px-4 min-h-14"><p class="text-[#111418] text-base font-normal leading-normal flex-1 truncate">Loading...</p></div>
+            <h3 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Avatars</h3>
+            <div class="flex items-center px-4 py-3 justify-start">
+              <div class="overflow-visible w-[34px]">
+                <div
+                  class="bg-center bg-no-repeat aspect-square bg-cover border-white bg-[#f0f2f5] text-[#60758a] rounded-full flex items-center justify-center size-11 border-4"
+                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAZqMI731QT4fu0XdBy0ZaraSpOUiIov7qSg9ppFn6QLFGxOnJbt2BP_VIOTegr24ioU5aiHaICa5W25QNHgn7EXq84u0h9u0xVrwZD4GYFSIJqD5ygtWPfxKobK0RfVQdhAgo6n5odZJiMsdHmVIWal3sH_QH1HUZoMH5o1k8MZMr-NlfsRteLDevAWdfcSiOM94NvBHBWz64ykEenK9YMQxdzlv3iG9oRYt0hsyL1EY0pyjvjPS0BdnLq8SRNVMDvfjpOlKGT2p1k");'
+                ></div>
+              </div>
+              <div class="overflow-visible w-[34px]">
+                <div
+                  class="bg-center bg-no-repeat aspect-square bg-cover border-white bg-[#f0f2f5] text-[#60758a] rounded-full flex items-center justify-center size-11 border-4"
+                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBrW-9_C5PuZcctKl6IV3hpKocwoi_3joEfUcxkvzhbm3BgNRUXiIqt_pH8HFdlpvgg_N37W6M-umEgWV9-_QhgQGVq67nM9f8GeGPm_k5BNIGtVZVG_0EgICxR_2D1G44jkT210_2ER7y5I_7dOT3Qqxy0G96-sCjMkkAjuOfqGqjn3asJzh4rxYaQOJl6iXRIisR5rqfz3MK3pDzw8S6uxfJmbST5LeHP3c1GKeTTKCHGUJyC3PEicKU2k92wQpHHnOzyebbXbKnJ");'
+                ></div>
+              </div>
+              <div class="overflow-visible w-11">
+                <div
+                  class="bg-center bg-no-repeat aspect-square bg-cover border-white bg-[#f0f2f5] text-[#60758a] rounded-full flex items-center justify-center size-11 border-4"
+                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBRU-Z5lMdZ9KRy8w0QNu2xiUfH61MCnqdvdOKD-uJIS_2Bc_oBPt-yBZuiaK3kr4ROL2h-lfQojF5O3SBoex-XibOID9HomMkUpviYOQtnM8zPSzO4sulpE4s6jW2-BXxLTtak7K81o5cMpo9N3rMBnwYHTEsh7WnfWOYhvyf1W9o_s3bfdVWXXoTZJyqPPvZwoQ_S5R-IXPTeKX9qE2mgSASm5kVkvro2WWdWMzc9OPN-feM3xLMni3HTOqiRwVbdS8o1E79QDZYP");'
+                ></div>
+              </div>
+            </div>
+            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">4. Componentes Compuestos</h2>
+            <div class="p-4">
+              <div class="flex items-stretch justify-between gap-4 rounded-xl bg-white p-4 shadow-[0_0_4px_rgba(0,0,0,0.1)]">
+                <div class="flex flex-col gap-1 flex-[2_2_0px]">
+                  <p class="text-[#111418] text-base font-bold leading-tight">Shopping List</p>
+                  <p class="text-[#60758a] text-sm font-normal leading-normal">12 items</p>
+                </div>
+                <div
+                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex-1"
+                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDQU1f68O0HXlYnYPAhonos8y7zlhDe0nfNBvjsT0Q8cfd7eHC3y_WWjXAFQovP8mY_TEJro_9ig0ZxFx6pYBUPCmZJSByYX8n8kAtQs1yJfzHkCpPXXyZ7nPbwPriqEDnJrgbIOW6c6kyvL-vyrgIs_CzDfm6r-vjxHywVbGFSAvQpKc7KBJXPng8r8Fnw9A6zOb4SDhlD-w55xvRtrxVhd5t__GiJ9CnRs9Jv24Qkh9fg25yyl--gKHC35gAZocDAeE60oJQEUqBS");'
+                ></div>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-stretch justify-between gap-4 rounded-xl bg-white p-4 shadow-[0_0_4px_rgba(0,0,0,0.1)]">
+                <div class="flex flex-col gap-1 flex-[2_2_0px]">
+                  <p class="text-[#111418] text-base font-bold leading-tight">Admin Stats</p>
+                  <p class="text-[#60758a] text-sm font-normal leading-normal">3 users, 2 lists</p>
+                </div>
+                <div
+                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex-1"
+                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCpQR2JutBBs2ZAWyS6KhgnKITx41jOhKv5DkqE2TNG7CFUEFvRPoZY2t-CBJ35bCxyAaTY_ADY9qJo87c--QRgqM1zVsmT1bbrmc4802qnS1FnDdhF3OjWnn-ZJCzDGzlcIyrZC7wl2ImnkNtW_OtjeSB1B6GqKJeXySxOENuj6M0EO0YpHwJLF5dllIh8FXSZw8RBE35itWAW9iqcG6XFo0Zfu6QgG2M62N4LajeU_DqAAopZlz1o4ldaDY3ai3zIaygEJ7V6_n43");'
+                ></div>
+              </div>
+            </div>
+            <div class="flex h-full min-h-[700px] flex-col justify-between bg-white p-4">
+              <div class="flex flex-col gap-4">
+                <div class="flex gap-3">
+                  <div
+                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCZ7cAeMobLr85YRMVMBO-GQQtXAhbRduRS0uXilkk9lUUfywjWoH84PZMT4AIWeWm0WkC8ePqa9XDwEfMDQ2iBCcGVOm2Gvbtig-P1hzPTqQVJvHypv22n7wup3Q1kBPQV4mWlv1webTkuWaEbfUOTTGUqolTr1Yk6UHZgDSQUt8C6tOd-9UBXmaZRMmMqijzIPPTkiWLP-QWxUhQrLhSS9G9lJXbXAxS9y7S30Frhtwk5epGK3ZvalxjwOopsGz7KS00hL__yfVKr");'
+                  ></div>
+                  <div class="flex flex-col">
+                    <h1 class="text-[#111418] text-base font-medium leading-normal">Sophia</h1>
+                    <p class="text-[#60758a] text-sm font-normal leading-normal">Personal Account</p>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#f0f2f5]">
+                    <div class="text-[#111418]" data-icon="House" data-size="24px" data-weight="fill">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path
+                          d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#111418] text-sm font-medium leading-normal">Home</p>
+                  </div>
+                  <div class="flex items-center gap-3 px-3 py-2">
+                    <div class="text-[#111418]" data-icon="ListBullets" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path
+                          d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#111418] text-sm font-medium leading-normal">Lists</p>
+                  </div>
+                  <div class="flex items-center gap-3 px-3 py-2">
+                    <div class="text-[#111418]" data-icon="CookingPot" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path
+                          d="M88,48V16a8,8,0,0,1,16,0V48a8,8,0,0,1-16,0Zm40,8a8,8,0,0,0,8-8V16a8,8,0,0,0-16,0V48A8,8,0,0,0,128,56Zm32,0a8,8,0,0,0,8-8V16a8,8,0,0,0-16,0V48A8,8,0,0,0,160,56Zm92.8,46.4L224,124v60a32,32,0,0,1-32,32H64a32,32,0,0,1-32-32V124L3.2,102.4a8,8,0,0,1,9.6-12.8L32,104V88A16,16,0,0,1,48,72H208a16,16,0,0,1,16,16v16l19.2-14.4a8,8,0,0,1,9.6,12.8ZM208,88H48v96a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16Z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#111418] text-sm font-medium leading-normal">Recipes</p>
+                  </div>
+                  <div class="flex items-center gap-3 px-3 py-2">
+                    <div class="text-[#111418]" data-icon="Gear" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path
+                          d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#111418] text-sm font-medium leading-normal">Settings</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

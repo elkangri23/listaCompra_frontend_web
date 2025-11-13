@@ -18,11 +18,16 @@ export const loginSchema = z.object({
 
 export const registerSchema = z
   .object({
-    name: z
+    nombre: z
       .string({ required_error: 'El nombre es obligatorio.' })
       .trim()
       .min(2, 'El nombre debe tener al menos 2 caracteres.')
       .max(100, 'El nombre no puede exceder 100 caracteres.'),
+    apellidos: z
+      .string({ required_error: 'Los apellidos son obligatorios.' })
+      .trim()
+      .min(2, 'Los apellidos deben tener al menos 2 caracteres.')
+      .max(100, 'Los apellidos no pueden exceder 100 caracteres.'),
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: passwordSchema,
