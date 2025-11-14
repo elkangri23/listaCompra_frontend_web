@@ -1,14 +1,71 @@
-.root {
-  padding: 2rem;
+/* Page Container */
+.pageContainer {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #f8f9fc, #ffffff);
+  padding: 2rem 1rem;
+}
+
+/* Content Wrapper */
+.contentWrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.header {
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
 .title {
   font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  color: var(--foreground, #111418);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.2;
 }
 
-.description {
+.subtitle {
   font-size: 1rem;
-  color: var(--foreground-secondary);
+  color: var(--foreground-secondary, #60708a);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Form Card */
+.formCard {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 1rem 0.75rem;
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .subtitle {
+    font-size: 0.9375rem;
+  }
+
+  .formCard {
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .formCard {
+    padding: 1.25rem;
+  }
 }
