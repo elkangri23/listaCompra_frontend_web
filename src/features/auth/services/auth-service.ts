@@ -6,6 +6,7 @@ import type {
   ForgotPasswordRequest,
   RefreshTokenRequest,
   AuthUser,
+  ApiLoginResponse,
 } from '@/features/auth/types'
 import type { ProfileFormValues } from '@/features/auth/validators/profile-schema'
 import type { ChangePasswordFormValues } from '@/features/auth/validators/password-schema'
@@ -37,18 +38,53 @@ function normalizeEmail(email: string): string {
 /**
  * Performs user login and returns the authentication token.
  */
-export async function login(request: LoginRequest): Promise<{ token: string }> {
+export async function login(request: LoginRequest): Promise<{ token: string; user: ApiLoginResponse['data']['user'] }> {
   try {
     const payload = {
       email: normalizeEmail(request.email),
       password: request.password,
     }
-    const { data } = await axiosInstance.post<{ token: string }>('/auth/login', payload)
-    if (typeof data.token !== 'string') {
+    
+    console.log('🔵 [auth-service] Login attempt:', {
+      email: payload.email,
+      passwordLength: payload.password.length,
+      baseURL: axiosInstance.defaults.baseURL,
+      endpoint: '/auth/login'
+    })
+    
+    const { data: response, status } = await axiosInstance.post<ApiLoginResponse>('/auth/login', payload)
+    
+    console.log('🟢 [auth-service] Login response:', {
+      status,
+      success: response.success,
+      hasTokens: !!response.data?.tokens,
+      hasAccessToken: !!response.data?.tokens?.accessToken,
+      hasUser: !!response.data?.user,
+      responseKeys: Object.keys(response)
+    })
+    
+    if (!response.success || !response.data?.tokens?.accessToken) {
+      console.error('🔴 [auth-service] Invalid response structure:', response)
       throw new Error('La respuesta de la API no contiene un token válido.')
     }
-    return data
+    
+    console.log('✅ [auth-service] Login successful')
+    
+    // Return the expected format for NextAuth
+    return {
+      token: response.data.tokens.accessToken,
+      user: response.data.user
+    }
   } catch (error) {
+    console.error('🔴 [auth-service] Login error:', {
+      error,
+      isAxiosError: isAxiosError(error),
+      response: isAxiosError(error) ? {
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers
+      } : undefined
+    })
     throw buildAuthApiError(error, 'No se pudo iniciar sesión. Verifica tus credenciales.')
   }
 }

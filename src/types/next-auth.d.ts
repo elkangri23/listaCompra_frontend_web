@@ -1,5 +1,6 @@
 import type { DefaultSession } from 'next-auth'
 import type { JWT } from 'next-auth/jwt'
+import type { ApiLoginResponse } from '@/features/auth/types'
 
 declare module 'next-auth' {
   /**
@@ -19,6 +20,7 @@ declare module 'next-auth' {
    */
   interface User {
     token?: string
+    user?: ApiLoginResponse['data']['user']
   }
 }
 

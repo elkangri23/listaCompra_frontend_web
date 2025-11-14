@@ -27,11 +27,23 @@ const callbacks: NextAuthConfig['callbacks'] = {
 
       token.accessToken = user.token
       token.expiresAt = decoded.exp * 1000 // exp is in seconds
-      token.user = {
-        id: decoded.sub, // Assuming 'sub' is the user ID
-        email: decoded.email,
-        name: decoded.name,
-        roles: decoded.roles ?? [],
+      
+      // Use data from the API response if available
+      if (user.user) {
+        token.user = {
+          id: user.user.id,
+          email: user.user.email,
+          name: user.user.nombreCompleto || `${user.user.nombre} ${user.user.apellidos}`,
+          roles: [user.user.rol],
+        }
+      } else {
+        // Fallback to JWT decoded data
+        token.user = {
+          id: decoded.userId || decoded.sub,
+          email: decoded.email,
+          name: decoded.name || decoded.nombreCompleto,
+          roles: decoded.role ? [decoded.role] : (decoded.roles ?? []),
+        }
       }
       return token
     }
@@ -101,22 +113,41 @@ export const authConfig: NextAuthConfig = {
         password: { label: 'Contraseña', type: 'password' },
       },
       async authorize(credentials) {
-        const parsed = loginSchema.safeParse(credentials)
+        console.log('--- Authorize Function Start ---');
+        console.log('Received credentials:', { email: credentials?.email });
+
+        const parsed = loginSchema.safeParse(credentials);
         if (!parsed.success) {
-          return null
+          console.log('Credential validation failed:', parsed.error.flatten());
+          console.log('--- Authorize Function End (Validation Failed) ---');
+          return null;
         }
 
-        const { email, password } = parsed.data
+        const { email, password } = parsed.data;
+        console.log('Credentials parsed successfully for email:', email);
 
         try {
-          const authResponse = await login({ email, password })
+          console.log('Attempting to call login service...');
+          const authResponse = await login({ email, password });
+          console.log('Login service response:', authResponse);
+
+          if (!authResponse || !authResponse.token) {
+            console.log('Authentication response is invalid or missing token.');
+            console.log('--- Authorize Function End (Invalid Response) ---');
+            return null;
+          }
+          
+          console.log('Authentication successful, token received.');
+          console.log('--- Authorize Function End (Success) ---');
+          
           // The user object passed to the jwt callback
           return {
             token: authResponse.token,
-          }
+          };
         } catch (error) {
-          console.error('Authorize error:', error)
-          return null // Returning null triggers a failed login
+          console.error('Error during login attempt:', JSON.stringify(error, null, 2));
+          console.log('--- Authorize Function End (Error) ---');
+          return null; // Returning null triggers a failed login
         }
       },
     }),
