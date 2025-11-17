@@ -34,7 +34,7 @@ describe('ShareLinkSection', () => {
   it('debe renderizar el selector de permisos', () => {
     render(<ShareLinkSection listId="test-list-id" />, { wrapper });
     
-    expect(screen.getByText('Permisos')).toBeInTheDocument();
+    expect(screen.getByLabelText('Permisos de acceso')).toBeInTheDocument();
     expect(screen.getByText('Generar Enlace de Compartir')).toBeInTheDocument();
   });
 
@@ -54,7 +54,7 @@ describe('ShareLinkSection', () => {
     await waitFor(() => {
       expect(mockInvitationService.generateShareLink).toHaveBeenCalledWith(
         'test-list-id',
-        { permissions: 'read' }
+        { permissions: 'read', expiresIn: '7d' }
       );
     });
 

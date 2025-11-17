@@ -8,6 +8,7 @@ import { useList, useUpdateList, useDeleteList } from '@/features/lists/hooks/us
 import { useProducts, useCreateProduct, useDeleteProduct, useToggleProductPurchased, useUpdateProduct } from '@/features/products/hooks/use-products';
 import { useCategories } from '@/features/categories/hooks/use-categories';
 import { ShareListDialog } from '@/features/invitations/components/share-list-dialog';
+import { CollaboratorsSection } from '@/features/invitations/components/collaborators-section';
 
 export default function ListDetailPage() {
   const params = useParams();
@@ -502,10 +503,6 @@ export default function ListDetailPage() {
             )}
           </div>
 
-import { CollaboratorsSection } from '@/features/invitations/components/collaborators-section';
-
-// ... inside the component
-
           <div className={styles.sidebar}>
             <div className={styles.tabs}>
               <div className={styles.tabsContainer}>
@@ -549,8 +546,6 @@ import { CollaboratorsSection } from '@/features/invitations/components/collabor
               )}
             </div>
           </div>
-// ... rest of the component
-
 
         </div>
       </div>
