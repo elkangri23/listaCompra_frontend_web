@@ -145,15 +145,67 @@ export const useToggleProductPurchased = (listId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
+    // TEMPORAL: Desactivada llamada a API para evitar rate limiting
+    // Solo actualiza estado local (UI) sin persistir en backend
+    mutationFn: async ({
       productId,
       purchased,
     }: {
       productId: string;
       purchased: boolean;
-    }) => productService.togglePurchased(listId, productId, { comprado: purchased }),
+    }) => {
+      // Simulamos éxito sin llamar a la API
+      return Promise.resolve({ id: productId, comprado: purchased });
+      // COMENTADO: productService.togglePurchased(listId, productId, { comprado: purchased })
+    },
+    // Optimistic update for instant UI feedback (solo frontend)
+    onMutate: async ({ productId, purchased }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ 
+        queryKey: ['lists', listId, 'products'],
+        exact: false 
+      });
+      
+      // Snapshot all matching queries
+      const previousQueries: any[] = [];
+      queryClient.getQueriesData({ queryKey: ['lists', listId, 'products'] })
+        .forEach(([key, data]) => {
+          previousQueries.push({ key, data });
+        });
+      
+      // Optimistically update all matching queries
+      queryClient.setQueriesData(
+        { queryKey: ['lists', listId, 'products'] },
+        (old: any) => {
+          if (!old) return old;
+          
+          // Handle nested structure
+          const items = old?.data?.items || old?.items || [];
+          const updatedItems = items.map((product: any) =>
+            product.id === productId ? { ...product, comprado: purchased } : product
+          );
+          
+          if (old?.data?.items) {
+            return { ...old, data: { ...old.data, items: updatedItems } };
+          }
+          return { ...old, items: updatedItems };
+        }
+      );
+      
+      return { previousQueries };
+    },
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context?.previousQueries) {
+        context.previousQueries.forEach(({ key, data }: any) => {
+          queryClient.setQueryData(key, data);
+        });
+      }
+    },
+    // Don't invalidate on success - optimistic update is enough
+    // This prevents excessive refetches that trigger rate limiting
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lists', listId, 'products'] });
+      // Silently succeed - optimistic update already applied
     },
   });
 };
