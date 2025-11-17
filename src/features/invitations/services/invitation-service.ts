@@ -17,9 +17,9 @@ const getPendingInvitations = async (): Promise<InvitationDto[]> => {
   return response.data;
 };
 
-const acceptInvitation = async (invitationId: string): Promise<void> => {
-  await axiosInstance.post(`/invitations/${invitationId}/accept`);
-};
+// NOTA: No existe endpoint /accept en el backend
+// El acceso a la lista compartida se obtiene simplemente con GET /invitations/:hash/access
+// Una vez el usuario tiene el hash válido y está autenticado, puede acceder directamente a la lista
 
 const declineInvitation = async (invitationId: string): Promise<void> => {
   await axiosInstance.post(`/invitations/${invitationId}/decline`);
@@ -69,7 +69,6 @@ const revokePermission = async (listId: string, userId: string): Promise<void> =
 export const invitationService = {
   inviteUser,
   getPendingInvitations,
-  acceptInvitation,
   declineInvitation,
   getInvitationByHash,
   getInvitationsByList,
