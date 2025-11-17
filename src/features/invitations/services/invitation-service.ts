@@ -62,6 +62,10 @@ const generateShareLink = async (
   return InvitationAdapter.fromBackendResponse(response.data);
 };
 
+const revokePermission = async (listId: string, userId: string): Promise<void> => {
+  await axiosInstance.delete(`/invitations/${listId}/permissions/${userId}`);
+};
+
 export const invitationService = {
   inviteUser,
   getPendingInvitations,
@@ -71,4 +75,5 @@ export const invitationService = {
   getInvitationsByList,
   updatePermissions,
   generateShareLink,
+  revokePermission,
 };
