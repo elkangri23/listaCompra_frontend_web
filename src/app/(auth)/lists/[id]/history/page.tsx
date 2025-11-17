@@ -16,9 +16,14 @@ export default function ProductHistoryPage() {
   const { data: productsData, isLoading: productsLoading } = useProducts(listId, { page: 1, limit: 200 });
   const { data: categoriesData } = useCategories();
 
-  const list = listData?.data || listData;
-  const products = productsData?.data?.items || productsData?.items || [];
-  const categories = categoriesData?.data?.categorias || categoriesData?.categorias || [];
+  const list = (listData as any)?.data || listData;
+  
+  // Wrap products in useMemo to avoid dependency issues
+  const products = useMemo(() => {
+    return (productsData as any)?.data?.items || (productsData as any)?.items || [];
+  }, [productsData]);
+  
+  const categories = (categoriesData as any)?.data?.categorias || (categoriesData as any)?.categorias || [];
 
   // Filtrar solo productos comprados
   const purchasedProducts = useMemo(() => {
