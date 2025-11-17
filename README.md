@@ -44,6 +44,9 @@
 
 ## 🎨 Cambios Recientes (17 nov 2025)
 
+- ✅ **Modal de compartir lista** con tabs para email y enlace público.
+- ✅ **Página pública de invitación** (`/invitations/[token]`) con validación de estados.
+- ✅ **Aceptación de invitaciones** para usuarios logueados y no logueados.
 - ✅ **Dashboard con listas reales del usuario** (integración con API)
 - ✅ **Estados de carga, error y vacío en dashboard**
 - ✅ **Página de creación de listas completa y funcional**
@@ -60,9 +63,9 @@
 
 ## 📊 Estado del Proyecto
 
-**Última actualización**: 7 de enero de 2025  
-**Progreso general**: ~75% completado  
-**Fase actual**: Fase 5 - IA (Sprint 5.1 completado ✅ | Sprint 5.2 pendiente)
+**Última actualización**: 17 de noviembre de 2025
+**Progreso general**: ~87% completado
+**Fase actual**: Fase 3 de Invitaciones - Gestión de Colaboradores (Pendiente)
 
 ### ✅ Completado
 - ✅ Configuración base de Next.js 15 con TypeScript
@@ -75,16 +78,18 @@
 - ✅ **Edición de perfil (nombre, email, bio)**
 - ✅ **Cambio de contraseña con validaciones**
 - ✅ CRUD completo de listas (crear, editar, eliminar, listar)
-- ✅ Sistema de invitaciones a listas
+- ✅ **Sistema de invitaciones a listas (Fase 1 y 2)** - NUEVO
+- ✅ **Modal de compartir lista (email y enlace)** - NUEVO
+- ✅ **Página pública para aceptar invitaciones** - NUEVO
 - ✅ Gestión de categorías de productos
 - ✅ CRUD de productos en listas
 - ✅ **Búsqueda y filtros en tiempo real (Sprint 4.2)**
 - ✅ **Historial de productos comprados**
 - ✅ **Sugerencias de productos basadas en frecuencia**
 - ✅ **Ordenamiento y paginación de productos**
-- ✅ **Categorización inteligente con IA (Sprint 5.1)** - NUEVO
-- ✅ **Auto-categorización con confidence scoring** - NUEVO
-- ✅ **Toggle AI on/off en formularios de productos** - NUEVO
+- ✅ **Categorización inteligente con IA (Sprint 5.1)**
+- ✅ **Auto-categorización con confidence scoring**
+- ✅ **Toggle AI on/off en formularios de productos**
 - ✅ Validación de formularios con Zod en todos los features
 - ✅ Configuración de seguridad (CSP, headers)
 - ✅ Testing setup (Jest + React Testing Library)

@@ -1,7 +1,7 @@
 # 📊 Estado Completo del Proyecto - listaCompra Frontend
 
-**Fecha**: 11 de noviembre de 2025
-**Versión**: 2.1.0**Progreso General**: 85% completado
+**Fecha**: 17 de noviembre de 2025
+**Versión**: 2.2.0**Progreso General**: 87% completado
 
 ---
 
@@ -13,11 +13,11 @@ Este documento unifica toda la información del proyecto: casos de uso implement
 
 | Métrica | Estado | Completado |
 |---------|--------|------------|
-| **Casos de Uso** | 46/56 | 82% |
+| **Casos de Uso** | 48/56 | 85% |
 | **Endpoints Frontend** | 47/57 | 82% |
-| **Páginas Implementadas** | 15/15 mockups | 100% |
-| **Navegación Funcional** | Enlaces corregidos | 95% |
-| **Tests Unitarios** | Setup configurado | 20% |
+| **Páginas Implementadas** | 16/16 mockups | 100% |
+| **Navegación Funcional** | Enlaces corregidos | 97% |
+| **Tests Unitarios** | Setup configurado | 25% |
 | **Tests E2E** | Setup configurado | 10% |
 | **Cobertura de Código** | Por definir | 0% |
 
@@ -61,7 +61,7 @@ Este documento unifica toda la información del proyecto: casos de uso implement
 
 ---
 
-### 1.2 Gestión de Listas Colaborativas 📋 (90% Completado)
+### 1.2 Gestión de Listas Colaborativas 📋 (95% Completado)
 
 | # | Caso de Uso | Estado | Página | Componentes | Hooks | Pendiente |
 |---|-------------|--------|--------|-------------|-------|-----------|
@@ -69,12 +69,13 @@ Este documento unifica toda la información del proyecto: casos de uso implement
 | CU-09 | Ver mis listas | ✅ | `/lists`, `/dashboard` | ListCard grid | `useLists` | - |
 | CU-10 | Editar lista | ⚠️ | `/lists/[id]` | - | `useUpdateList` | UI de edición |
 | CU-11 | Eliminar lista | ⚠️ | `/lists` | - | `useDeleteList` | Botón eliminar |
-| CU-12 | Invitar usuario por email | ✅ | `/lists/[id]` | - | `useInviteUser` | - |
-| CU-13 | Aceptar/rechazar invitación | ✅ | `/invitations` | InvitationsList | `useAcceptInvitation`, `useDeclineInvitation` | - |
+| CU-12 | Invitar usuario por email | ✅ | `/lists/[id]` | `ShareListDialog` | `useInviteUser` | - |
+| CU-13 | Aceptar/rechazar invitación | ✅ | `/invitations`, `/invitations/[token]` | InvitationsList, PublicListAccess | `useAcceptInvitation`, `useDeclineInvitation` | - |
 | CU-14 | Asignar/quitar permisos | ⚠️ | `/lists/[id]` | CollaboratorsList | `useCollaborators` | Cambiar permisos |
 | CU-15 | CRUD como colaborador | ✅ | `/lists/[id]` | - | Validación de permisos | - |
 | CU-16 | Eliminar colaborador | ✅ | `/lists/[id]` | - | `useRemoveCollaborator` | - |
 | CU-17 | Cambios en tiempo real | ⚠️ | `/lists/[id]` | - | Polling/SSE | Implementar WebSockets |
+| CU-17b| Acceder a lista por hash | ✅ | `/invitations/[token]` | `PublicListAccess` | `useInvitationByHash` | - |
 
 **Archivos clave**:
 - `src/features/lists/services/list-service.ts` (CRUD completo)
@@ -388,7 +389,7 @@ Se han añadido páginas placeholder para las rutas que no existían y se han cr
 | 14 | `/categories` | Gestionar Categorías | ✅ |
 | 15 | `/stores` | Gestionar Tiendas | ✅ |
 
-**Total**: 15 páginas creadas.
+**Total**: 16 páginas creadas.
 
 ### 3.2 Páginas Referenciadas pero NO Existen ❌ (0)
 Todas las páginas referenciadas ahora existen.
@@ -441,8 +442,13 @@ Lists (/lists)
 
 List Detail (/lists/[id])
   ├─ CRUD productos → ✅ Funciona
-  ├─ Botón "Compartir" → alert placeholder ⚠️
+  ├─ Botón "Compartir" → Abre ShareListDialog ✅
   └─ Historial → /lists/[id]/history ✅ (Corregido)
+
+Invitations ([token])
+  ├─ Acceso público → ✅ Funciona
+  ├─ Aceptar invitación → ✅ Funciona
+  └─ Redirección a login → ✅ Funciona
 ```
 
 ### 4.2 Problemas de Navegación Identificados

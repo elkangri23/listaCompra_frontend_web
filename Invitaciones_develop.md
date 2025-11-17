@@ -531,11 +531,11 @@ src/
 - [x] Crear tests unitarios
 - [x] Documentar implementación
 
-### Fase 2: Página Pública de Acceso 🔄 PENDIENTE
-- [ ] Crear ruta `/invitations/[token]/page.tsx`
-- [ ] Componente `PublicListAccessPage`
-- [ ] Estados de validación (404, 410, 403)
-- [ ] Integración con auth (usuarios logueados vs invitados)
+### Fase 2: Página Pública de Acceso ✅ COMPLETADA
+- [x] Crear ruta `/invitations/[token]/page.tsx`
+- [x] Componente `PublicListAccessPage`
+- [x] Estados de validación (404, 410, 403)
+- [x] Integración con auth (usuarios logueados vs invitados)
 
 ### Fase 3: Gestión de Colaboradores 🔄 PENDIENTE
 - [ ] Crear componente `CollaboratorsSection`
@@ -562,4 +562,4 @@ src/
 ---
 
 **Última actualización**: 17 de noviembre de 2025
-**Progreso general**: 25% (1 de 4 fases completadas)
+**Progreso general**: 50% (2 de 4 fases completadas)
