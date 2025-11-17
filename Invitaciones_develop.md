@@ -1,3 +1,4 @@
+
 # 🗺️ ROADMAP: Funcionalidad de Compartir Listas
 
 Basándome en la documentación y el código existente, aquí está el plan completo para implementar la funcionalidad de compartir listas.
@@ -456,11 +457,11 @@ src/
 - [ ] Testing: gestionar colaboradores
 
 ### FASE 4: Mejoras UX
-- [x] Añadir selector de expiración
-- [x] Integrar toasts (sonner/react-hot-toast)
-- [x] Implementar límite de colaboradores
+- [ ] Añadir selector de expiración
+- [ ] Integrar toasts (sonner/react-hot-toast)
+- [ ] Implementar límite de colaboradores
 - [ ] Añadir analytics (opcional)
-- [x] Testing final completo
+- [ ] Testing final completo
 
 ---
 
@@ -543,12 +544,11 @@ src/
 - [x] Hook `useCollaborators`
 - [x] Añadir tab en página de lista
 
-### Fase 4: Mejoras UX y Seguridad ✅ COMPLETADA
-- [x] Expiración de enlaces
-- [x] Notificaciones mejoradas
-- [x] Límites de colaboradores
-- [ ] Revocación de accesos (PENDIENTE)
-- [ ] Auditoría de accesos (PENDIENTE)
+### Fase 4: Mejoras UX y Seguridad 🔄 PENDIENTE
+- [ ] Expiración de enlaces
+- [ ] Notificaciones mejoradas
+- [ ] Revocación de accesos
+- [ ] Auditoría de accesos
 
 ---
 
@@ -563,4 +563,4 @@ src/
 ---
 
 **Última actualización**: 17 de noviembre de 2025
-**Progreso general**: 100% (4 de 4 fases completadas)
+**Progreso general**: 75% (3 de 4 fases completadas)
