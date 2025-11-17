@@ -18,6 +18,7 @@ export function CreateListFormClient({ onSuccess, onCancel }: CreateListFormClie
     tiendaId: undefined,
   })
   const [errors, setErrors] = useState<Partial<Record<keyof CreateListDto, string>>>({})
+  const [apiError, setApiError] = useState<string | null>(null)
 
   const createListMutation = useCreateList()
   const { data: storesData, isLoading: storesLoading } = useStores({ activas: true })
@@ -44,6 +45,7 @@ export function CreateListFormClient({ onSuccess, onCancel }: CreateListFormClie
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setApiError(null)
 
     if (!validateForm()) {
       return
@@ -60,9 +62,30 @@ export function CreateListFormClient({ onSuccess, onCancel }: CreateListFormClie
       if (result && 'id' in result) {
         onSuccess?.(result.id)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating list:', error)
-      // Error is handled by react-query, you can add toast notifications here
+      
+      // Extract error message from API response
+      let errorMessage = 'Error al crear la lista. Por favor, intenta nuevamente.'
+      
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message
+      } else if (error?.response?.data?.error) {
+        errorMessage = error.response.data.error
+      } else if (error?.message) {
+        errorMessage = error.message
+      }
+
+      // Check for specific error codes
+      if (error?.response?.status === 409) {
+        errorMessage = 'Ya existe una lista con ese nombre. Por favor, elige otro nombre.'
+      } else if (error?.response?.status === 429) {
+        errorMessage = 'Has alcanzado el límite de listas. Elimina algunas listas antes de crear nuevas.'
+      } else if (error?.response?.status === 404 && error?.response?.data?.message?.includes('Tienda')) {
+        errorMessage = 'La tienda seleccionada no existe. Por favor, selecciona otra tienda.'
+      }
+
+      setApiError(errorMessage)
     }
   }
 
@@ -71,6 +94,10 @@ export function CreateListFormClient({ onSuccess, onCancel }: CreateListFormClie
     // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }))
+    }
+    // Clear API error when user makes changes
+    if (apiError) {
+      setApiError(null)
     }
   }
 
@@ -147,14 +174,12 @@ export function CreateListFormClient({ onSuccess, onCancel }: CreateListFormClie
         </p>
       </div>
 
-      {createListMutation.isError && (
+      {apiError && (
         <div className={styles.errorBanner} role="alert">
           <svg className={styles.errorIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span>
-            Error al crear la lista. Por favor, intenta nuevamente.
-          </span>
+          <span>{apiError}</span>
         </div>
       )}
 
