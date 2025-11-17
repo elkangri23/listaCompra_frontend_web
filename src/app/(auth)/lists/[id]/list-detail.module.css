@@ -139,7 +139,6 @@
   background-color: white;
   padding: 8px 16px;
   min-height: 72px;
-  justify-content: space-between;
   border-left: 4px solid transparent;
   transition: all 0.2s;
 }
@@ -168,6 +167,8 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  flex: 1;
+  min-width: 0;
 }
 
 .checkboxWrapper {
@@ -208,6 +209,8 @@
   padding: 8px;
   border-radius: 4px;
   transition: background-color 0.2s;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .productInfo:hover {
@@ -219,12 +222,13 @@
   font-size: 20px;
   font-weight: 500;
   line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  word-break: break-word;
+  width: 100%;
 }
 
 .productCantidad {
@@ -426,11 +430,24 @@
 /* Form Grid for Add Product */
 .formGrid {
   display: grid;
-  grid-template-columns: 1fr 100px 120px 180px;
+  grid-template-columns: 1fr;
   gap: 12px;
   align-items: end;
   width: 100%;
   max-width: 100%;
+}
+
+/* En pantallas medianas y grandes, usar grid horizontal */
+@media (min-width: 768px) {
+  .formGrid {
+    grid-template-columns: minmax(400px, 3fr) 80px 100px 160px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .formGrid {
+    grid-template-columns: minmax(500px, 4fr) 80px 100px 160px;
+  }
 }
 
 .formGroup {
