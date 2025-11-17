@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { AppProviders } from '@/components/providers/app-providers'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Inter } from 'next/font/google'
+import { Toaster } from 'sonner'
 
 const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' })
 
@@ -26,6 +27,7 @@ export default function RootLayout({
         <AppProviders>
           <ThemeProvider defaultTheme="light">
             {children}
+            <Toaster position="top-right" richColors />
           </ThemeProvider>
         </AppProviders>
       </body>

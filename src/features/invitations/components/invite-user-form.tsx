@@ -1,10 +1,9 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -33,23 +32,39 @@ export function InviteUserForm({ onSubmit }: InviteUserFormProps) {
   });
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="email"
           render={({ field }: any) => (
             <FormItem>
-              <FormLabel>Correo Electrónico</FormLabel>
+              <FormLabel className="text-base font-semibold text-gray-900">
+                Correo electrónico del usuario
+              </FormLabel>
               <FormControl>
-                <Input placeholder="ejemplo@dominio.com" {...field} />
+                <Input 
+                  type="email"
+                  placeholder="ejemplo@dominio.com" 
+                  {...field}
+                  className="w-full h-11 text-base"
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-sm text-red-600 font-medium" />
+              <p className="text-sm text-gray-600 mt-2">
+                📧 El usuario recibirá un correo con la invitación para acceder a la lista
+              </p>
             </FormItem>
           )}
         />
-        <Button type="submit">Invitar</Button>
+        <Button 
+          type="submit" 
+          className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting ? 'Enviando...' : 'Enviar Invitación'}
+        </Button>
       </form>
-    </Form>
+    </FormProvider>
   );
 }
