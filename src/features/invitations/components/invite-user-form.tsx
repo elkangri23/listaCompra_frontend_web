@@ -46,8 +46,12 @@ export function InviteUserForm({ onSubmit }: InviteUserFormProps) {
                 <Input 
                   type="email"
                   placeholder="ejemplo@dominio.com" 
+                  id={field.name}
                   {...field}
                   className="w-full h-11 text-base"
+                  autoComplete="email"
+                  disabled={form.formState.isSubmitting}
+                  tabIndex={0}
                 />
               </FormControl>
               <FormMessage className="text-sm text-red-600 font-medium" />

@@ -61,20 +61,18 @@ export function ShareLinkSection({ listId }: ShareLinkSectionProps) {
             <SelectValue placeholder="Selecciona permisos" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="read" className="flex flex-col items-start">
-              <span className="font-medium">Solo lectura</span>
-              <span className="text-xs text-gray-500">Ver productos y categorías</span>
+            <SelectItem value="read">
+              Solo lectura
             </SelectItem>
-            <SelectItem value="write" className="flex flex-col items-start">
-              <span className="font-medium">Lectura y escritura</span>
-              <span className="text-xs text-gray-500">Ver, añadir y editar productos</span>
+            <SelectItem value="write">
+              Lectura y escritura
             </SelectItem>
           </SelectContent>
         </Select>
         <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-md border border-gray-200">
           {permissions === 'read'
-            ? '👀 Los usuarios podrán ver la lista pero no editarla'
-            : '✏️ Los usuarios podrán ver y editar la lista'}
+            ? '👀 Solo lectura: Los usuarios podrán ver productos y categorías, pero no editarlos'
+            : '✏️ Lectura y escritura: Los usuarios podrán ver, añadir y editar productos'}
         </p>
       </div>
 

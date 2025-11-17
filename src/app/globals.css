@@ -124,3 +124,72 @@ html,body,#root{height:100%}
     transform: translateY(0);
   }
 }
+
+/* Fix para inputs y selects dentro de Dialog - permitir interacción */
+[data-radix-dialog-content] input,
+[data-radix-dialog-content] textarea,
+[data-radix-dialog-content] select,
+[data-radix-dialog-content] button:not([data-radix-dialog-close]) {
+  pointer-events: auto !important;
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+  cursor: text !important;
+}
+
+/* Asegurar que el input de email específicamente sea interactuable */
+[data-radix-dialog-content] input[type="email"],
+[data-radix-dialog-content] input[type="text"] {
+  pointer-events: auto !important;
+  cursor: text !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  touch-action: auto !important;
+}
+
+[data-radix-dialog-content] [role="combobox"],
+[data-radix-dialog-content] [role="listbox"],
+[data-radix-dialog-content] [data-radix-select-trigger],
+[data-radix-dialog-content] [data-radix-select-content] {
+  pointer-events: auto !important;
+}
+
+/* Asegurar que el contenido del Dialog sea completamente interactuable */
+[data-radix-dialog-content] {
+  pointer-events: auto !important;
+}
+
+/* Asegurar que form y sus elementos sean interactuables */
+[data-radix-dialog-content] form,
+[data-radix-dialog-content] form * {
+  pointer-events: auto !important;
+}
+
+/* Asegurar que el SelectContent se renderice por encima del Dialog */
+[data-radix-select-content] {
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-radix-select-viewport] {
+  pointer-events: auto !important;
+  background-color: white !important;
+}
+
+/* Estilos para items del Select */
+[data-radix-select-item] {
+  background-color: white !important;
+}
+
+[data-radix-select-item][data-highlighted] {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+  outline: none !important;
+}
+
+[data-radix-select-item][data-state="checked"] {
+  background-color: #e0e7ff !important;
+  color: #3730a3 !important;
+}
