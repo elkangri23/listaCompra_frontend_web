@@ -2,7 +2,55 @@
 
 **Sistema frontend moderno y escalable** construido con **Next.js 15**, **TypeScript** y **CSS modular** siguiendo **arquitectura limpia** y **principios SOLID**.
 
-## 🎨 Cambios Recientes (10 nov 2025)
+---
+
+## ⚠️ REGLAS DE DESARROLLO OBLIGATORIAS
+
+**TODA funcionalidad, componente, pantalla y código generado DEBE cumplir estas reglas:**
+
+### 1️⃣ Accesibilidad (A11y) - WCAG 2.2 AA
+- ✅ HTML semántico antes que WAI-ARIA
+- ✅ Elementos interactivos accesibles por teclado
+- ✅ Estados de focus visibles
+- ✅ `alt` en imágenes, descripciones en iconos
+- ✅ `aria-live="polite"` o `role="status"` en contenido dinámico
+- ❌ NO usar `div` clicables sin roles
+
+### 2️⃣ Feedback al Usuario
+- ✅ Loader/spinner/skeleton en TODAS las operaciones asíncronas
+- ✅ Mensajes de éxito, error y estado claros y no intrusivos
+- ❌ NO dejar al usuario sin indicaciones visuales del estado
+
+### 3️⃣ Microcopy Obligatoria
+- ✅ Textos claros, breves y orientados a la acción
+- ✅ Botones descriptivos: "Añadir producto", "Guardar cambios"
+- ✅ Mensajes de error comprensibles (no técnicos)
+- ❌ NO usar textos genéricos: "Aceptar", "Confirmar", "OK"
+
+### 4️⃣ Loaders y Estados Vacíos
+- ✅ Loaders consistentes en toda la app
+- ✅ Estados vacíos con mensajes y CTA
+- ✅ Skeletons donde mejore la UX
+
+### 5️⃣ Estándares de Calidad
+- ✅ Código limpio, modular y documentado
+- ✅ Componentes reutilizables
+- ✅ Nombres autoexplicativos
+- ❌ NO generar elementos inaccesibles o confusos
+
+**📌 Cualquier código que incumpla estas reglas debe ser corregido automáticamente.**
+
+---
+
+## 🎨 Cambios Recientes (17 nov 2025)
+
+- ✅ **Dashboard con listas reales del usuario** (integración con API)
+- ✅ **Estados de carga, error y vacío en dashboard**
+- ✅ **Página de creación de listas completa y funcional**
+- ✅ **Manejo específico de errores** (409 nombre duplicado, 429 límite)
+- ✅ **Validación completa de formularios**
+- ✅ **Fix de autenticación** (adaptación a estructura de API)
+- ✅ **Mejoras de accesibilidad y feedback visual**
 
 - ✅ **Página de inicio rediseñada** con mockup aplicado (sin Tailwind CSS)
 - ✅ Estilos implementados con **CSS Modules** (`homepage.module.css`)
