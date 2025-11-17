@@ -46,7 +46,9 @@ export function ShareListDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto bg-white">
+      <DialogContent 
+        className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto bg-white"
+      >
         <DialogHeader className="space-y-2 pb-4">
           <DialogTitle className="text-2xl font-bold text-gray-900">
             Compartir lista
