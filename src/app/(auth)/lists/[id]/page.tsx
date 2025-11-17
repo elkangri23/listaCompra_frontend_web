@@ -7,6 +7,7 @@ import styles from './list-detail.module.css';
 import { useList, useUpdateList, useDeleteList } from '@/features/lists/hooks/use-lists';
 import { useProducts, useCreateProduct, useDeleteProduct, useToggleProductPurchased, useUpdateProduct } from '@/features/products/hooks/use-products';
 import { useCategories } from '@/features/categories/hooks/use-categories';
+import { ShareListDialog } from '@/features/invitations/components/share-list-dialog';
 
 export default function ListDetailPage() {
   const params = useParams();
@@ -27,6 +28,9 @@ export default function ListDetailPage() {
   const [isEditingListDesc, setIsEditingListDesc] = useState(false);
   const [editingListName, setEditingListName] = useState('');
   const [editingListDesc, setEditingListDesc] = useState('');
+  
+  // Estado para el dialog de compartir
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
 
   const { data: listData, isLoading: isLoadingList } = useList(listId);
   const list = (listData as any)?.data || listData;
@@ -104,8 +108,7 @@ export default function ListDetailPage() {
   };
 
   const handleShare = () => {
-    // placeholder until share endpoint implemented
-    alert('Funcionalidad de compartir lista (por implementar)');
+    setShareDialogOpen(true);
   };
 
   const handleDeleteList = async () => {
@@ -253,6 +256,7 @@ export default function ListDetailPage() {
   }
 
   return (
+    <>
     <div className={styles.root}>
       <div className={styles.container}>
         <div className={styles.wrapper}>
@@ -629,5 +633,14 @@ export default function ListDetailPage() {
         </div>
       </div>
     </div>
+    
+    {/* Dialog fuera del contenedor principal para evitar conflictos de z-index y CSS */}
+    <ShareListDialog
+      listId={listId}
+      listName={list?.nombre}
+      open={shareDialogOpen}
+      onOpenChange={setShareDialogOpen}
+    />
+  </>
   );
 }

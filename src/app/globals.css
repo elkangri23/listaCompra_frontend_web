@@ -64,3 +64,63 @@
 }
 
 html,body,#root{height:100%}
+
+/* Dialog y Modal overrides para asegurar que se muestren correctamente */
+[data-radix-dialog-overlay] {
+  z-index: 9998 !important;
+}
+
+[data-radix-dialog-content] {
+  z-index: 9999 !important;
+}
+
+/* Asegurar que el contenido del dialog sea scrollable */
+[data-radix-dialog-content] {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Estilos para tabs dentro del dialog */
+[data-radix-tabs-content] {
+  min-height: 200px;
+}
+
+/* Mejorar apariencia de TabsList */
+[data-radix-tabs-list] {
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+}
+
+/* Tabs trigger activo */
+[data-radix-tabs-trigger][data-state="active"] {
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  color: #111827;
+  font-weight: 500;
+}
+
+/* Tabs trigger inactivo */
+[data-radix-tabs-trigger][data-state="inactive"] {
+  color: #6b7280;
+}
+
+[data-radix-tabs-trigger]:hover {
+  color: #111827;
+}
+
+/* Animación suave para el contenido de tabs */
+[data-radix-tabs-content] {
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
