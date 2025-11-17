@@ -15,7 +15,8 @@ export default function ListDetailPage() {
   const [newProduct, setNewProduct] = useState('');
   const [activeTab, setActiveTab] = useState<'suggestions' | 'details'>('details');
 
-  const { data: listData } = useList(listId);
+  const { data: listData, isLoading: isLoadingList } = useList(listId);
+  const list = (listData as any)?.data || listData;
 
   // Fetch products for the list
   const { data: productsData } = useProducts(listId, { page: 1, limit: 200 });
@@ -73,7 +74,7 @@ export default function ListDetailPage() {
         <div className={styles.wrapper}>
           <div className={styles.mainContent}>
             <div className={styles.header}>
-              <h1 className={styles.title}>Lista de la compra familiar</h1>
+              <h1 className={styles.title}>{list?.nombre || 'Cargando...'}</h1>
               <div className={styles.headerActions}>
                 <Link href={`/lists/${listId}/history`} className={styles.historyButton}>
                   <span>Ver Historial</span>
@@ -160,16 +161,35 @@ export default function ListDetailPage() {
               {activeTab === 'details' ? (
                 <>
                   <div className={styles.detailCard}>
-                    <p className={styles.detailLabel}>Fecha</p>
-                    <p className={styles.detailValue}>12 de mayo de 2024</p>
+                    <p className={styles.detailLabel}>Nombre</p>
+                    <p className={styles.detailValue}>{list?.nombre || '-'}</p>
+                  </div>
+                  {list?.descripcion && (
+                    <div className={styles.detailCard}>
+                      <p className={styles.detailLabel}>Descripción</p>
+                      <p className={styles.detailValue}>{list.descripcion}</p>
+                    </div>
+                  )}
+                  <div className={styles.detailCard}>
+                    <p className={styles.detailLabel}>Fecha de creación</p>
+                    <p className={styles.detailValue}>
+                      {list?.fechaCreacion 
+                        ? new Date(list.fechaCreacion).toLocaleDateString('es-ES', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                          })
+                        : '-'
+                      }
+                    </p>
                   </div>
                   <div className={styles.detailCard}>
-                    <p className={styles.detailLabel}>Tienda</p>
-                    <p className={styles.detailValue}>Supermercado Central</p>
+                    <p className={styles.detailLabel}>Estado</p>
+                    <p className={styles.detailValue}>{list?.activa ? 'Activa' : 'Inactiva'}</p>
                   </div>
                   <div className={styles.detailCard}>
-                    <p className={styles.detailLabel}>Colaboradores</p>
-                    <p className={styles.detailValue}>Elena, Carlos, Sofía</p>
+                    <p className={styles.detailLabel}>Productos</p>
+                    <p className={styles.detailValue}>{products.length} productos</p>
                   </div>
                 </>
               ) : (
