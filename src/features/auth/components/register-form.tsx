@@ -97,11 +97,12 @@ export function RegisterForm() {
         <h2 className="text-[#111418] text-lg font-bold leading-normal mb-4">Datos Personales</h2>
 
         <div className="flex max-w-[480px] flex-wrap items-end gap-4 py-3">
-          <label htmlFor="nombre" className="flex flex-col min-w-40 flex-1" aria-label="Nombre">
+          <label htmlFor="nombre" className="flex flex-col min-w-40 flex-1">
+            <span className="text-sm font-medium text-[#111418] mb-2">Nombre</span>
             <input
               id="nombre"
               className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
-              placeholder="Nombre"
+              placeholder="Juan"
               value={values.nombre}
               onChange={handleChange}
               name="nombre"
@@ -119,11 +120,12 @@ export function RegisterForm() {
         ) : null}
 
         <div className="flex max-w-[480px] flex-wrap items-end gap-4 py-3">
-          <label htmlFor="apellidos" className="flex flex-col min-w-40 flex-1" aria-label="Apellidos">
+          <label htmlFor="apellidos" className="flex flex-col min-w-40 flex-1">
+            <span className="text-sm font-medium text-[#111418] mb-2">Apellidos</span>
             <input
               id="apellidos"
               className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
-              placeholder="Apellidos"
+              placeholder="García López"
               value={values.apellidos}
               onChange={handleChange}
               name="apellidos"
@@ -141,11 +143,12 @@ export function RegisterForm() {
         ) : null}
 
         <div className="flex max-w-[480px] flex-wrap items-end gap-4 py-3">
-          <label htmlFor="email" className="flex flex-col min-w-40 flex-1" aria-label="Correo electrónico">
+          <label htmlFor="email" className="flex flex-col min-w-40 flex-1">
+            <span className="text-sm font-medium text-[#111418] mb-2">Correo electrónico</span>
             <input
               id="email"
               className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
-              placeholder="Email"
+              placeholder="usuario@ejemplo.com"
               value={values.email}
               onChange={handleChange}
               name="email"
@@ -167,11 +170,12 @@ export function RegisterForm() {
         <h2 className="text-[#111418] text-lg font-bold leading-normal mb-4">Seguridad</h2>
 
         <div className="flex max-w-[480px] flex-wrap items-end gap-4 py-3">
-          <label htmlFor="password" className="flex flex-col min-w-40 flex-1" aria-label="Contraseña">
+          <label htmlFor="password" className="flex flex-col min-w-40 flex-1">
+            <span className="text-sm font-medium text-[#111418] mb-2">Contraseña</span>
             <input
               id="password"
               className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
-              placeholder="Contraseña"
+              placeholder="Introduce tu contraseña"
               value={values.password}
               onChange={handleChange}
               name="password"
@@ -182,7 +186,7 @@ export function RegisterForm() {
             />
           </label>
         </div>
-        <p className="text-[#60708a] text-sm font-normal leading-normal pb-3 pt-1">
+        <p className="text-[#60708a] text-sm font-normal leading-normal pb-3 pt-1 px-4">
           La contraseña debe tener al menos 8 caracteres
         </p>
         {fieldErrors.password ? (
@@ -192,11 +196,12 @@ export function RegisterForm() {
         ) : null}
 
         <div className="flex max-w-[480px] flex-wrap items-end gap-4 py-3">
-          <label htmlFor="confirmPassword" className="flex flex-col min-w-40 flex-1" aria-label="Confirmar contraseña">
+          <label htmlFor="confirmPassword" className="flex flex-col min-w-40 flex-1">
+            <span className="text-sm font-medium text-[#111418] mb-2">Confirmar contraseña</span>
             <input
               id="confirmPassword"
               className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
-              placeholder="Confirmar Contraseña"
+              placeholder="Repite tu contraseña"
               value={values.confirmPassword}
               onChange={handleChange}
               name="confirmPassword"
@@ -223,9 +228,9 @@ export function RegisterForm() {
             onChange={(e: any) => setTermsAccepted(e.target.checked)}
             className="h-5 w-5 rounded border-[#dbdfe6] border-2 bg-transparent text-[#4387f4] checked:bg-[#4387f4] checked:border-[#4387f4] checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-[#dbdfe6] focus:outline-none"
           />
-          <p className="text-[#111418] text-base font-normal leading-normal">
+          <span className="text-[#111418] text-base font-normal leading-normal">
             Acepto los Términos de Servicio
-          </p>
+          </span>
         </label>
       </div>
 
@@ -245,8 +250,14 @@ export function RegisterForm() {
         <button
           type="submit"
           disabled={isPending || !termsAccepted}
-          className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+          className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
         >
+          {isPending && (
+            <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          )}
           <span className="truncate">
             {isPending ? 'Creando cuenta…' : 'Crear Cuenta'}
           </span>
