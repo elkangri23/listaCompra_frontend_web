@@ -37,7 +37,7 @@ export default function ListDetailPage() {
   const list = (listData as any)?.data || listData;
 
   // Fetch products for the list
-  const { data: productsData } = useProducts(listId, { page: 1, limit: 200 });
+  const { data: productsData, isError: isProductsError, error: productsError } = useProducts(listId, { page: 1, limit: 200 });
 
   // Fetch categories (use tiendaId from list if available)
   const tiendaId = (listData as any)?.tiendaId;
@@ -245,6 +245,41 @@ export default function ListDetailPage() {
             <p className={styles.inactiveMessage}>
               Esta lista ha sido eliminada o desactivada y ya no está disponible.
             </p>
+            <div className={styles.inactiveActions}>
+              <Link href="/dashboard" className={styles.backToDashboardButton}>
+                Volver al Dashboard
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Verificar error al cargar productos (bug backend: colaboradores no pueden ver productos)
+  if (isProductsError && (productsError as any)?.response?.status === 404) {
+    return (
+      <div className={styles.root}>
+        <div className={styles.container}>
+          <div className={styles.inactiveListContainer}>
+            <svg className={styles.inactiveIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{color: '#f59e0b'}}>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <h2 className={styles.inactiveTitle} style={{color: '#f59e0b'}}>Bug del Backend Detectado</h2>
+            <p className={styles.inactiveMessage}>
+              Eres colaborador de esta lista, pero el backend actualmente no permite que los colaboradores vean productos.
+            </p>
+            <p className={styles.inactiveMessage} style={{fontSize: '0.875rem', marginTop: '0.5rem'}}>
+              <strong>Error técnico:</strong> El endpoint GET /lists/:listId/products solo valida si eres propietario, ignorando la tabla de permisos/colaboradores.
+            </p>
+            <div style={{marginTop: '1rem', padding: '1rem', backgroundColor: '#fef3c7', borderRadius: '0.5rem', fontSize: '0.875rem', textAlign: 'left'}}>
+              <p style={{fontWeight: '600', marginBottom: '0.5rem'}}>📋 Detalles para el equipo backend:</p>
+              <ul style={{marginLeft: '1.5rem', marginTop: '0.5rem'}}>
+                <li>Endpoint afectado: <code style={{backgroundColor: '#fff', padding: '0.125rem 0.25rem', borderRadius: '0.25rem'}}>GET /lists/:listId/products</code></li>
+                <li>Lista ID: <code style={{backgroundColor: '#fff', padding: '0.125rem 0.25rem', borderRadius: '0.25rem'}}>{listId}</code></li>
+                <li>Ver: <code style={{backgroundColor: '#fff', padding: '0.125rem 0.25rem', borderRadius: '0.25rem'}}>BACKEND_ISSUES.md</code></li>
+              </ul>
+            </div>
             <div className={styles.inactiveActions}>
               <Link href="/dashboard" className={styles.backToDashboardButton}>
                 Volver al Dashboard
