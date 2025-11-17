@@ -45,8 +45,10 @@ export default function ListDetailPage() {
   const updateListMutation = useUpdateList();
   const deleteListMutation = useDeleteList();
 
-  // Handle nested response structure from backend
-  const products = (productsData as any)?.data?.items ?? productsData?.items ?? [];
+  // Handle nested response structure from backend - wrapped in useMemo to avoid dependency issues
+  const products = useMemo(() => {
+    return (productsData as any)?.data?.items ?? productsData?.items ?? [];
+  }, [productsData]);
 
   const productStats = useMemo(() => {
     const total = products.length;
@@ -270,7 +272,7 @@ export default function ListDetailPage() {
                         handleCancelListEdit();
                       }
                     }}
-                    autoFocus
+                    aria-label="Editar nombre de la lista"
                   />
                   <button
                     className={styles.saveListButton}
@@ -287,9 +289,15 @@ export default function ListDetailPage() {
                   </button>
                 </div>
               ) : (
-                <h1 className={styles.title} onClick={handleStartEditListName} title="Clic para editar">
+                <button 
+                  className={styles.title} 
+                  onClick={handleStartEditListName}
+                  type="button"
+                  title="Presiona Enter para editar"
+                  aria-label="Nombre de la lista, presiona Enter para editar"
+                >
                   {list?.nombre || 'Cargando...'}
-                </h1>
+                </button>
               )}
               <div className={styles.headerActions}>
                 <Link href={`/lists/${listId}/history`} className={styles.historyButton}>
@@ -429,7 +437,7 @@ export default function ListDetailPage() {
                                 handleCancelEdit();
                               }
                             }}
-                            autoFocus
+                            aria-label="Editar nombre del producto"
                           />
                           <label className={styles.editUrgenteLabel}>
                             <input
@@ -457,7 +465,12 @@ export default function ListDetailPage() {
                           </div>
                         </div>
                       ) : (
-                        <div className={styles.productInfo} onClick={() => handleStartEdit(product)}>
+                        <button 
+                          className={styles.productInfo} 
+                          onClick={() => handleStartEdit(product)}
+                          type="button"
+                          aria-label={`Editar producto ${product.nombre}`}
+                        >
                           <p className={styles.productName}>
                             <span className={styles.productCantidad}>{product.cantidad}</span>
                             {' '}
@@ -466,7 +479,7 @@ export default function ListDetailPage() {
                               <span className={styles.urgentBadge}>Urgente</span>
                             )}
                           </p>
-                        </div>
+                        </button>
                       )}
                     </div>
                     <button
@@ -529,7 +542,7 @@ export default function ListDetailPage() {
                           }}
                           placeholder="Añade una descripción..."
                           rows={3}
-                          autoFocus
+                          aria-label="Editar descripción de la lista"
                         />
                         <div className={styles.editDescActions}>
                           <button
@@ -548,14 +561,16 @@ export default function ListDetailPage() {
                         </div>
                       </div>
                     ) : (
-                      <p 
+                      <button 
                         className={styles.detailValue} 
                         onClick={handleStartEditListDesc}
-                        title="Clic para editar"
-                        style={{ cursor: 'pointer' }}
+                        type="button"
+                        title="Presiona Enter para editar"
+                        aria-label="Descripción de la lista, presiona Enter para editar"
+                        style={{ cursor: 'pointer', textAlign: 'left', width: '100%', background: 'none', border: 'none', padding: 0 }}
                       >
                         {list?.descripcion || 'Añadir descripción...'}
-                      </p>
+                      </button>
                     )}
                   </div>
                   <div className={styles.detailCard}>
