@@ -111,11 +111,12 @@ export function LoginForm() {
         <h2 className="text-[#111418] text-lg font-bold leading-normal mb-4">Seguridad</h2>
 
         <div className="flex w-full max-w-[480px] flex-wrap items-end gap-4 py-3">
-          <label htmlFor="email" className="flex flex-col min-w-40 flex-1" aria-label="Correo electrónico">
+          <label htmlFor="email" className="flex flex-col min-w-40 flex-1">
+            <span className="text-sm font-medium text-[#111418] mb-2">Correo electrónico</span>
             <input
               id="email"
               className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
-              placeholder="Email"
+              placeholder="usuario@ejemplo.com"
               value={values.email}
               onChange={handleChange}
               name="email"
@@ -132,11 +133,12 @@ export function LoginForm() {
           </p>
         ) : null}
         <div className="flex w-full max-w-[480px] flex-wrap items-end gap-4 py-3">
-          <label htmlFor="password" className="flex flex-col min-w-40 flex-1" aria-label="Contraseña">
+          <label htmlFor="password" className="flex flex-col min-w-40 flex-1">
+            <span className="text-sm font-medium text-[#111418] mb-2">Contraseña</span>
             <input
               id="password"
               className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
-              placeholder="Contraseña"
+              placeholder="Introduce tu contraseña"
               value={values.password}
               onChange={handleChange}
               name="password"
@@ -163,8 +165,14 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+          className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
         >
+          {isPending && (
+            <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          )}
           <span className="truncate">{isPending ? 'Iniciando sesión…' : 'Iniciar Sesión'}</span>
         </button>
       </div>
