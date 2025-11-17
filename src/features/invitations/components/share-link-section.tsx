@@ -21,12 +21,13 @@ interface ShareLinkSectionProps {
 
 export function ShareLinkSection({ listId }: ShareLinkSectionProps) {
   const [permissions, setPermissions] = useState<'read' | 'write'>('read');
+  const [expiresIn, setExpiresIn] = useState<'24h' | '7d' | '30d' | 'never'>('7d');
   const [shareLink, setShareLink] = useState<string>('');
   const shareListMutation = useShareList(listId);
 
   const handleGenerateLink = async () => {
     try {
-      const result = await shareListMutation.mutateAsync({ permissions });
+      const result = await shareListMutation.mutateAsync({ permissions, expiresIn });
       const fullUrl = `${window.location.origin}/invitations/${result.hash}`;
       setShareLink(fullUrl);
       toast.success('Enlace generado correctamente');
@@ -60,17 +61,13 @@ export function ShareLinkSection({ listId }: ShareLinkSectionProps) {
             <SelectValue placeholder="Selecciona permisos" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="read">
-              <div className="flex flex-col items-start">
-                <span className="font-medium">Solo lectura</span>
-                <span className="text-xs text-gray-500">Ver productos y categorías</span>
-              </div>
+            <SelectItem value="read" className="flex flex-col items-start">
+              <span className="font-medium">Solo lectura</span>
+              <span className="text-xs text-gray-500">Ver productos y categorías</span>
             </SelectItem>
-            <SelectItem value="write">
-              <div className="flex flex-col items-start">
-                <span className="font-medium">Lectura y escritura</span>
-                <span className="text-xs text-gray-500">Ver, añadir y editar productos</span>
-              </div>
+            <SelectItem value="write" className="flex flex-col items-start">
+              <span className="font-medium">Lectura y escritura</span>
+              <span className="text-xs text-gray-500">Ver, añadir y editar productos</span>
             </SelectItem>
           </SelectContent>
         </Select>
@@ -78,6 +75,29 @@ export function ShareLinkSection({ listId }: ShareLinkSectionProps) {
           {permissions === 'read'
             ? '👀 Los usuarios podrán ver la lista pero no editarla'
             : '✏️ Los usuarios podrán ver y editar la lista'}
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        <Label htmlFor="expiresIn" className="text-base font-semibold text-gray-900">
+          Expiración del enlace
+        </Label>
+        <Select
+          value={expiresIn}
+          onValueChange={(value: string) => setExpiresIn(value as '24h' | '7d' | '30d' | 'never')}
+        >
+          <SelectTrigger id="expiresIn" className="w-full h-11">
+            <SelectValue placeholder="Selecciona la expiración" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="24h">24 horas</SelectItem>
+            <SelectItem value="7d">7 días</SelectItem>
+            <SelectItem value="30d">30 días</SelectItem>
+            <SelectItem value="never">Sin expiración</SelectItem>
+          </SelectContent>
+        </Select>
+         <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-md border border-gray-200">
+          ⏱️ El enlace dejará de ser válido después del tiempo seleccionado.
         </p>
       </div>
 

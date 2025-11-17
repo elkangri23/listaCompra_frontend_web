@@ -37,7 +37,15 @@ const badgeVariantMapping = {
 
 export const CollaboratorItem: React.FC<CollaboratorItemProps> = ({ listId, collaborator, isOwner, currentUserId }) => {
   const isCurrentUser = collaborator.id === currentUserId;
-  const canManage = isOwner && !isCurrentUser && collaborator.role !== 'OWNER';
+
+  const getRoleFromPermissions = (permissions: string[]): 'OWNER' | 'EDITOR' | 'VIEWER' => {
+    if (permissions.includes('OWNER')) return 'OWNER';
+    if (permissions.includes('EDITOR')) return 'EDITOR';
+    return 'VIEWER';
+  };
+
+  const role = getRoleFromPermissions(collaborator.permissions);
+  const canManage = isOwner && !isCurrentUser && role !== 'OWNER';
 
   const updatePermissionsMutation = useUpdatePermissions();
   const revokeAccessMutation = useRevokeAccess();
@@ -71,8 +79,8 @@ export const CollaboratorItem: React.FC<CollaboratorItemProps> = ({ listId, coll
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <Badge variant={badgeVariantMapping[collaborator.role] || 'outline'}>
-          {roleMapping[collaborator.role] || collaborator.role}
+        <Badge variant={badgeVariantMapping[role] || 'outline'}>
+          {roleMapping[role] || role}
         </Badge>
         {canManage && (
           <DropdownMenu>
@@ -86,13 +94,13 @@ export const CollaboratorItem: React.FC<CollaboratorItemProps> = ({ listId, coll
               <DropdownMenuItem
                 onClick={() =>
                   handleUpdatePermissions(
-                    collaborator.role === 'EDITOR' ? ['VIEWER'] : ['EDITOR']
+                    role === 'EDITOR' ? ['VIEWER'] : ['EDITOR']
                   )
                 }
               >
                 <Shield className="mr-2 h-4 w-4" />
                 <span>
-                  {collaborator.role === 'EDITOR' ? 'Cambiar a Lector' : 'Cambiar a Editor'}
+                  {role === 'EDITOR' ? 'Cambiar a Lector' : 'Cambiar a Editor'}
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem
