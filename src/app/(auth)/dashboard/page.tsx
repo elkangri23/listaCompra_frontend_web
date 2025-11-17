@@ -7,7 +7,7 @@ import styles from './dashboard.module.css'
 
 export default function DashboardPage() {
   const { data, isLoading, isError } = useLists(undefined, 1, 20)
-  const lists = data?.data ?? []
+  const lists = data?.data?.items ?? []
 
   return (
     <div className={styles.container}>

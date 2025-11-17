@@ -17,7 +17,7 @@ export default function ListsPage() {
     limit
   );
 
-  const lists = data?.data ?? [];
+  const lists = data?.data?.items ?? [];
 
   const createListMutation = useCreateList();
   const [newListName, setNewListName] = useState('');
@@ -114,12 +114,12 @@ export default function ListsPage() {
               Anterior
             </button>
             <span className={styles.pageInfo}>
-              Página {data.page} de {Math.ceil((data.total || 0) / data.limit || 1)}
+              Página {data.data.page} de {data.data.totalPages || Math.ceil((data.data.total || 0) / data.data.limit || 1)}
             </span>
             <button
               className={styles.pageButton}
               onClick={() => setPage((p) => p + 1)}
-              disabled={data.page * data.limit >= data.total}
+              disabled={data.data.page * data.data.limit >= data.data.total}
             >
               Siguiente
             </button>
