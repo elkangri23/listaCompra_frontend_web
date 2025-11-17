@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useAcceptInvitation } from '../hooks/use-accept-invitation';
+import { toast } from 'sonner';
 import { 
   AlertCircle, 
   CheckCircle2, 
@@ -29,14 +29,17 @@ export const PublicListAccess: React.FC<PublicListAccessProps> = ({ token }) => 
   const { data: invitation, isLoading, error } = useInvitationByHash(token);
   const { data: session } = useSession();
   const router = useRouter();
-  const acceptInvitationMutation = useAcceptInvitation();
 
   const handleAccept = () => {
     if (session) {
-      if (invitation?.data.invitacion.id) {
-        acceptInvitationMutation.mutate(invitation.data.invitacion.id);
+      // El usuario ya tiene acceso a la lista simplemente accediendo con el hash válido
+      // Redirigir directamente a la lista
+      if (invitation?.data.lista.id) {
+        router.push(`/lists/${invitation.data.lista.id}`);
+        toast.success(`¡Te has unido a la lista "${invitation.data.lista.nombre}"!`);
       }
     } else {
+      // Guardar el token de invitación y redirigir al login
       localStorage.setItem('pendingInvitation', token);
       router.push('/login?callbackUrl=/invitations/' + token);
     }
@@ -270,24 +273,18 @@ export const PublicListAccess: React.FC<PublicListAccessProps> = ({ token }) => 
           <div className="space-y-3 pt-2">
             <Button 
               onClick={handleAccept}
-              disabled={acceptInvitationMutation.isPending}
-              className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-base shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label={session ? 'Aceptar invitación y unirse a la lista' : 'Iniciar sesión para aceptar la invitación'}
+              className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-base shadow-md hover:shadow-lg transition-all"
+              aria-label={session ? 'Acceder a la lista compartida' : 'Iniciar sesión para acceder a la lista'}
             >
-              {acceptInvitationMutation.isPending ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" aria-hidden="true"></div>
-                  Procesando...
-                </>
-              ) : session ? (
+              {session ? (
                 <>
                   <CheckCircle2 className="w-5 h-5 mr-2" aria-hidden="true" />
-                  Aceptar y unirse a la lista
+                  Acceder a la lista
                 </>
               ) : (
                 <>
                   <LogIn className="w-5 h-5 mr-2" aria-hidden="true" />
-                  Iniciar sesión para aceptar
+                  Iniciar sesión para acceder
                 </>
               )}
             </Button>
