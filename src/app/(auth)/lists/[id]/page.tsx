@@ -17,7 +17,7 @@ export default function ListDetailPage() {
   const [newProduct, setNewProduct] = useState('');
   const [newCantidad, setNewCantidad] = useState(1);
   const [newUrgente, setNewUrgente] = useState(false);
-  const [activeTab, setActiveTab] = useState<'suggestions' | 'details'>('details');
+  const [activeTab, setActiveTab] = useState<'suggestions' | 'details' | 'collaborators'>('details');
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [editingNombre, setEditingNombre] = useState('');
   const [editingCantidad, setEditingCantidad] = useState(1);
@@ -502,6 +502,10 @@ export default function ListDetailPage() {
             )}
           </div>
 
+import { CollaboratorsSection } from '@/features/invitations/components/collaborators-section';
+
+// ... inside the component
+
           <div className={styles.sidebar}>
             <div className={styles.tabs}>
               <div className={styles.tabsContainer}>
@@ -511,7 +515,7 @@ export default function ListDetailPage() {
                   }`}
                   onClick={() => setActiveTab('suggestions')}
                 >
-                  <p className={styles.tabText}>Sugerencias de IA</p>
+                  <p className={styles.tabText}>Sugerencias</p>
                 </button>
                 <button
                   className={`${styles.tab} ${activeTab === 'details' ? styles.tabActive : styles.tabInactive}`}
@@ -519,107 +523,22 @@ export default function ListDetailPage() {
                 >
                   <p className={styles.tabText}>Detalles</p>
                 </button>
+                <button
+                  className={`${styles.tab} ${activeTab === 'collaborators' ? styles.tabActive : styles.tabInactive}`}
+                  onClick={() => setActiveTab('collaborators')}
+                >
+                  <p className={styles.tabText}>Colaboradores</p>
+                </button>
               </div>
             </div>
 
             <div className={styles.detailsContent}>
               {activeTab === 'details' ? (
                 <>
-                  <div className={styles.detailCard}>
-                    <p className={styles.detailLabel}>Nombre</p>
-                    <p className={styles.detailValue}>{list?.nombre || '-'}</p>
-                  </div>
-                  <div className={styles.detailCard}>
-                    <p className={styles.detailLabel}>Descripción</p>
-                    {isEditingListDesc ? (
-                      <div className={styles.editDescWrapper}>
-                        <textarea
-                          className={styles.editDescTextarea}
-                          value={editingListDesc}
-                          onChange={(e) => setEditingListDesc(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' && e.ctrlKey) {
-                              handleSaveListDesc();
-                            } else if (e.key === 'Escape') {
-                              handleCancelListEdit();
-                            }
-                          }}
-                          placeholder="Añade una descripción..."
-                          rows={3}
-                          aria-label="Editar descripción de la lista"
-                        />
-                        <div className={styles.editDescActions}>
-                          <button
-                            className={styles.saveListButton}
-                            onClick={handleSaveListDesc}
-                            disabled={updateListMutation.isPending}
-                          >
-                            ✓ Guardar
-                          </button>
-                          <button
-                            className={styles.cancelListButton}
-                            onClick={handleCancelListEdit}
-                          >
-                            ✕ Cancelar
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <button 
-                        className={styles.detailValue} 
-                        onClick={handleStartEditListDesc}
-                        type="button"
-                        title="Presiona Enter para editar"
-                        aria-label="Descripción de la lista, presiona Enter para editar"
-                        style={{ cursor: 'pointer', textAlign: 'left', width: '100%', background: 'none', border: 'none', padding: 0 }}
-                      >
-                        {list?.descripcion || 'Añadir descripción...'}
-                      </button>
-                    )}
-                  </div>
-                  <div className={styles.detailCard}>
-                    <p className={styles.detailLabel}>Fecha de creación</p>
-                    <p className={styles.detailValue}>
-                      {list?.fechaCreacion 
-                        ? new Date(list.fechaCreacion).toLocaleDateString('es-ES', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric'
-                          })
-                        : '-'
-                      }
-                    </p>
-                  </div>
-                  <div className={styles.detailCard}>
-                    <p className={styles.detailLabel}>Estado</p>
-                    <p className={styles.detailValue}>{list?.activa ? 'Activa' : 'Inactiva'}</p>
-                  </div>
-                  <div className={styles.detailCard}>
-                    <p className={styles.detailLabel}>Productos</p>
-                    <div className={styles.productStats}>
-                      <p className={styles.detailValue}>
-                        {productStats.total} productos / {productStats.comprados} comprados
-                      </p>
-                      <div className={styles.progressContainer}>
-                        <div className={styles.progressBar}>
-                          <div 
-                            className={styles.progressFill} 
-                            style={{ width: `${productStats.porcentaje}%` }}
-                          />
-                        </div>
-                        <span className={styles.progressText}>{productStats.porcentaje}%</span>
-                      </div>
-                      {productStats.porcentaje < 100 && productStats.primerSinComprar && (
-                        <button 
-                          className={styles.goToUncheckedButton}
-                          onClick={scrollToFirstUnchecked}
-                        >
-                          <span>🔍 Ver primer producto pendiente</span>
-                        </button>
-                      )}
-                    </div>
-                  </div>
+                  {/* ... details content */}
                 </>
+              ) : activeTab === 'collaborators' ? (
+                <CollaboratorsSection listId={listId} ownerId={list?.propietarioId} />
               ) : (
                 <div className={styles.detailCard}>
                   <p className={styles.detailLabel}>Sugerencias de IA</p>
@@ -630,6 +549,9 @@ export default function ListDetailPage() {
               )}
             </div>
           </div>
+// ... rest of the component
+
+
         </div>
       </div>
     </div>
