@@ -10,6 +10,9 @@ const customJestConfig = {
   transformIgnorePatterns: [
     '/node_modules/(?!next-auth|@auth/core)/',
   ],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
 }
 
 module.exports = createJestConfig(customJestConfig)
