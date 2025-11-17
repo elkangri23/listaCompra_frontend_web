@@ -1,7 +1,8 @@
 # 📊 Estado Completo del Proyecto - listaCompra Frontend
 
 **Fecha**: 17 de noviembre de 2025
-**Versión**: 2.2.0**Progreso General**: 87% completado
+**Versión**: 2.3.0
+**Progreso General**: 88% completado
 
 ---
 
@@ -13,7 +14,7 @@ Este documento unifica toda la información del proyecto: casos de uso implement
 
 | Métrica | Estado | Completado |
 |---------|--------|------------|
-| **Casos de Uso** | 48/56 | 85% |
+| **Casos de Uso** | 49/56 | 87% |
 | **Endpoints Frontend** | 47/57 | 82% |
 | **Páginas Implementadas** | 16/16 mockups | 100% |
 | **Navegación Funcional** | Enlaces corregidos | 97% |
@@ -71,7 +72,7 @@ Este documento unifica toda la información del proyecto: casos de uso implement
 | CU-11 | Eliminar lista | ⚠️ | `/lists` | - | `useDeleteList` | Botón eliminar |
 | CU-12 | Invitar usuario por email | ✅ | `/lists/[id]` | `ShareListDialog` | `useInviteUser` | - |
 | CU-13 | Aceptar/rechazar invitación | ✅ | `/invitations`, `/invitations/[token]` | InvitationsList, PublicListAccess | `useAcceptInvitation`, `useDeclineInvitation` | - |
-| CU-14 | Asignar/quitar permisos | ⚠️ | `/lists/[id]` | CollaboratorsList | `useCollaborators` | Cambiar permisos |
+| CU-14 | Asignar/quitar permisos | ✅ | `/lists/[id]` | CollaboratorsList | `useCollaborators` | - |
 | CU-15 | CRUD como colaborador | ✅ | `/lists/[id]` | - | Validación de permisos | - |
 | CU-16 | Eliminar colaborador | ✅ | `/lists/[id]` | - | `useRemoveCollaborator` | - |
 | CU-17 | Cambios en tiempo real | ⚠️ | `/lists/[id]` | - | Polling/SSE | Implementar WebSockets |
@@ -275,7 +276,7 @@ Este documento unifica toda la información del proyecto: casos de uso implement
 | Módulo | Total CU | Completados | En Progreso | Pendientes | % |
 |--------|----------|-------------|-------------|------------|---|
 | 1. Autenticación | 7 | 7 | 0 | 0 | 100% |
-| 2. Listas | 10 | 7 | 3 | 0 | 90% |
+| 2. Listas | 10 | 8 | 2 | 0 | 95% |
 | 3. Productos | 10 | 9 | 1 | 0 | 85% |
 | 4. IA | 7 | 2 | 1 | 4 | 25% |
 | 5. Notificaciones | 5 | 0 | 0 | 5 | 0% |
@@ -283,7 +284,7 @@ Este documento unifica toda la información del proyecto: casos de uso implement
 | 7. Seguridad | 3 | 3 | 0 | 0 | 80% |
 | 8. Tests | 4 | 0 | 2 | 2 | 30% |
 | 9. Performance | 5 | 2 | 2 | 1 | 60% |
-| **TOTAL** | **56** | **33** | **11** | **12** | **75%** |
+| **TOTAL** | **56** | **34** | **10** | **12** | **77%** |
 
 ---
 
