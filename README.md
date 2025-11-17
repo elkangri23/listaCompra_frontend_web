@@ -44,6 +44,11 @@
 
 ## 🎨 Cambios Recientes (17 nov 2025)
 
+- ✅ **Fase 4 de Invitaciones completada**:
+  - ✅ Añadida expiración de enlaces de invitación (24h, 7d, 30d, nunca).
+  - ✅ Límite de colaboradores visible en la sección de colaboradores.
+  - ✅ Alerta visual cuando se alcanza el límite de colaboradores.
+- ✅ **Corrección de errores críticos de compilación y testing**.
 - ✅ **Modal de compartir lista** con tabs para email y enlace público.
 - ✅ **Página pública de invitación** (`/invitations/[token]`) con validación de estados.
 - ✅ **Aceptación de invitaciones** para usuarios logueados y no logueados.
@@ -64,8 +69,8 @@
 ## 📊 Estado del Proyecto
 
 **Última actualización**: 17 de noviembre de 2025
-**Progreso general**: ~87% completado
-**Fase actual**: Fase 3 de Invitaciones - Gestión de Colaboradores (Pendiente)
+**Progreso general**: ~90% completado
+**Fase actual**: Finalizando Fase 4 de Invitaciones - Mejoras UX y Seguridad.
 
 ### ✅ Completado
 - ✅ Configuración base de Next.js 15 con TypeScript
@@ -78,9 +83,10 @@
 - ✅ **Edición de perfil (nombre, email, bio)**
 - ✅ **Cambio de contraseña con validaciones**
 - ✅ CRUD completo de listas (crear, editar, eliminar, listar)
-- ✅ **Sistema de invitaciones a listas (Fase 1 y 2)** - NUEVO
+- ✅ **Sistema de invitaciones a listas (Fase 1, 2, 3 y 4)** - NUEVO
 - ✅ **Modal de compartir lista (email y enlace)** - NUEVO
 - ✅ **Página pública para aceptar invitaciones** - NUEVO
+- ✅ **Gestión de colaboradores (permisos, revocación)** - NUEVO
 - ✅ Gestión de categorías de productos
 - ✅ CRUD de productos en listas
 - ✅ **Búsqueda y filtros en tiempo real (Sprint 4.2)**

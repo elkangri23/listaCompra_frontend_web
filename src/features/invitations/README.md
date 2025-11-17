@@ -29,34 +29,33 @@ invitations/
 
 ## 🎯 Funcionalidades
 
-### ✅ Implementadas (Fase 1)
+### ✅ Implementadas (Fase 1, 2, 3 y 4)
 
 #### Compartir por Enlace Público
 - Generar enlace público de compartir
 - Selector de permisos (lectura/escritura)
 - Copiar enlace al portapapeles
 - Notificaciones toast de confirmación
+- Expiración de enlaces
 
 #### Invitar por Email (Existente)
 - Enviar invitación a usuario registrado
 - Formulario con validación
 - Gestión de invitaciones pendientes
 
-### 🔄 En Desarrollo
-
-#### Fase 2: Página Pública de Acceso
+#### Página Pública de Acceso
 - Acceder a lista compartida vía hash
 - Validación de estado (expirada, revocada, inválida)
 - Aceptar invitación (usuarios logueados)
 - Guardado de invitación pendiente (usuarios no logueados)
 
-#### Fase 3: Gestión de Colaboradores
+#### Gestión de Colaboradores
 - Ver lista de colaboradores
 - Cambiar permisos de colaboradores
 - Revocar acceso
 - Ver estado de cada colaborador
 
-#### Fase 4: Mejoras UX y Seguridad
+#### Mejoras UX y Seguridad
 - Expiración automática de enlaces
 - Límites de uso
 - Auditoría de accesos
@@ -308,11 +307,11 @@ Ver `BACKEND_API_SPEC.md` para detalles.
 | Fase | Estado | Progreso |
 |------|--------|----------|
 | Fase 1: Dialog de Compartir | ✅ Completada | 100% |
-| Fase 2: Página Pública | 🔄 Pendiente | 0% |
-| Fase 3: Gestión Colaboradores | 🔄 Pendiente | 0% |
-| Fase 4: Mejoras UX/Seguridad | 🔄 Pendiente | 0% |
+| Fase 2: Página Pública | ✅ Completada | 100% |
+| Fase 3: Gestión Colaboradores | ✅ Completada | 100% |
+| Fase 4: Mejoras UX/Seguridad | ✅ Completada | 100% |
 
-**Progreso Total: 25%** (1 de 4 fases)
+**Progreso Total: 100%** (4 de 4 fases)
 
 ---
 
