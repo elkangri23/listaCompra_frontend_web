@@ -88,7 +88,7 @@ export function ProfileForm() {
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Tu nombre completo"
+                    placeholder="Juan García López"
                     {...field}
                     disabled={updateProfileMutation.isPending}
                     autoComplete="name"
@@ -114,7 +114,7 @@ export function ProfileForm() {
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="tu@email.com"
+                    placeholder="usuario@ejemplo.com"
                     {...field}
                     disabled={updateProfileMutation.isPending}
                     autoComplete="email"
