@@ -2,14 +2,15 @@
 
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import styles from './list-detail.module.css';
-import { useList } from '@/features/lists/hooks/use-lists';
+import { useList, useUpdateList, useDeleteList } from '@/features/lists/hooks/use-lists';
 import { useProducts, useCreateProduct, useDeleteProduct, useToggleProductPurchased, useUpdateProduct } from '@/features/products/hooks/use-products';
 import { useCategories } from '@/features/categories/hooks/use-categories';
 
 export default function ListDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const listId = params?.id as string;
 
   const [newProduct, setNewProduct] = useState('');
@@ -20,6 +21,12 @@ export default function ListDetailPage() {
   const [editingNombre, setEditingNombre] = useState('');
   const [editingCantidad, setEditingCantidad] = useState(1);
   const [editingUrgente, setEditingUrgente] = useState(false);
+  
+  // Estados para editar nombre y descripción de la lista
+  const [isEditingListName, setIsEditingListName] = useState(false);
+  const [isEditingListDesc, setIsEditingListDesc] = useState(false);
+  const [editingListName, setEditingListName] = useState('');
+  const [editingListDesc, setEditingListDesc] = useState('');
 
   const { data: listData, isLoading: isLoadingList } = useList(listId);
   const list = (listData as any)?.data || listData;
@@ -35,6 +42,8 @@ export default function ListDetailPage() {
   const deleteProductMutation = useDeleteProduct(listId);
   const togglePurchasedMutation = useToggleProductPurchased(listId);
   const updateProductMutation = useUpdateProduct(listId);
+  const updateListMutation = useUpdateList();
+  const deleteListMutation = useDeleteList();
 
   // Handle nested response structure from backend
   const products = (productsData as any)?.data?.items ?? productsData?.items ?? [];
@@ -58,12 +67,15 @@ export default function ListDetailPage() {
   const grouped = useMemo(() => {
     const byCat: Record<string, any[]> = {};
     products.forEach((p: any) => {
-      const key = p.categoriaId || '__nocat__';
+      // Si el producto no tiene categoría O la categoría no existe en el mapa, agruparlo como "sin categoría"
+      const key = (p.categoriaId && categoriesMap.has(p.categoriaId)) 
+        ? p.categoriaId 
+        : '__nocat__';
       if (!byCat[key]) byCat[key] = [];
       byCat[key].push(p);
     });
     return byCat;
-  }, [products]);
+  }, [products, categoriesMap]);
 
   const handleAddProduct = () => {
     if (!newProduct.trim()) return;
@@ -92,6 +104,30 @@ export default function ListDetailPage() {
   const handleShare = () => {
     // placeholder until share endpoint implemented
     alert('Funcionalidad de compartir lista (por implementar)');
+  };
+
+  const handleDeleteList = async () => {
+    const confirmDelete = window.confirm(
+      `¿Estás seguro de que quieres eliminar la lista "${list?.nombre}"?\n\n` +
+      `Esta acción eliminará:\n` +
+      `• La lista y todos sus datos\n` +
+      `• ${productStats.total} productos asociados\n` +
+      `• Todas las invitaciones y colaboradores\n\n` +
+      `Esta acción NO se puede deshacer.`
+    );
+
+    if (confirmDelete) {
+      try {
+        await deleteListMutation.mutateAsync(listId);
+        console.log('Lista eliminada correctamente, redirigiendo...');
+        // Esperar un momento para que React Query invalide las queries
+        await new Promise(resolve => setTimeout(resolve, 100));
+        router.push('/dashboard');
+      } catch (error) {
+        console.error('Error al eliminar la lista:', error);
+        alert('Error al eliminar la lista. Por favor, intenta de nuevo.');
+      }
+    }
   };
 
   const scrollToFirstUnchecked = () => {
@@ -146,19 +182,132 @@ export default function ListDetailPage() {
     );
   };
 
+  const handleStartEditListName = () => {
+    setEditingListName(list?.nombre || '');
+    setIsEditingListName(true);
+  };
+
+  const handleStartEditListDesc = () => {
+    setEditingListDesc(list?.descripcion || '');
+    setIsEditingListDesc(true);
+  };
+
+  const handleSaveListName = () => {
+    if (!editingListName.trim()) return;
+    updateListMutation.mutate(
+      {
+        id: listId,
+        data: { nombre: editingListName.trim() }
+      },
+      {
+        onSuccess: () => {
+          setIsEditingListName(false);
+        }
+      }
+    );
+  };
+
+  const handleSaveListDesc = () => {
+    updateListMutation.mutate(
+      {
+        id: listId,
+        data: { descripcion: editingListDesc.trim() || undefined }
+      },
+      {
+        onSuccess: () => {
+          setIsEditingListDesc(false);
+        }
+      }
+    );
+  };
+
+  const handleCancelListEdit = () => {
+    setIsEditingListName(false);
+    setIsEditingListDesc(false);
+  };
+
+  // Verificar si la lista está inactiva
+  if (!isLoadingList && list && list.activa === false) {
+    return (
+      <div className={styles.root}>
+        <div className={styles.container}>
+          <div className={styles.inactiveListContainer}>
+            <svg className={styles.inactiveIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <h2 className={styles.inactiveTitle}>Lista no disponible</h2>
+            <p className={styles.inactiveMessage}>
+              Esta lista ha sido eliminada o desactivada y ya no está disponible.
+            </p>
+            <div className={styles.inactiveActions}>
+              <Link href="/dashboard" className={styles.backToDashboardButton}>
+                Volver al Dashboard
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.root}>
       <div className={styles.container}>
         <div className={styles.wrapper}>
           <div className={styles.mainContent}>
             <div className={styles.header}>
-              <h1 className={styles.title}>{list?.nombre || 'Cargando...'}</h1>
+              {isEditingListName ? (
+                <div className={styles.editListNameWrapper}>
+                  <input
+                    type="text"
+                    className={styles.editListNameInput}
+                    value={editingListName}
+                    onChange={(e) => setEditingListName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSaveListName();
+                      } else if (e.key === 'Escape') {
+                        handleCancelListEdit();
+                      }
+                    }}
+                    autoFocus
+                  />
+                  <button
+                    className={styles.saveListButton}
+                    onClick={handleSaveListName}
+                    disabled={updateListMutation.isPending || !editingListName.trim()}
+                  >
+                    ✓
+                  </button>
+                  <button
+                    className={styles.cancelListButton}
+                    onClick={handleCancelListEdit}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <h1 className={styles.title} onClick={handleStartEditListName} title="Clic para editar">
+                  {list?.nombre || 'Cargando...'}
+                </h1>
+              )}
               <div className={styles.headerActions}>
                 <Link href={`/lists/${listId}/history`} className={styles.historyButton}>
                   <span>Ver Historial</span>
                 </Link>
                 <button className={styles.shareButton} onClick={handleShare}>
                   <span>Compartir</span>
+                </button>
+                <button 
+                  className={styles.deleteListButton} 
+                  onClick={handleDeleteList}
+                  disabled={deleteListMutation.isPending}
+                  title="Eliminar lista"
+                >
+                  <svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor">
+                    <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path>
+                  </svg>
+                  {deleteListMutation.isPending ? 'Eliminando...' : 'Eliminar'}
                 </button>
               </div>
             </div>
@@ -240,7 +389,9 @@ export default function ListDetailPage() {
             ) : (
               Object.entries(grouped).map(([catId, productos]) => (
                 <div key={catId}>
-                  <h2 className={styles.categoryTitle}>{categoriesMap.get(catId) ?? (catId === '__nocat__' ? 'Sin categoría' : catId)}</h2>
+                  <h2 className={styles.categoryTitle}>
+                    {catId === '__nocat__' ? 'Sin categoría' : categoriesMap.get(catId)}
+                  </h2>
                   {productos.map((product: any) => (
                   <div 
                     key={product.id} 
@@ -361,12 +512,52 @@ export default function ListDetailPage() {
                     <p className={styles.detailLabel}>Nombre</p>
                     <p className={styles.detailValue}>{list?.nombre || '-'}</p>
                   </div>
-                  {list?.descripcion && (
-                    <div className={styles.detailCard}>
-                      <p className={styles.detailLabel}>Descripción</p>
-                      <p className={styles.detailValue}>{list.descripcion}</p>
-                    </div>
-                  )}
+                  <div className={styles.detailCard}>
+                    <p className={styles.detailLabel}>Descripción</p>
+                    {isEditingListDesc ? (
+                      <div className={styles.editDescWrapper}>
+                        <textarea
+                          className={styles.editDescTextarea}
+                          value={editingListDesc}
+                          onChange={(e) => setEditingListDesc(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && e.ctrlKey) {
+                              handleSaveListDesc();
+                            } else if (e.key === 'Escape') {
+                              handleCancelListEdit();
+                            }
+                          }}
+                          placeholder="Añade una descripción..."
+                          rows={3}
+                          autoFocus
+                        />
+                        <div className={styles.editDescActions}>
+                          <button
+                            className={styles.saveListButton}
+                            onClick={handleSaveListDesc}
+                            disabled={updateListMutation.isPending}
+                          >
+                            ✓ Guardar
+                          </button>
+                          <button
+                            className={styles.cancelListButton}
+                            onClick={handleCancelListEdit}
+                          >
+                            ✕ Cancelar
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p 
+                        className={styles.detailValue} 
+                        onClick={handleStartEditListDesc}
+                        title="Clic para editar"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {list?.descripcion || 'Añadir descripción...'}
+                      </p>
+                    )}
+                  </div>
                   <div className={styles.detailCard}>
                     <p className={styles.detailLabel}>Fecha de creación</p>
                     <p className={styles.detailValue}>

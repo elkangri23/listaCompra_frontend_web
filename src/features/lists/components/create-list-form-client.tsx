@@ -58,9 +58,15 @@ export function CreateListFormClient({ onSuccess, onCancel }: CreateListFormClie
         tiendaId: formData.tiendaId || undefined,
       })
 
-      // Assuming the API returns the created list with an id
-      if (result && 'id' in result) {
+      console.log('Lista creada exitosamente:', result)
+      
+      // The service now returns the Lista object directly
+      if (result && result.id) {
+        console.log('Redirigiendo a lista con ID:', result.id)
         onSuccess?.(result.id)
+      } else {
+        console.error('La respuesta no contiene un ID:', result)
+        setApiError('Error: La lista se creó pero no se recibió el ID.')
       }
     } catch (error: any) {
       console.error('Error creating list:', error)

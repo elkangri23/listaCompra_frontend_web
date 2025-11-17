@@ -51,6 +51,12 @@
   padding: var(--spacing-md);
 }
 
+.listCardWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
 .listCard {
   display: flex;
   flex-direction: column;
@@ -62,6 +68,35 @@
 
 .listCard:hover {
   transform: translateY(-2px);
+}
+
+.deleteCardButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  color: #dc2626;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.listCardWrapper:hover .deleteCardButton {
+  opacity: 1;
+}
+
+.deleteCardButton:hover {
+  background-color: #dc2626;
+  color: white;
+  transform: scale(1.1);
 }
 
 .listThumbnail {
@@ -87,10 +122,31 @@
 }
 
 .listProgress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progressText {
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
-  font-weight: 400;
+  font-weight: 500;
   line-height: normal;
+}
+
+.progressBarContainer {
+  width: 100%;
+  height: 6px;
+  background-color: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: linear-gradient(90deg, #4387f4 0%, #2563eb 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
 }
 
 .listDescription {

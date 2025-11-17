@@ -11,8 +11,14 @@ export default function CreateListPage() {
   const router = useRouter()
 
   const handleSuccess = (listId: string) => {
+    console.log('handleSuccess llamado con listId:', listId)
+    console.log('Intentando navegar a:', `/lists/${listId}`)
+    
     // Redirect to the newly created list
     router.push(`/lists/${listId}`)
+    
+    // Log después de push
+    console.log('router.push ejecutado')
   }
 
   const handleCancel = () => {
