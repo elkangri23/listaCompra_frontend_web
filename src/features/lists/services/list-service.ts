@@ -4,6 +4,11 @@ import { Lista, ListSummary } from '@/types/Lista.types';
 
 import { PaginatedResponse } from '@/types/PaginatedResponse.types';
 
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+}
+
 const getLists = async (
   query?: string,
   page = 1,
@@ -19,18 +24,18 @@ const getLists = async (
 };
 
 const getListById = async (id: string): Promise<Lista> => {
-  const response = await axiosInstance.get<Lista>(`/lists/${id}`);
-  return response.data;
+  const response = await axiosInstance.get<ApiResponse<Lista>>(`/lists/${id}`);
+  return response.data.data;
 };
 
 const createList = async (data: CreateListDto): Promise<Lista> => {
-  const response = await axiosInstance.post<Lista>('/lists', data);
-  return response.data;
+  const response = await axiosInstance.post<ApiResponse<Lista>>('/lists', data);
+  return response.data.data;
 };
 
 const updateList = async (id: string, data: UpdateListDto): Promise<Lista> => {
-  const response = await axiosInstance.put<Lista>(`/lists/${id}`, data);
-  return response.data;
+  const response = await axiosInstance.put<ApiResponse<Lista>>(`/lists/${id}`, data);
+  return response.data.data;
 };
 
 const deleteList = async (id: string): Promise<void> => {

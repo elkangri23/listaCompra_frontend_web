@@ -17,6 +17,66 @@
   flex-direction: column;
 }
 
+/* Inactive List Styles */
+.inactiveListContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.inactiveIcon {
+  width: 80px;
+  height: 80px;
+  color: #f59e0b;
+  margin-bottom: 24px;
+}
+
+.inactiveTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 16px 0;
+}
+
+.inactiveMessage {
+  font-size: 16px;
+  color: #6b7280;
+  max-width: 500px;
+  margin: 0 0 32px 0;
+  line-height: 1.6;
+}
+
+.inactiveActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.backToDashboardButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  background-color: #4387f4;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.backToDashboardButton:hover {
+  background-color: #2563eb;
+}
+
 .wrapper {
   display: flex;
   flex: 1;
@@ -46,6 +106,96 @@
   font-weight: bold;
   line-height: 1.2;
   min-width: 288px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.title:hover {
+  background-color: #f0f2f5;
+}
+
+/* Edit List Name */
+.editListNameWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.editListNameInput {
+  flex: 1;
+  font-size: 32px;
+  font-weight: bold;
+  color: #111418;
+  border: 2px solid #4387f4;
+  border-radius: 8px;
+  padding: 8px 12px;
+  outline: none;
+}
+
+.saveListButton {
+  padding: 8px 16px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.saveListButton:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.saveListButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cancelListButton {
+  padding: 8px 16px;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancelListButton:hover {
+  background-color: #dc2626;
+}
+
+/* Edit Description */
+.editDescWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.editDescTextarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #4387f4;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #111418;
+  resize: vertical;
+  outline: none;
+  font-family: inherit;
+}
+
+.editDescActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
 }
 
 .headerActions {
@@ -78,6 +228,33 @@
 .historyButton:hover,
 .shareButton:hover {
   background-color: #e4e7eb;
+}
+
+.deleteListButton {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  height: 32px;
+  padding: 0 12px;
+  background-color: #fee2e2;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.deleteListButton:hover:not(:disabled) {
+  background-color: #ef4444;
+  color: white;
+}
+
+.deleteListButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .addProductForm {
