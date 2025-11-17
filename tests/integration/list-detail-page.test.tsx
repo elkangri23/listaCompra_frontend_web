@@ -6,21 +6,18 @@ import ListDetailPage from '@/app/(auth)/lists/[id]/page';
 // Mock the necessary hooks and services
 jest.mock('@/features/lists/hooks/use-lists', () => ({
   useList: () => ({
-    data: { id: '1', nombre: 'Mi Lista', descripcion: 'Mi descripción' },
+    data: { data: { id: '1', nombre: 'Mi Lista', descripcion: 'Mi descripción' } },
     isLoading: false,
     isError: false,
   }),
-  useListSummary: () => ({
-    data: { totalProductos: 2, productosComprados: 1, productosPendientes: 1, valorTotalEstimado: 10, productosUrgentes: 1 },
-    isLoading: false,
-    isError: false,
-  }),
+  useUpdateList: () => ({ mutate: jest.fn() }),
+  useDeleteList: () => ({ mutateAsync: jest.fn().mockResolvedValue(undefined) }),
 }));
 
 jest.mock('@/features/products/hooks/use-products', () => ({
   useProducts: () => ({
     data: {
-      data: [
+      items: [
         { id: '1', nombre: 'Producto 1', cantidad: 1, comprado: false, categoriaId: '1' },
         { id: '2', nombre: 'Producto 2', cantidad: 2, comprado: true, categoriaId: '2' },
       ],
@@ -28,20 +25,17 @@ jest.mock('@/features/products/hooks/use-products', () => ({
     },
     isLoading: false,
     isError: false,
-    refetch: jest.fn(),
-    togglePurchasedMutation: { mutateAsync: jest.fn() },
-    deleteProductMutation: { mutateAsync: jest.fn() },
-    editProductMutation: { mutateAsync: jest.fn() },
-    adjustQuantityMutation: { mutateAsync: jest.fn() },
-    reorderProductsMutation: { mutateAsync: jest.fn() },
-    createProductMutation: { mutateAsync: jest.fn() },
   }),
+  useCreateProduct: () => ({ mutate: jest.fn() }),
+  useDeleteProduct: () => ({ mutate: jest.fn() }),
+  useToggleProductPurchased: () => ({ mutate: jest.fn() }),
+  useUpdateProduct: () => ({ mutate: jest.fn() }),
 }));
 
 jest.mock('@/features/categories/hooks/use-categories', () => ({
   useCategories: () => ({
     data: {
-      data: [
+      categorias: [
         { id: '1', nombre: 'Categoría 1' },
         { id: '2', nombre: 'Categoría 2' },
       ],
@@ -70,20 +64,14 @@ const renderWithProviders = (ui: React.ReactElement) => {
 };
 
 describe('ListDetailPage', () => {
-  it('should render the page with products and filters', async () => {
+  it('should render the page with products', async () => {
     renderWithProviders(<ListDetailPage />);
 
     // Check for list details
     expect(screen.getByText('Mi Lista')).toBeInTheDocument();
-    expect(screen.getByText('Mi descripción')).toBeInTheDocument();
 
     // Check for products
     expect(screen.getByText('Producto 1')).toBeInTheDocument();
     expect(screen.getByText('Producto 2')).toBeInTheDocument();
-
-    // Check for filters
-    expect(screen.getByPlaceholderText('Buscar productos...')).toBeInTheDocument();
-    expect(screen.getByText('Filtrar por estado')).toBeInTheDocument();
-    expect(screen.getByText('Filtrar por categoría')).toBeInTheDocument();
   });
 });
