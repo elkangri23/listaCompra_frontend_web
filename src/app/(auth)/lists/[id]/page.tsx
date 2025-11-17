@@ -531,9 +531,35 @@ export default function ListDetailPage() {
 
             <div className={styles.detailsContent}>
               {activeTab === 'details' ? (
-                <>
-                  {/* ... details content */}
-                </>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500">Descripción</h4>
+                    <p className="mt-1 text-sm text-gray-900">{list?.descripcion || 'Sin descripción'}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500">Fecha de creación</h4>
+                    <p className="mt-1 text-sm text-gray-900">
+                      {list?.createdAt ? new Date(list.createdAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }) : '-'}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500">Estadísticas</h4>
+                    <ul className="mt-2 space-y-2">
+                      <li className="flex justify-between text-sm">
+                        <span>Total de productos:</span>
+                        <span>{productStats.total}</span>
+                      </li>
+                      <li className="flex justify-between text-sm">
+                        <span>Comprados:</span>
+                        <span>{productStats.comprados}</span>
+                      </li>
+                      <li className="flex justify-between text-sm">
+                        <span>Pendientes:</span>
+                        <span>{productStats.total - productStats.comprados}</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               ) : activeTab === 'collaborators' ? (
                 <CollaboratorsSection listId={listId} ownerId={list?.propietarioId} />
               ) : (
