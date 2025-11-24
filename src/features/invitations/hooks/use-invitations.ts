@@ -36,17 +36,8 @@ export const useInviteUser = (listId: string) => {
   });
 };
 
-export const useAcceptInvitation = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (invitationId: string) =>
-      invitationService.acceptInvitation(invitationId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['invitations', 'pending'] });
-    },
-  });
-};
+// NOTA: useAcceptInvitation eliminado - no existe endpoint /accept en el backend
+// El flujo correcto es: GET /invitations/:hash/access y luego redirigir a la lista
 
 export const useDeclineInvitation = () => {
   const queryClient = useQueryClient();

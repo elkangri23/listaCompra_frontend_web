@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { z } from 'zod';
 import {
   Dialog,
   DialogContent,
@@ -9,11 +10,15 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { InviteUserForm, InviteUserFormValues } from './invite-user-form';
+import { InviteUserForm } from './invite-user-form';
 import { ShareLinkSection } from './share-link-section';
 import { useInviteUser } from '../hooks/use-invitations';
 import { toast } from 'sonner';
 import { Mail, Link2 } from 'lucide-react';
+
+const formSchema = z.object({
+  email: z.string().email('Ingresa un correo electrónico válido'),
+});
 
 interface ShareListDialogProps {
   listId: string;
@@ -29,20 +34,31 @@ export function ShareListDialog({
   onOpenChange,
 }: ShareListDialogProps) {
   const [activeTab, setActiveTab] = useState('email');
+  const [email, setEmail] = useState('');
   const inviteUserMutation = useInviteUser(listId);
 
-  const handleInviteByEmail = async (data: InviteUserFormValues) => {
+  const handleInviteByEmail = async (data: { email: string }) => {
     try {
       await inviteUserMutation.mutateAsync(data.email);
       toast.success(`Invitación enviada a ${data.email}`);
+      setEmail(''); // Reset email on success
     } catch (error: any) {
-      const errorMessage =
-        error?.response?.data?.message ||
-        'Error al enviar la invitación';
-      toast.error(errorMessage);
       console.error('Error inviting user:', error);
+      const backendMessage = error?.response?.data?.message || error?.response?.data?.error;
+      const errorMessage = backendMessage || 'Error al enviar la invitación';
+      toast.error(errorMessage);
     }
   };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = formSchema.safeParse({ email });
+    if (!result.success) {
+      toast.error(result.error.errors[0].message);
+      return;
+    }
+    handleInviteByEmail(result.data);
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -85,7 +101,12 @@ export function ShareListDialog({
                   💌 Envía una invitación por correo electrónico a un usuario registrado
                 </p>
               </div>
-              <InviteUserForm onSubmit={handleInviteByEmail} />
+              <form onSubmit={handleSubmit}>
+                <InviteUserForm 
+                  email={email}
+                  setEmail={setEmail}
+                />
+              </form>
             </TabsContent>
 
             <TabsContent value="link" className="space-y-4 mt-0 pt-4">

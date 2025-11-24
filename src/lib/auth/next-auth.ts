@@ -143,6 +143,7 @@ export const authConfig: NextAuthConfig = {
           // The user object passed to the jwt callback
           return {
             token: authResponse.token,
+            user: authResponse.user
           };
         } catch (error) {
           console.error('Error during login attempt:', JSON.stringify(error, null, 2));

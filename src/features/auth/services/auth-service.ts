@@ -6,6 +6,7 @@ import type {
   ForgotPasswordRequest,
   RefreshTokenRequest,
   AuthUser,
+  ApiUser,
   ApiLoginResponse,
 } from '@/features/auth/types'
 import type { ProfileFormValues } from '@/features/auth/validators/profile-schema'
@@ -38,7 +39,7 @@ function normalizeEmail(email: string): string {
 /**
  * Performs user login and returns the authentication token.
  */
-export async function login(request: LoginRequest): Promise<{ token: string; user: ApiLoginResponse['data']['user'] }> {
+export async function login(request: LoginRequest): Promise<{ token: string; user: ApiUser }> {
   try {
     const payload = {
       email: normalizeEmail(request.email),

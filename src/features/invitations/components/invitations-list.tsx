@@ -1,27 +1,27 @@
 'use client';
 
 import { InvitationDto } from '@/types/dtos/invitations';
-import { useAcceptInvitation, useDeclineInvitation } from '../hooks/use-invitations';
+import { useDeclineInvitation } from '../hooks/use-invitations';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface InvitationsListProps {
   invitations: InvitationDto[];
 }
 
 export function InvitationsList({ invitations }: InvitationsListProps) {
-  const acceptInvitationMutation = useAcceptInvitation();
   const declineInvitationMutation = useDeclineInvitation();
+  const router = useRouter();
   const [processingId, setProcessingId] = useState<string | null>(null);
 
-  const handleAccept = async (invitationId: string, listName: string) => {
-    setProcessingId(invitationId);
-    try {
-      await acceptInvitationMutation.mutateAsync(invitationId);
-      alert(`Te has unido a "${listName}" exitosamente`); // Reemplazado toast con alert
-    } catch (error) {
-      alert('Error al aceptar la invitación'); // Reemplazado toast con alert
-    } finally {
-      setProcessingId(null);
+  const handleAccept = async (invitationId: string, listName: string, listId?: string) => {
+    // NOTA: No existe endpoint /accept en el backend
+    // Simplemente redirigir a la lista si tenemos el listId
+    if (listId) {
+      router.push(`/lists/${listId}`);
+      alert(`Accediendo a "${listName}"`);
+    } else {
+      alert('No se puede acceder a la lista: ID no disponible');
     }
   };
 
