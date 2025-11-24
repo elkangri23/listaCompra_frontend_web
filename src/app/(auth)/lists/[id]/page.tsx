@@ -191,11 +191,13 @@ export default function ListDetailPage() {
   const handleStartEditListName = () => {
     setEditingListName(list?.nombre || '');
     setIsEditingListName(true);
+    setIsEditingListDesc(false);
   };
 
   const handleStartEditListDesc = () => {
     setEditingListDesc(list?.descripcion || '');
     setIsEditingListDesc(true);
+    setIsEditingListName(false);
   };
 
   const handleSaveListName = () => {
@@ -332,6 +334,12 @@ export default function ListDetailPage() {
                 <button 
                   className={styles.title} 
                   onClick={handleStartEditListName}
+                  onFocus={(e) => {
+                    // Check if the focus is coming from a keyboard interaction
+                    if (e.target.matches(':focus-visible')) {
+                      handleStartEditListName();
+                    }
+                  }}
                   type="button"
                   title="Presiona Enter para editar"
                   aria-label="Nombre de la lista, presiona Enter para editar"
@@ -569,7 +577,53 @@ export default function ListDetailPage() {
                 <div className="space-y-4">
                   <div>
                     <h4 className="text-sm font-medium text-gray-500">Descripción</h4>
-                    <p className="mt-1 text-sm text-gray-900">{list?.descripcion || 'Sin descripción'}</p>
+                    {isEditingListDesc ? (
+                      <div className={styles.editDescWrapper}>
+                        <textarea
+                          className={styles.editDescTextarea}
+                          value={editingListDesc}
+                          onChange={(e) => setEditingListDesc(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                              handleCancelListEdit();
+                            }
+                          }}
+                          aria-label="Editar descripción de la lista"
+                          rows={4}
+                        />
+                        <div className={styles.editDescActions}>
+                          <button
+                            className={styles.cancelListButton}
+                            onClick={handleCancelListEdit}
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            className={styles.saveListButton}
+                            onClick={handleSaveListDesc}
+                            disabled={updateListMutation.isPending}
+                          >
+                            Guardar
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div 
+                        className="mt-1 text-sm text-gray-900 cursor-pointer"
+                        onClick={handleStartEditListDesc}
+                        onFocus={(e) => {
+                          // Check if the focus is coming from a keyboard interaction
+                          if (e.target.matches(':focus-visible')) {
+                            handleStartEditListDesc();
+                          }
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleStartEditListDesc()}}
+                      >
+                        <p className="whitespace-pre-wrap">{list?.descripcion || <span className="text-gray-500">Sin descripción, haz click para añadir una.</span>}</p>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <h4 className="text-sm font-medium text-gray-500">Fecha de creación</h4>
