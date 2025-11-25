@@ -13,6 +13,7 @@ import { CollaboratorsSection } from '@/features/invitations/components/collabor
 import { BulkCategorizationDialog } from '@/features/ai/components/bulk-categorization-dialog';
 import { ProductsKanban } from '@/features/products/components/products-kanban';
 import { RecommendationsPanel } from '@/features/ai/components/recommendations-panel';
+import { CreateBlueprintFromListDialog } from '@/features/blueprints/components/create-blueprint-from-list-dialog';
 import { Button } from '@/components/ui/button';
 import type { Recommendation } from '@/types/dtos/ai';
 
@@ -389,6 +390,11 @@ export default function ListDetailPage() {
                 </button>
               )}
               <div className={styles.headerActions}>
+                <CreateBlueprintFromListDialog
+                  listId={listId}
+                  listName={list?.nombre || ''}
+                  productCount={products.length}
+                />
                 <Button
                   variant="outline"
                   size="sm"
