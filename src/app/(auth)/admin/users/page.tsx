@@ -1,111 +1,210 @@
 'use client';
 
 import { useState } from 'react';
-import styles from './admin-users.module.css';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  useSystemMetrics,
+  useHealthStatus,
+  usePerformanceMetrics,
+  useAdminUsers,
+  useUpdateUserStatus,
+  useImpersonateUser,
+} from '@/features/admin/hooks/use-admin-users';
+import { SystemMetricsDashboard } from '@/features/admin/components/system-metrics-dashboard';
+import { SystemHealthPanel } from '@/features/admin/components/system-health-panel';
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  registrationDate: string;
-  status: 'Activo' | 'Inactivo';
-}
-
-export default function UserManagementPage() {
+export default function AdminUsersPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   
-  // Mock data - replace with actual API call
-  const users: User[] = [
-    { id: 1, name: 'Elena Ramirez', email: 'elena.ramirez@example.com', registrationDate: '2023-08-15', status: 'Activo' },
-    { id: 2, name: 'Carlos Mendoza', email: 'carlos.mendoza@example.com', registrationDate: '2023-07-22', status: 'Activo' },
-    { id: 3, name: 'Sofia Vargas', email: 'sofia.vargas@example.com', registrationDate: '2023-06-10', status: 'Inactivo' },
-    { id: 4, name: 'Javier Torres', email: 'javier.torres@example.com', registrationDate: '2023-05-01', status: 'Activo' },
-    { id: 5, name: 'Lucia Fernandez', email: 'lucia.fernandez@example.com', registrationDate: '2023-04-18', status: 'Activo' }
-  ];
+  // Queries
+  const { data: metrics, isLoading: metricsLoading } = useSystemMetrics();
+  const { data: health } = useHealthStatus();
+  const { data: performance } = usePerformanceMetrics();
+  const { data: usersData, isLoading: usersLoading } = useAdminUsers(searchQuery, currentPage, 20);
+  
+  // Mutations
+  const updateStatus = useUpdateUserStatus();
+  const impersonate = useImpersonateUser();
 
-  const handleViewDetails = (userId: number) => {
-    alert(`Ver detalles del usuario ${userId} (por implementar)`);
+  const handleToggleStatus = (userId: string, currentStatus: boolean) => {
+    if (confirm(`¿Confirmar ${currentStatus ? 'desactivar' : 'activar'} usuario?`)) {
+      updateStatus.mutate({ userId, activo: !currentStatus });
+    }
   };
 
-  const handleToggleStatus = (userId: number) => {
-    alert(`Cambiar estado del usuario ${userId} (por implementar)`);
+  const handleImpersonate = (userId: string, userName: string) => {
+    if (confirm(`¿Impersonar a ${userName}? Actuarás como este usuario hasta que finalices la impersonación.`)) {
+      impersonate.mutate(userId);
+    }
   };
 
   return (
-    <div className={styles.container}>
-            <header className={styles.header}>
-              <h2 className={styles.title}>Gestión de Usuarios</h2>
-            </header>
-            
-            <div className={styles.searchWrapper}>
-              <label htmlFor="search-users" className={styles.searchLabel}>
-                <div className={styles.searchContainer}>
-                  <div className={styles.searchIconWrapper}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                      <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z" />
-                    </svg>
-                  </div>
-                  <input
-                    id="search-users"
-                    type="text"
-                    placeholder="Buscar usuarios por nombre o email"
-                    className={styles.searchInput}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    aria-label="Buscar usuarios por nombre o email"
-                  />
-                </div>
-              </label>
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Panel de Administración</h1>
+        <Badge variant="outline" className="text-lg">
+          Admin Dashboard
+        </Badge>
+      </div>
+
+      <Tabs defaultValue="metrics" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="metrics">📊 Métricas</TabsTrigger>
+          <TabsTrigger value="users">👥 Usuarios</TabsTrigger>
+          <TabsTrigger value="health">🏥 Estado del Sistema</TabsTrigger>
+        </TabsList>
+
+        {/* Tab: Métricas del Sistema */}
+        <TabsContent value="metrics" className="space-y-4">
+          {metricsLoading ? (
+            <div className="flex items-center justify-center p-8">
+              <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
             </div>
-            
-            <div className={styles.tableWrapper}>
-              <div className={styles.tableContainer}>
-                <table className={styles.table}>
-                  <thead className={styles.tableHead}>
-                    <tr className={styles.tableRow}>
-                      <th className={`${styles.tableHeader} ${styles.colName}`}>Nombre</th>
-                      <th className={`${styles.tableHeader} ${styles.colEmail}`}>Email</th>
-                      <th className={`${styles.tableHeader} ${styles.colDate}`}>Fecha de Registro</th>
-                      <th className={`${styles.tableHeader} ${styles.colStatus}`}>Estado</th>
-                      <th className={`${styles.tableHeader} ${styles.colDetails}`}></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.map((user) => (
-                      <tr key={user.id} className={styles.tableRow}>
-                        <td className={`${styles.tableCell} ${styles.cellName} ${styles.colName}`}>
-                          {user.name}
-                        </td>
-                        <td className={`${styles.tableCell} ${styles.cellEmail} ${styles.colEmail}`}>
-                          {user.email}
-                        </td>
-                        <td className={`${styles.tableCell} ${styles.cellDate} ${styles.colDate}`}>
-                          {user.registrationDate}
-                        </td>
-                        <td className={`${styles.tableCell} ${styles.colStatus}`}>
-                          <button 
-                            className={styles.statusButton}
-                            onClick={() => handleToggleStatus(user.id)}
-                            aria-label={`Estado actual: ${user.status}. Click para cambiar`}
-                          >
-                            <span>{user.status}</span>
-                          </button>
-                        </td>
-                        <td className={`${styles.tableCell} ${styles.colDetails}`}>
-                          <button 
-                            className={styles.detailsButton}
-                            onClick={() => handleViewDetails(user.id)}
-                            aria-label={`Ver detalles de ${user.name}`}
-                          >
-                            Ver Detalles
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+          ) : metrics ? (
+            <SystemMetricsDashboard metrics={metrics} />
+          ) : (
+            <p className="text-center text-muted-foreground">No hay métricas disponibles</p>
+          )}
+        </TabsContent>
+
+        {/* Tab: Gestión de Usuarios */}
+        <TabsContent value="users" className="space-y-4">
+          <div className="flex items-center gap-4">
+            <Input
+              type="search"
+              placeholder="Buscar usuarios por nombre o email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="max-w-md"
+            />
+            <Button variant="outline" onClick={() => setSearchQuery('')}>
+              Limpiar
+            </Button>
+          </div>
+
+          {usersLoading ? (
+            <div className="flex items-center justify-center p-8">
+              <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
             </div>
+          ) : usersData && usersData.usuarios.length > 0 ? (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nombre</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Rol</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead>Registro</TableHead>
+                    <TableHead className="text-right">Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {usersData.usuarios.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="font-medium">{user.nombre}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>
+                        <Badge variant={user.rol === 'ADMIN' ? 'default' : 'secondary'}>
+                          {user.rol}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={user.activo ? 'default' : 'destructive'}>
+                          {user.activo ? 'Activo' : 'Inactivo'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {new Date(user.fechaCreacion).toLocaleDateString('es-ES')}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              ⋮
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => handleImpersonate(user.id, user.nombre)}
+                            >
+                              👤 Impersonar usuario
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleToggleStatus(user.id, user.activo)}
+                            >
+                              {user.activo ? '🔴 Desactivar' : '🟢 Activar'}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <p className="text-center text-muted-foreground py-8">
+              No se encontraron usuarios
+            </p>
+          )}
+
+          {usersData && usersData.totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                Anterior
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Página {currentPage} de {usersData.totalPages}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage((p) => Math.min(usersData.totalPages, p + 1))}
+                disabled={currentPage === usersData.totalPages}
+              >
+                Siguiente
+              </Button>
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Tab: Estado del Sistema */}
+        <TabsContent value="health" className="space-y-4">
+          {health ? (
+            <SystemHealthPanel health={health} performance={performance} />
+          ) : (
+            <p className="text-center text-muted-foreground">
+              Cargando estado del sistema...
+            </p>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
