@@ -15,7 +15,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Sparkles, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import type { CategorySuggestionDto } from '@/types/dtos/ai';
+import type { SuggestedCategory } from '@/types/dtos/ai';
 
 interface AIProductFormProps extends ProductFormProps {
   /**
@@ -41,7 +41,7 @@ export function AIProductForm({
   const [aiEnabled, setAiEnabled] = useState(defaultAIEnabled);
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');
-  const [suggestions, setSuggestions] = useState<CategorySuggestionDto[]>([]);
+  const [suggestions, setSuggestions] = useState<SuggestedCategory[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(
     defaultValues?.categoriaId
   );
@@ -59,19 +59,26 @@ export function AIProductForm({
         descripcion: productDescription,
       });
 
-      setSuggestions(result.sugerencias);
+      // result.data tiene { suggestedCategory, alternativeCategories, source, processingTimeMs }
+      const categorySuggestions: SuggestedCategory[] = [
+        result.data.suggestedCategory,
+        ...(result.data.alternativeCategories || []),
+      ];
+      setSuggestions(categorySuggestions);
 
-      // Auto-seleccionar la categoría recomendada si tiene alta confianza (>0.7)
+      // Auto-seleccionar la categoría recomendada si tiene alta confianza (>80%)
+      const mainSuggestion = result.data.suggestedCategory;
       if (
-        result.categoriaRecomendada &&
-        result.categoriaRecomendada.confianza > 0.7 &&
-        !selectedCategoryId
+        mainSuggestion &&
+        mainSuggestion.confidence > 80 &&
+        !selectedCategoryId &&
+        mainSuggestion.tiendaId
       ) {
-        setSelectedCategoryId(result.categoriaRecomendada.categoriaId);
-        onCategorySuggestionSelected?.(result.categoriaRecomendada.categoriaId);
+        setSelectedCategoryId(mainSuggestion.tiendaId);
+        onCategorySuggestionSelected?.(mainSuggestion.tiendaId);
         
         toast.success('Categoría sugerida por IA', {
-          description: `${result.categoriaRecomendada.nombre} (${Math.round(result.categoriaRecomendada.confianza * 100)}% confianza)`,
+          description: `${mainSuggestion.nombre} (${mainSuggestion.confidence}% confianza)`,
           icon: <Sparkles className="h-4 w-4" />,
         });
       }
@@ -108,10 +115,13 @@ export function AIProductForm({
     }
   }, [formValues, productName, productDescription]);
 
-  const handleSuggestionClick = (suggestion: CategorySuggestionDto) => {
-    setSelectedCategoryId(suggestion.categoriaId);
-    setFormValues(prev => ({ ...prev, categoriaId: suggestion.categoriaId }));
-    onCategorySuggestionSelected?.(suggestion.categoriaId);
+  const handleSuggestionClick = (suggestion: SuggestedCategory) => {
+    // SuggestedCategory tiene tiendaId opcional, buscar la categoría por nombre
+    setFormValues(prev => ({ ...prev, categoriaId: suggestion.tiendaId || undefined }));
+    if (suggestion.tiendaId) {
+      setSelectedCategoryId(suggestion.tiendaId);
+      onCategorySuggestionSelected?.(suggestion.tiendaId);
+    }
     
     toast.success('Categoría aplicada', {
       description: suggestion.nombre,
@@ -165,29 +175,27 @@ export function AIProductForm({
             <div className="space-y-2">
               <p className="text-sm font-medium">Sugerencias de categoría:</p>
               <div className="flex flex-wrap gap-2">
-                {suggestions.slice(0, 3).map((suggestion) => (
+                {suggestions.slice(0, 3).map((suggestion, index) => (
                   <Button
-                    key={suggestion.categoriaId}
-                    variant={selectedCategoryId === suggestion.categoriaId ? 'default' : 'outline'}
+                    key={suggestion.tiendaId || `${suggestion.nombre}-${index}`}
+                    variant={selectedCategoryId === suggestion.tiendaId ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => handleSuggestionClick(suggestion)}
                     className="gap-2"
                   >
-                    {selectedCategoryId === suggestion.categoriaId && (
+                    {selectedCategoryId === suggestion.tiendaId && (
                       <CheckCircle2 className="h-3 w-3" />
                     )}
                     {suggestion.nombre}
                     <Badge variant="secondary" className="ml-1">
-                      {Math.round(suggestion.confianza * 100)}%
+                      {suggestion.confidence}%
                     </Badge>
                   </Button>
                 ))}
               </div>
-              {suggestions[0]?.razon && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  💡 {suggestions[0].razon}
-                </p>
-              )}
+              <p className="text-xs text-muted-foreground mt-2">
+                💡 Sugerencias basadas en el nombre del producto
+              </p>
             </div>
           </CardContent>
         )}

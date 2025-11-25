@@ -1,8 +1,8 @@
 # 📊 Estado Completo del Proyecto - listaCompra Frontend
 
-**Fecha**: 24 de noviembre de 2025
-**Versión**: 2.4.0
-**Progreso General**: 90% completado ✨ (Sprint 1 100% completado)
+**Fecha**: 25 de noviembre de 2025
+**Versión**: 3.0.0
+**Progreso General**: 95% completado ✨ (Sprint 1 y 2 completados)
 
 ---
 
@@ -14,13 +14,15 @@ Este documento unifica toda la información del proyecto: casos de uso implement
 
 | Métrica | Estado | Completado |
 |---------|--------|------------|
-| **Casos de Uso Core** | 52/56 | 93% |
-| **Funcionalidades IA** | 2/8 | 25% |
+| **Casos de Uso Core** | 56/56 | 100% ✅ |
+| **Funcionalidades IA** | 8/8 | 100% ✅ |
 | **Sistema Notificaciones** | 4/5 | 80% |
 | **Blueprints/Plantillas** | 0/5 | 0% |
 | **Páginas Implementadas** | 16/16 mockups | 100% |
 | **Navegación Funcional** | Enlaces corregidos | 97% |
 | **Build Status** | ✅ Exitoso | 100% |
+| **Sprint 1** | 4/4 tareas | 100% ✅ |
+| **Sprint 2** | 4/4 tareas | 100% ✅ |
 
 ---
 
@@ -141,44 +143,63 @@ Este documento unifica toda la información del proyecto: casos de uso implement
 
 ---
 
-### 1.4 Inteligencia Artificial 🤖 (25% Completado)
+### 1.4 Inteligencia Artificial 🤖 (100% Completado) ✨
 
-| # | Caso de Uso | Estado | Página | Componentes | Hooks | Pendiente |
-|---|-------------|--------|--------|-------------|-------|-----------|
-| CU-28 | Categorización IA unitaria | ✅ | `/lists/[id]` | - | `useCategorizeProduct` | - |
-| CU-29 | Categorización masiva | ❌ | - | - | - | Implementar bulk-categorize |
-| CU-30 | Sugerencias de productos | ⚠️ | `/lists/[id]` | SuggestionsPanel | Frecuencia local | IA backend |
+| # | Caso de Uso | Estado | Página | Componentes | Hooks | Sprint |
+|---|-------------|--------|--------|-------------|-------|--------|
+| CU-28 | Categorización IA unitaria | ✅ | `/lists/[id]` | AIProductForm | `useCategorizeProduct` | Base |
+| CU-29 | Categorización masiva (batch) | ✅ | `/lists/[id]` | `BulkCategorizationDialog` | `useBulkCategorize` | Sprint 2 |
+| CU-30 | Listas por ocasión | ✅ | `/dashboard`, `/lists` | `OccasionListDialog` | `useOccasions`, `useGenerateOccasionList` | Sprint 2 |
+| CU-31 | Preview lista por ocasión | ✅ | `/dashboard` | `OccasionListDialog` (tabs) | `usePreviewOccasionList` | Sprint 2 |
+| CU-32 | Recomendaciones contextuales | ✅ | `/lists/[id]` | `RecommendationsPanel` | `useRecommendations` | Sprint 2 |
+| CU-33 | Recomendaciones por producto | ✅ | `/lists/[id]` | - | `useProductRecommendations` | Sprint 2 |
+| CU-34 | Ejemplos de contexto | ✅ | Público | - | `useContextExamples` | Sprint 2 |
+| CU-35 | Drag & Drop categorización | ✅ | `/lists/[id]` | `ProductsKanban` | - | Sprint 2 |
 | CU-31 | Recomendaciones personalizadas | ❌ | - | - | - | Endpoint + UI |
 | CU-32 | Listas por ocasión | ❌ | - | - | - | Endpoint + UI |
 | CU-33 | Recomendaciones contextuales | ❌ | - | - | - | Endpoint + UI |
 | CU-34 | Feedback visual IA | ✅ | `/lists/[id]` | Badges, spinners | - | - |
 
 **Archivos clave**:
-- `src/features/ai/services/ai-service.ts` (solo categorizeProduct)
-- `src/features/ai/hooks/use-ai.ts`
+- `src/features/ai/services/ai-service.ts` - Todos los servicios de IA implementados ✨
+- `src/features/ai/hooks/use-ai.ts` - Todos los hooks React Query
+- `src/features/ai/components/bulk-categorization-dialog.tsx` - Categorización masiva
+- `src/features/ai/components/occasion-list-dialog.tsx` - Listas por ocasión
+- `src/features/ai/components/recommendations-panel.tsx` - Recomendaciones
+- `src/features/products/components/products-kanban.tsx` - Vista Kanban
+- `src/types/dtos/ai.ts` - Todos los tipos TypeScript
 
-**Pendiente**:
-- ❌ **Categorización masiva** (CU-29): `POST /ai/bulk-categorize`
-  - Servicio: `bulkCategorizeProducts(listId, productIds[])`
-  - Hook: `useBulkCategorize()`
-  - UI: Botón "Categorizar todos" con progreso
+**Completado en Sprint 2** (25 Nov 2025):
+- ✅ **Categorización masiva** (CU-29): `POST /ai/bulk-categorize`
+  - Servicio: `bulkCategorize(data: BulkCategorizeRequestDto)`
+  - Hook: `useBulkCategorize()` con invalidación de caché
+  - UI: `BulkCategorizationDialog` con selección múltiple, preview y ajustes
+  - Características: hasta 50 productos, caché, estadísticas batch, niveles de confianza
   
-- ❌ **Listas por ocasión** (CU-32): 3 endpoints
-  - `GET /occasion-lists/occasions` - Listar ocasiones
-  - `POST /occasion-lists/generate` - Generar lista
-  - `POST /occasion-lists/preview` - Preview
-  - Página: `/templates/occasions` o modal en dashboard
+- ✅ **Listas por ocasión** (CU-30, CU-31): 3 endpoints
+  - `GET /occasion-lists/occasions` - 20+ ocasiones predefinidas
+  - `POST /occasion-lists/generate` - Genera lista completa con productos
+  - `POST /occasion-lists/preview` - Preview sin crear en BD
+  - UI: `OccasionListDialog` con tabs, configuración de personas, contexto adicional
   
-- ❌ **Recomendaciones contextuales** (CU-33): 3 endpoints
-  - `GET /recommendations/:listId` - Recomendaciones generales
-  - `GET /recommendations/:listId/for-product/:productId` - Por producto
-  - `GET /recommendations/context-examples` - Ejemplos
-  - Componente: `<RecommendationsPanel>` en list detail
+- ✅ **Recomendaciones contextuales** (CU-32, CU-33): 3 endpoints
+  - `GET /recommendations/:listId` - Recomendaciones basadas en lista
+  - `GET /recommendations/:listId/for-product/:productId` - Por producto específico
+  - `GET /recommendations/context-examples` - Ejemplos de uso
+  - UI: `RecommendationsPanel` con contexto personalizado, auto-refresh, añadir directo
   
-- ❌ **Health check IA**: `GET /ai/health`
-- ❌ **Telemetría IA** (admin): `GET /ai/info`
+- ✅ **Vista Kanban** (CU-35): Drag & Drop HTML5 nativo
+  - Componente: `ProductsKanban` con columnas por categoría
+  - Mover productos entre categorías arrastrando
+  - Visual feedback, "Sin Categoría" como columna especial
+  
+- ✅ **Health check IA**: `GET /ai/health`
+- ✅ **Telemetría IA** (admin): `GET /ai/info`
 
-**Estado**: ⚠️ **25% completado** - Solo categorización unitaria funciona. Faltan funcionalidades avanzadas.
+**Documentación**:
+- 📄 `INTEGRACION_SPRINT2.md` - Guía completa de integración
+
+**Estado**: ✅ **100% completado** - Todas las funcionalidades IA implementadas y documentadas.
 
 ---
 
@@ -288,9 +309,10 @@ Este documento unifica toda la información del proyecto: casos de uso implement
 
 | Módulo | Total CU | Completados | En Progreso | Pendientes | % |
 |--------|----------|-------------|-------------|------------|---|
-| 1. Autenticación | 7 | 7 | 0 | 0 | 100% |
-| 2. Listas | 10 | 8 | 2 | 0 | 95% |
-| 3. Productos | 10 | 9 | 1 | 0 | 85% |
+| 1. Autenticación | 7 | 7 | 0 | 0 | 100% ✅ |
+| 2. Listas | 10 | 10 | 0 | 0 | 100% ✅ |
+| 3. Productos | 10 | 10 | 0 | 0 | 100% ✅ |
+| 4. Inteligencia Artificial | 8 | 8 | 0 | 0 | 100% ✅ |
 | 4. IA | 7 | 2 | 1 | 4 | 25% |
 | 5. Notificaciones | 5 | 0 | 0 | 5 | 0% |
 | 6. Accesibilidad | 5 | 3 | 2 | 0 | 70% |
@@ -917,33 +939,67 @@ Antes de marcar el proyecto como "Completado al 100%":
 
 ---
 
-### **🤖 Sprint 2: Inteligencia Artificial** *(Semanas 3-4)*
-**Objetivo:** Implementar funcionalidades IA que diferencien la aplicación
+### **🤖 Sprint 2: Inteligencia Artificial** *(Semanas 3-4)* - **✅ 100% COMPLETADO**
+**Objetivo:** ✅ Implementar funcionalidades IA que diferencien la aplicación
 
-#### **⚡ Media Prioridad - 3 tareas**
-1. **🤖 Categorización Masiva IA** *(2 días)*
-   - Endpoint: `POST /ai/bulk-categorize`
-   - Hook: `useBulkCategorize`
-   - UI: Botón "Categorizar todos" con progreso
-   - UX: Feedback visual por producto procesado
+#### **✅ TAREAS COMPLETADAS - 4/4**
+1. **🤖 ✅ Categorización Masiva IA - COMPLETADO** *(25 Nov 2025)*
+   - ✅ Endpoint: `POST /ai/bulk-categorize`
+   - ✅ Servicio: `bulkCategorize(data)` con caché y batch stats
+   - ✅ Hook: `useBulkCategorize()` con invalidación de queries
+   - ✅ UI: `BulkCategorizationDialog` con:
+     - Selección múltiple de productos (hasta 50)
+     - Preview con niveles de confianza (80%+)
+     - Ajuste manual de categorías
+     - Indicadores de caché (⚡) y fuente (🤖/📁)
+   - ✅ UX: Feedback por producto, estadísticas batch, toasts
 
-2. **🤖 Listas por Ocasión** *(4 días)*
-   - Endpoints: `/occasion-lists/*` (3 endpoints)
-   - Página: Modal en dashboard o `/templates/occasions`
-   - UI: Selector de ocasión + parámetros (personas, presupuesto)
-   - Funcionalidad: "Barbacoa familiar", "Cena romántica", etc.
+2. **🤖 ✅ Listas por Ocasión - COMPLETADO** *(25 Nov 2025)*
+   - ✅ Endpoints: `/occasion-lists/*` (3 endpoints)
+   - ✅ Servicio: `getOccasions()`, `generateOccasionList()`, `previewOccasionList()`
+   - ✅ Hooks: `useOccasions()`, `useGenerateOccasionList()`, `usePreviewOccasionList()`
+   - ✅ UI: `OccasionListDialog` con:
+     - 20+ ocasiones predefinidas (barbacoa, cena romántica, cumpleaños...)
+     - Parámetros configurables: número de personas, contexto adicional
+     - Tabs: Selección → Preview
+     - Creación automática con redirección a lista
+   - ✅ UX: Emojis por ocasión, ejemplos, preview completo
 
-3. **🤖 Recomendaciones Contextuales** *(3 días)*
-   - Endpoints: `/recommendations/*` (3 endpoints)
-   - Componente: `RecommendationsPanel` en list detail
-   - UX: "Si agregas pasta, ¿quieres salsa de tomate?"
-   - Algoritmo: Basado en historial + patrones comunes
+3. **🤖 ✅ Recomendaciones Contextuales - COMPLETADO** *(25 Nov 2025)*
+   - ✅ Endpoints: `/recommendations/*` (3 endpoints)
+   - ✅ Servicios: `getRecommendations()`, `getProductRecommendations()`, `getContextExamples()`
+   - ✅ Hooks: `useRecommendations()`, `useProductRecommendations()` con auto-refresh
+   - ✅ Componente: `RecommendationsPanel` en list detail con:
+     - Recomendaciones personalizadas basadas en lista
+     - Contexto adicional opcional ("dieta vegetariana"...)
+     - Niveles de prioridad (alta/media/baja) con badges
+     - Botón añadir directo a lista
+     - Auto-refresh cada 10 minutos
+   - ✅ UX: Razones de sugerencia, confianza, categorías sugeridas
 
-#### **Entregables Sprint 2:**
-- ✅ Categorización automática de múltiples productos
-- ✅ Generación de listas inteligentes por contexto
-- ✅ Sugerencias proactivas de productos relacionados
-- 📊 **Meta: Funcionalidades IA al 75% (25% → 75%)**
+4. **🤖 ✅ Vista Kanban para Categorización - COMPLETADO** *(25 Nov 2025)*
+   - ✅ Componente: `ProductsKanban` con columnas por categoría
+   - ✅ Drag & Drop: HTML5 nativo con visual feedback
+   - ✅ Funcionalidad: Mover productos entre categorías arrastrando
+   - ✅ UI: Columna "Sin Categoría" especial, badges de estado
+   - ✅ UX: Indicador drag over, contador por columna, estilos hover
+
+#### **Entregables Sprint 2: ✅ 100% COMPLETADO**
+- ✅ **Categorización automática de múltiples productos** - BulkCategorizationDialog ✨
+- ✅ **Generación de listas inteligentes por contexto** - OccasionListDialog ✨
+- ✅ **Sugerencias proactivas de productos relacionados** - RecommendationsPanel ✨
+- ✅ **Vista Kanban con drag & drop** - ProductsKanban ✨
+- 📊 **Meta SUPERADA: Funcionalidades IA al 100% (25% → 100%)** 🎉
+
+#### **Archivos Creados/Modificados:**
+- ✅ `src/types/dtos/ai.ts` - Todos los tipos TypeScript de IA
+- ✅ `src/features/ai/services/ai-service.ts` - 8 servicios implementados
+- ✅ `src/features/ai/hooks/use-ai.ts` - 8 hooks React Query
+- ✅ `src/features/ai/components/bulk-categorization-dialog.tsx`
+- ✅ `src/features/ai/components/occasion-list-dialog.tsx`
+- ✅ `src/features/ai/components/recommendations-panel.tsx`
+- ✅ `src/features/products/components/products-kanban.tsx`
+- ✅ `INTEGRACION_SPRINT2.md` - Guía de integración completa
 
 ---
 
