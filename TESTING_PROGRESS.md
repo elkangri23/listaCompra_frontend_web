@@ -32,32 +32,16 @@
       └── test-utils.ts ✅ Utilidades creadas
   ```
 
-#### 2. Tests Críticos Implementados (5/17 = 29.4%)
-✅ **list-service.test.ts** - 100% coverage
-- 19 tests pasando
-- Cobertura: 100% statements, 100% branches, 100% functions, 100% lines
-- Casos testeados:
-  - getLists: paginación, búsqueda, errores de red, respuestas vacías
-  - getListById: obtención correcta, lista no encontrada, ID inválido
-  - createList: creación correcta, validación de nombre, validación de tienda
-  - updateList: actualización correcta, lista no encontrada, datos inválidos
-  - deleteList: eliminación correcta, lista no encontrada, permisos insuficientes
-  - getListSummary: resumen correcto, lista vacía, errores del servidor
+#### 2. Tests Críticos Implementados (7/17 = 41.2%)
+✅ **list-service.test.ts** - 100% coverage (19 tests)
+✅ **auth-service.test.ts** - 98.36% coverage (23 tests)
+✅ **product-service.test.ts** - 100% coverage (20 tests)
+✅ **invitation-service.test.ts** - 100% coverage (24 tests)
+✅ **ai-service.test.ts** - 100% coverage (23 tests)
+✅ **admin-service.test.ts** - 100% coverage (25 tests)
+✅ **advanced-security.test.ts** - 100% coverage (37 tests)
 
-✅ **auth-service.test.ts** - 98.36% coverage
-- 23 tests pasando
-- Cobertura: 98.36% statements, 75% branches, 100% functions, 98.36% lines
-- Casos testeados:
-  - login: autenticación correcta, normalización de email, credenciales inválidas
-  - refreshToken: renovación correcta, token vacío, token inválido
-  - registerUser: registro correcto, email duplicado, contraseña débil
-  - requestPasswordReset: enlace de recuperación, email no registrado
-  - getCurrentUser: obtención correcta, sesión expirada
-  - updateProfile: actualización correcta, email duplicado
-  - changePassword: cambio correcto, contraseña actual incorrecta, contraseña débil
-  - AuthApiError: creación de error personalizado
-
-✅ **product-service.test.ts** - 100% coverage
+**Total: 171 tests pasando**
 - 20 tests pasando
 - Cobertura: 100% statements, 100% branches, 100% functions, 100% lines
 - Casos testeados:
@@ -157,7 +141,7 @@
 | bulk-categorization-dialog.tsx | 0% | ⏳ | Pendiente |
 | use-blueprints.ts | 0% | ⏳ | Pendiente |
 
-**Críticos completados**: 5/17 = 29.4% 🟢 (+17.7% en esta sesión)
+**Críticos completados**: 7/17 = 41.2% 🟢 (+41.2% acumulado)
 
 #### 🟡 SECUNDARIOS (15 archivos) - 0% completado
 Todos pendientes (requieren 80% coverage)
@@ -184,13 +168,22 @@ Excluidos de coverage (componentes shadcn/ui, layouts, utilidades simples)
    - 23 tests, 100% coverage
    - Tiempo: 2h
 
-4. ⏳ **admin-service.test.ts**
-   - getUsers, getUserById, updateUser, deleteUser, getMetrics, getAuditLog
-   - Estimado: 2h
+4. ✅ **admin-service.test.ts** - COMPLETADO
+   - 25 tests, 100% coverage
+   - getSystemMetrics, getHealthStatus, getPerformanceMetrics
+   - getAdminUsers (paginación), updateUserStatus
+   - impersonateUser, endImpersonation
+   - getAuditLogs (filtros), getSecurityAlerts
+   - Tiempo: 1.5h
 
-5. ⏳ **advanced-security.test.ts**
-   - validateInvitationExpiration, enforceInvitationLimit, rateLimitCheck
-   - Estimado: 1.5h
+5. ✅ **advanced-security.test.ts** - COMPLETADO
+   - 37 tests, 100% coverage
+   - validateInvitationExpiration (días/horas restantes)
+   - validateInvitationLimits (quota enforcement)
+   - validateTemporaryLink (time-limited access)
+   - createAuditLog, requiresAudit (decision logic)
+   - checkRateLimit (localStorage, frontend rate limiting)
+   - Tiempo: 1h
 
 #### Hooks (7 archivos)
 6. ⏳ **use-lists.test.tsx**
