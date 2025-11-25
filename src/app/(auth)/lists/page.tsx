@@ -2,8 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { PartyPopper } from 'lucide-react';
 import { useLists, useCreateList } from '@/features/lists/hooks/use-lists';
 import { useDebounce } from '@/hooks/use-debounce';
+import { OccasionListDialog } from '@/features/ai/components/occasion-list-dialog';
+import { Button } from '@/components/ui/button';
 import styles from './lists.module.css';
 
 export default function ListsPage() {
@@ -21,6 +24,7 @@ export default function ListsPage() {
 
   const createListMutation = useCreateList();
   const [newListName, setNewListName] = useState('');
+  const [occasionDialogOpen, setOccasionDialogOpen] = useState(false);
 
   // Mock list images (can be replaced with actual list images from backend)
   const listImages = [
@@ -35,6 +39,14 @@ export default function ListsPage() {
         <header className={styles.header}>
           <h1 className={styles.title}>Mis Listas</h1>
           <div className={styles.createContainer}>
+            <Button
+              variant="outline"
+              onClick={() => setOccasionDialogOpen(true)}
+              title="Generar lista por ocasión con IA"
+            >
+              <PartyPopper className="h-4 w-4 mr-2" />
+              Por Ocasión
+            </Button>
             <input
               aria-label="Nombre de nueva lista"
               placeholder="Nueva lista"
@@ -125,6 +137,11 @@ export default function ListsPage() {
             </button>
           </div>
         )}
+        
+        <OccasionListDialog
+          open={occasionDialogOpen}
+          onOpenChange={setOccasionDialogOpen}
+        />
     </div>
   );
 }

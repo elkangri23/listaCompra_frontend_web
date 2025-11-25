@@ -17,14 +17,20 @@ interface BulkCategorizationDialogProps {
   listId: string;
   products: ProductoListDto[];
   onApply: (categorizations: Map<string, string>) => Promise<void>;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function BulkCategorizationDialog({
   listId,
   products,
   onApply,
+  open: controlledOpen,
+  onOpenChange,
 }: BulkCategorizationDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [categorizedResults, setCategorizedResults] = useState<CategorizedProduct[]>([]);
   const [categoryOverrides, setCategoryOverrides] = useState<Map<string, string>>(new Map());

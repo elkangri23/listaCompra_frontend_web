@@ -14,9 +14,16 @@ import { useOccasions, useGenerateOccasionList, usePreviewOccasionList } from '@
 import { toast } from 'sonner';
 import type { OccasionProduct } from '@/types/dtos/ai';
 
-export function OccasionListDialog() {
+interface OccasionListDialogProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export function OccasionListDialog({ open: controlledOpen, onOpenChange }: OccasionListDialogProps = {}) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
   const [selectedOccasion, setSelectedOccasion] = useState('');
   const [numPersonas, setNumPersonas] = useState<number>(4);
   const [contextoAdicional, setContextoAdicional] = useState('');
