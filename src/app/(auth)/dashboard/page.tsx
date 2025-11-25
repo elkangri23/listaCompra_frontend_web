@@ -1,9 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import React from 'react'
+import React, { useState } from 'react'
+import { PartyPopper } from 'lucide-react'
 import { useLists, useDeleteList } from '@/features/lists/hooks/use-lists'
 import { useProducts } from '@/features/products/hooks/use-products'
+import { OccasionListDialog } from '@/features/ai/components/occasion-list-dialog'
+import { Button } from '@/components/ui/button'
 import styles from './dashboard.module.css'
 
 // Componente para mostrar el resumen de una lista individual
@@ -81,6 +84,7 @@ export default function DashboardPage() {
   // Filtrar solo listas activas
   const lists = allLists.filter((list: any) => list.activa !== false)
   const deleteListMutation = useDeleteList()
+  const [occasionDialogOpen, setOccasionDialogOpen] = useState(false)
 
   const handleDeleteList = (listId: string, listName: string) => {
     const confirmDelete = window.confirm(
@@ -106,9 +110,19 @@ export default function DashboardPage() {
     <div className={styles.container}>
       <div className={styles.contentHeader}>
         <h2 className={styles.contentTitle}>Mis Listas</h2>
-        <Link href="/lists/create" className={styles.createButton}>
-          Crear Nueva Lista
-        </Link>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <Button
+            variant="outline"
+            onClick={() => setOccasionDialogOpen(true)}
+            title="Generar lista por ocasión con IA"
+          >
+            <PartyPopper className="h-4 w-4 mr-2" />
+            Generar por Ocasión
+          </Button>
+          <Link href="/lists/create" className={styles.createButton}>
+            Crear Nueva Lista
+          </Link>
+        </div>
       </div>
 
       {isLoading && (
@@ -146,6 +160,11 @@ export default function DashboardPage() {
           ))}
         </div>
       )}
+      
+      <OccasionListDialog
+        open={occasionDialogOpen}
+        onOpenChange={setOccasionDialogOpen}
+      />
     </div>
   )
 }

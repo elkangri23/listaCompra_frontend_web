@@ -3,12 +3,18 @@
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { LayoutGrid, Table as TableIcon, Sparkles } from 'lucide-react';
 import styles from './list-detail.module.css';
 import { useList, useUpdateList, useDeleteList } from '@/features/lists/hooks/use-lists';
 import { useProducts, useCreateProduct, useDeleteProduct, useToggleProductPurchased, useUpdateProduct } from '@/features/products/hooks/use-products';
 import { useCategories } from '@/features/categories/hooks/use-categories';
 import { ShareListDialog } from '@/features/invitations/components/share-list-dialog';
 import { CollaboratorsSection } from '@/features/invitations/components/collaborators-section';
+import { BulkCategorizationDialog } from '@/features/ai/components/bulk-categorization-dialog';
+import { ProductsKanban } from '@/features/products/components/products-kanban';
+import { RecommendationsPanel } from '@/features/ai/components/recommendations-panel';
+import { Button } from '@/components/ui/button';
+import type { Recommendation } from '@/types/dtos/ai';
 
 export default function ListDetailPage() {
   const params = useParams();
@@ -23,6 +29,10 @@ export default function ListDetailPage() {
   const [editingNombre, setEditingNombre] = useState('');
   const [editingCantidad, setEditingCantidad] = useState(1);
   const [editingUrgente, setEditingUrgente] = useState(false);
+  
+  // Estados para Sprint 2
+  const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
+  const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
   
   // Estados para editar nombre y descripción de la lista
   const [isEditingListName, setIsEditingListName] = useState(false);
@@ -234,6 +244,37 @@ export default function ListDetailPage() {
     setIsEditingListDesc(false);
   };
 
+  // Handlers Sprint 2
+  const handleBulkCategorize = async (categorizations: Map<string, string>) => {
+    const promises = Array.from(categorizations.entries()).map(([productId, categoryId]) =>
+      updateProductMutation.mutateAsync({
+        productId,
+        data: { categoriaId: categoryId },
+      })
+    );
+    await Promise.all(promises);
+    setBulkDialogOpen(false);
+  };
+
+  const handleMoveProduct = async (productId: string, newCategoryId: string | null) => {
+    await updateProductMutation.mutateAsync({
+      productId,
+      data: { categoriaId: newCategoryId || undefined },
+    });
+  };
+
+  const handleAddRecommendation = async (recommendation: Recommendation) => {
+    await createProductMutation.mutateAsync({
+      nombre: recommendation.productoNombre,
+      descripcion: recommendation.descripcion,
+      cantidad: recommendation.cantidad || 1,
+      unidad: recommendation.unidad,
+      precio: undefined,
+      urgente: recommendation.prioridad === 'alta',
+      categoriaId: undefined,
+    });
+  };
+
   // Verificar si la lista está inactiva
   if (!isLoadingList && list && list.activa === false) {
     return (
@@ -348,6 +389,28 @@ export default function ListDetailPage() {
                 </button>
               )}
               <div className={styles.headerActions}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setBulkDialogOpen(true)}
+                  disabled={products.filter((p: any) => !p.categoriaId).length === 0}
+                  title="Categorizar productos masivamente con IA"
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Categorizar
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setViewMode(prev => prev === 'table' ? 'kanban' : 'table')}
+                  title={viewMode === 'table' ? 'Vista Kanban' : 'Vista Tabla'}
+                >
+                  {viewMode === 'table' ? (
+                    <LayoutGrid className="h-4 w-4" />
+                  ) : (
+                    <TableIcon className="h-4 w-4" />
+                  )}
+                </Button>
                 <Link href={`/lists/${listId}/history`} className={styles.historyButton}>
                   <span>Ver Historial</span>
                 </Link>
@@ -442,6 +505,12 @@ export default function ListDetailPage() {
               <div className={styles.emptyState}>
                 <p className={styles.emptyStateText}>No hay productos en esta lista. ¡Añade el primero!</p>
               </div>
+            ) : viewMode === 'kanban' ? (
+              <ProductsKanban
+                products={products}
+                categories={categoriesResp?.categorias || []}
+                onMoveProduct={handleMoveProduct}
+              />
             ) : (
               Object.entries(grouped).map(([catId, productos]) => (
                 <div key={catId}>
@@ -652,12 +721,10 @@ export default function ListDetailPage() {
               ) : activeTab === 'collaborators' ? (
                 <CollaboratorsSection listId={listId} ownerId={list?.propietarioId} />
               ) : (
-                <div className={styles.detailCard}>
-                  <p className={styles.detailLabel}>Sugerencias de IA</p>
-                  <p className={styles.detailValue}>
-                    Función de sugerencias de IA próximamente...
-                  </p>
-                </div>
+                <RecommendationsPanel
+                  listId={listId}
+                  onAddProduct={handleAddRecommendation}
+                />
               )}
             </div>
           </div>
@@ -666,12 +733,20 @@ export default function ListDetailPage() {
       </div>
     </div>
     
-    {/* Dialog fuera del contenedor principal para evitar conflictos de z-index y CSS */}
+    {/* Dialogs fuera del contenedor principal para evitar conflictos de z-index y CSS */}
     <ShareListDialog
       listId={listId}
       listName={list?.nombre}
       open={shareDialogOpen}
       onOpenChange={setShareDialogOpen}
+    />
+    
+    <BulkCategorizationDialog
+      listId={listId}
+      products={products.filter((p: any) => !p.categoriaId)}
+      onApply={handleBulkCategorize}
+      open={bulkDialogOpen}
+      onOpenChange={setBulkDialogOpen}
     />
   </>
   );
