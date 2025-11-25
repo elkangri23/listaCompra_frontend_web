@@ -29,12 +29,6 @@ export function InviteUserForm({ email, setEmail }: InviteUserFormProps) {
           📧 El usuario recibirá un correo con la invitación para acceder a la lista
         </p>
       </div>
-      <Button 
-        type="submit" 
-        className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium"
-      >
-        Enviar Invitación
-      </Button>
     </div>
   );
 }

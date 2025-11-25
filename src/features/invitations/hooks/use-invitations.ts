@@ -29,7 +29,8 @@ export const useInviteUser = (listId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (email: string) => invitationService.inviteUser(listId, email),
+    mutationFn: (data: { email: string; tipoPermiso?: 'LECTURA' | 'ESCRITURA' }) => 
+      invitationService.inviteUser(listId, data.email, data.tipoPermiso || 'LECTURA'),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invitations', 'list', listId] });
     },
