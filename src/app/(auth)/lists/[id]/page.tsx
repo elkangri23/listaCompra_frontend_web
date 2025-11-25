@@ -14,6 +14,8 @@ import { BulkCategorizationDialog } from '@/features/ai/components/bulk-categori
 import { ProductsKanban } from '@/features/products/components/products-kanban';
 import { RecommendationsPanel } from '@/features/ai/components/recommendations-panel';
 import { CreateBlueprintFromListDialog } from '@/features/blueprints/components/create-blueprint-from-list-dialog';
+import { CollaborationIndicator } from '@/features/lists/components/collaboration-indicator';
+import { useAutoRefresh, useConflictDetection } from '@/features/lists/hooks/use-collaboration';
 import { Button } from '@/components/ui/button';
 import type { Recommendation } from '@/types/dtos/ai';
 
@@ -60,6 +62,22 @@ export default function ListDetailPage() {
   const updateProductMutation = useUpdateProduct(listId);
   const updateListMutation = useUpdateList();
   const deleteListMutation = useDeleteList();
+
+  // Sprint 4: Colaboración en tiempo real
+  // Auto-refresh cada 10 segundos
+  useAutoRefresh({
+    queryKey: ['lists', listId],
+    interval: 10000,
+  });
+
+  // Detección de conflictos
+  const { handleConflict } = useConflictDetection({
+    listId,
+    lastModified: list?.fechaActualizacion || '',
+    onConflict: () => {
+      // Los queries se invalidarán automáticamente por el hook
+    },
+  });
 
   // Handle nested response structure from backend - wrapped in useMemo to avoid dependency issues
   const products = useMemo(() => {
@@ -389,6 +407,13 @@ export default function ListDetailPage() {
                   {list?.nombre || 'Cargando...'}
                 </button>
               )}
+              
+              {/* Sprint 4: Indicador de colaboración en tiempo real */}
+              <CollaborationIndicator
+                listId={listId}
+                onConflictDetected={handleConflict}
+              />
+              
               <div className={styles.headerActions}>
                 <CreateBlueprintFromListDialog
                   listId={listId}
