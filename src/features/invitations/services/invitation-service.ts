@@ -8,8 +8,11 @@ import {
   ShareLinkResponseDto,
 } from '@/types/dtos/invitations';
 
-const inviteUser = async (listId: string, email: string): Promise<void> => {
-  await axiosInstance.post(`/invitations/${listId}/share`, { email });
+const inviteUser = async (listId: string, email: string, tipoPermiso: 'LECTURA' | 'ESCRITURA' = 'LECTURA'): Promise<void> => {
+  await axiosInstance.post(`/invitations/${listId}/share`, { 
+    email,
+    tipoPermiso
+  });
 };
 
 const getPendingInvitations = async (): Promise<InvitationDto[]> => {
