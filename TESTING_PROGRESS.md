@@ -8,7 +8,7 @@
 
 ## 📊 RESUMEN EJECUTIVO
 
-### ✅ COMPLETADO (Actualizado: 26 nov 2025 - 19:30)
+### ✅ COMPLETADO (Actualizado: 26 nov 2025 - 20:00)
 
 #### 1. Configuración de Testing (100%)
 - ✅ **jest.config.js** actualizado con thresholds 100/80/0
@@ -24,7 +24,7 @@
   ├── unit/
   │   ├── services/     ✅ 7 archivos (171 tests)
   │   ├── hooks/        ✅ 10 archivos (194 tests) ← +53 tests secundarios
-  │   ├── components/   ✅ 4 archivos (68 tests) ← +18 tests secundarios
+  │   ├── components/   ✅ 5 archivos (88 tests) ← +38 tests secundarios
   │   └── security/     ⏳ Pendiente
   ├── integration/      ⏳ Pendiente (1 archivo existente)
   ├── e2e/              ⏳ Pendiente
@@ -57,16 +57,16 @@
 ✅ register-form.test.tsx - 20 tests
 ✅ share-list-dialog.test.tsx - 14 tests passing (5 edge cases pendientes)
 
-**Total: 436 tests passing / 436 total (100% success) 🎉** ⬆️ +74 tests desde última sesión
+**Total: 456 tests passing / 456 total (100% success) 🎉** ⬆️ +94 tests desde última sesión
 
 **Desglose por categoría:**
 - **Críticos (100% coverage)**: 362 tests ✅
   - Services: 171 tests (7 archivos)
   - Hooks: 141 tests (7 archivos)
   - Components: 50 tests (3 archivos)
-- **Secundarios (80% coverage)**: 71 tests ✅ ← NUEVO
+- **Secundarios (80% coverage)**: 91 tests ✅ ← NUEVO
   - Hooks: 53 tests (3 archivos)
-  - Components: 18 tests (1 archivo)
+  - Components: 38 tests (2 archivos)
 - **Integración**: 1 test
 - **Triviales (0% coverage)**: 0 tests (diferidos)
 
@@ -75,6 +75,7 @@
 - 05f517b: Tests secundarios use-stores (18 tests)
 - ac10c5c: Tests secundarios use-notifications (15 tests)
 - 109da16: Tests secundarios products-kanban component (18 tests)
+- 1fd4b57: Tests secundarios blueprint-card component (20 tests)
 
 ✅ **invitation-service.test.ts** - 100% coverage
 - 24 tests pasando
@@ -195,7 +196,7 @@
 
 **Críticos completados**: 17/17 = 100% ✅ 🎉**
 
-#### 🟡 SECUNDARIOS (15 archivos) - 4/15 completado (26.7%) ← NUEVO
+#### 🟡 SECUNDARIOS (15 archivos) - 5/15 completado (33.3%) ← NUEVO
 | Archivo | Coverage | Status | Tests | Commit |
 |---------|----------|--------|-------|--------|
 | **HOOKS (3/4 = 75%)** |||||
@@ -203,12 +204,12 @@
 | use-stores.ts | 80% | ✅ | 18 tests | 05f517b |
 | use-notifications.ts | 80% | ✅ | 15 tests | ac10c5c |
 | use-collaboration.ts | ⏳ | ⏳ | Verificar si necesita secundario | - |
-| **COMPONENTS (1/~7 = ~14%)** |||||
+| **COMPONENTS (2/~7 = ~29%)** |||||
 | products-kanban.tsx | 80% | ✅ | 18 tests | 109da16 |
+| blueprint-card.tsx | 80% | ✅ | 20 tests | 1fd4b57 |
 | occasion-list-dialog.tsx | - | ❌ | Requiere mocks complejos | - |
 | recommendations-panel.tsx | - | ⏳ | Pendiente | - |
 | create-blueprint-from-list-dialog.tsx | - | ⏳ | Pendiente | - |
-| blueprint-card.tsx | - | ⏳ | Pendiente | - |
 | category-form.tsx | - | ⏳ | No existe aún | - |
 | store-form.tsx | - | ⏳ | No existe aún | - |
 | product-form.tsx | - | ⏳ | No existe aún | - |
@@ -218,7 +219,7 @@
 | notifications page | - | ⏳ | Pendiente | - |
 | templates page | - | ⏳ | Pendiente | - |
 
-**Secundarios completados**: 4/15 = 26.7% (71 tests) ✅
+**Secundarios completados**: 5/15 = 33.3% (91 tests) ✅
 
 **Detalles de tests secundarios:**
 
@@ -253,6 +254,18 @@
 - Estado isMoving (loading)
 - Prevención de movimientos a misma categoría
 - Edge cases (listas vacías, categorías inactivas)
+
+✅ **blueprint-card.test.tsx** - 80% coverage (20 tests) - commit 1fd4b57
+- Renderizado básico (nombre, descripción, icono, contador de productos)
+- Badges de visibilidad (Pública/Privada con íconos Globe/Lock)
+- Badge de contador de usos (singular/plural)
+- Etiquetas/tags display
+- Dropdown menu (abrir, opciones Editar/Eliminar)
+- Eliminar con confirmación (window.confirm)
+- Callback onEdit opcional
+- Botón "Usar Plantilla" con loading state
+- Redirección a nueva lista después de creación
+- Edge cases (sin descripción, sin tags, sin usos, contador singular)
 
 #### ⚪ TRIVIALES (25 archivos) - N/A
 Excluidos de coverage (componentes shadcn/ui, layouts, utilidades simples)
