@@ -1,8 +1,11 @@
 // Optional: configure or set up a testing framework before each test.
 // If you delete this file, remove `setupFilesAfterEnv` from `jest.config.js`
 
-// Matchers mínimos inspirados en jest-dom para evitar dependencias externas
-expect.extend({
+// Import all jest-dom matchers
+import '@testing-library/jest-dom';
+
+// Matchers adicionales personalizados (mantener por compatibilidad)
+const customMatchers = {
   toBeInTheDocument(received) {
     const pass = received instanceof Element || received instanceof SVGElement
     return {
@@ -43,12 +46,15 @@ expect.extend({
       message: () => (pass ? 'El elemento está deshabilitado.' : 'Se esperaba que el elemento estuviera deshabilitado.'),
     }
   },
-})
+};
+
+// No extender si jest-dom ya provee los matchers
+// expect.extend(customMatchers);
 
 if (typeof global.ResizeObserver === 'undefined') {
   global.ResizeObserver = class {
     observe() {}
     unobserve() {}
     disconnect() {}
-  };
+  }
 }
