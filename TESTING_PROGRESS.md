@@ -24,7 +24,7 @@
   ├── unit/
   │   ├── services/     ✅ 7 archivos (171 tests)
   │   ├── hooks/        ✅ 10 archivos (194 tests) ← +53 tests secundarios
-  │   ├── components/   ✅ 6 archivos (103 tests) ← +53 tests secundarios
+  │   ├── components/   ✅ 7 archivos (115 tests) ← +65 tests secundarios
   │   └── security/     ⏳ Pendiente
   ├── integration/      ⏳ Pendiente (1 archivo existente)
   ├── e2e/              ⏳ Pendiente
@@ -57,16 +57,16 @@
 ✅ register-form.test.tsx - 20 tests
 ✅ share-list-dialog.test.tsx - 14 tests passing (5 edge cases pendientes)
 
-**Total: 478 tests passing / 478 total (100% success) 🎉** ⬆️ +116 tests desde última sesión
+**Total: 490 tests passing / 490 total (100% success) 🎉** ⬆️ +128 tests desde última sesión
 
 **Desglose por categoría:**
 - **Críticos (100% coverage)**: 362 tests ✅
   - Services: 171 tests (7 archivos)
   - Hooks: 141 tests (7 archivos)
   - Components: 50 tests (3 archivos)
-- **Secundarios (80% coverage)**: 106 tests ✅ ← NUEVO
+- **Secundarios (80% coverage)**: 118 tests ✅ ← NUEVO
   - Hooks: 53 tests (3 archivos)
-  - Components: 53 tests (3 archivos)
+  - Components: 65 tests (4 archivos)
 - **Integración**: 1 test
 - **Triviales (0% coverage)**: 0 tests (diferidos)
 
@@ -77,6 +77,7 @@
 - 109da16: Tests secundarios products-kanban component (18 tests)
 - 1fd4b57: Tests secundarios blueprint-card component (20 tests)
 - a4ef1c2: Tests secundarios recommendations-panel component (15 tests)
+- 15b25d4: Tests secundarios collaborators-section component (12 tests)
 
 ✅ **invitation-service.test.ts** - 100% coverage
 - 24 tests pasando
@@ -197,7 +198,7 @@
 
 **Críticos completados**: 17/17 = 100% ✅ 🎉**
 
-#### 🟡 SECUNDARIOS (15 archivos) - 6/15 completado (40%) ← NUEVO
+#### 🟡 SECUNDARIOS (15 archivos) - 7/15 completado (47%) ← NUEVO
 | Archivo | Coverage | Status | Tests | Commit |
 |---------|----------|--------|-------|--------|
 | **HOOKS (3/4 = 75%)** |||||
@@ -205,10 +206,11 @@
 | use-stores.ts | 80% | ✅ | 18 tests | 05f517b |
 | use-notifications.ts | 80% | ✅ | 15 tests | ac10c5c |
 | use-collaboration.ts | ⏳ | ⏳ | Verificar si necesita secundario | - |
-| **COMPONENTS (3/~7 = ~43%)** |||||
+| **COMPONENTS (4/~7 = ~57%)** |||||
 | products-kanban.tsx | 80% | ✅ | 18 tests | 109da16 |
 | blueprint-card.tsx | 80% | ✅ | 20 tests | 1fd4b57 |
 | recommendations-panel.tsx | 80% | ✅ | 15 tests | a4ef1c2 |
+| collaborators-section.tsx | 80% | ✅ | 12 tests | 15b25d4 |
 | occasion-list-dialog.tsx | - | ❌ | Requiere mocks complejos | - |
 | create-blueprint-from-list-dialog.tsx | - | ⏳ | Pendiente | - |
 | category-form.tsx | - | ⏳ | No existe aún | - |
@@ -220,7 +222,7 @@
 | notifications page | - | ⏳ | Pendiente | - |
 | templates page | - | ⏳ | Pendiente | - |
 
-**Secundarios completados**: 6/15 = 40% (106 tests) ✅
+**Secundarios completados**: 7/15 = 47% (118 tests) ✅
 
 **Detalles de tests secundarios:**
 
@@ -278,6 +280,14 @@
 - Metadata de procesamiento (totalRecommendations, processingTimeMs, contexto utilizado)
 - Botón actualizar (refetch manual, disabled durante fetching)
 - Edge cases (sin metadata, contexto vacío)
+
+✅ **collaborators-section.test.tsx** - 80% coverage (12 tests) - commit 15b25d4
+- Renderizado básico (título con contador, descripción informativa)
+- Estados (loading con GeneralLoading, error message)
+- Lista de colaboradores (vacía, con datos, CollaboratorItem render)
+- Límite máximo (Alert warning cuando 10/10, no mostrar con <10)
+- Verificación de owner (isOwner prop basado en session userId)
+- Props listId y ownerId correctamente pasadas
 
 #### ⚪ TRIVIALES (25 archivos) - N/A
 Excluidos de coverage (componentes shadcn/ui, layouts, utilidades simples)
