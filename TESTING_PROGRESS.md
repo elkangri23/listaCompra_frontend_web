@@ -8,7 +8,7 @@
 
 ## 📊 RESUMEN EJECUTIVO
 
-### ✅ COMPLETADO (Actualizado: 26 nov 2025 - 20:30)
+### ✅ COMPLETADO (Actualizado: 26 nov 2025 - 20:45)
 
 #### 1. Configuración de Testing (100%)
 - ✅ **jest.config.js** actualizado con thresholds 100/80/0
@@ -24,7 +24,7 @@
   ├── unit/
   │   ├── services/     ✅ 7 archivos (171 tests)
   │   ├── hooks/        ✅ 10 archivos (194 tests) ← +53 tests secundarios
-  │   ├── components/   ✅ 7 archivos (115 tests) ← +65 tests secundarios
+  │   ├── components/   ✅ 8 archivos (129 tests) ← +79 tests secundarios
   │   └── security/     ⏳ Pendiente
   ├── integration/      ⏳ Pendiente (1 archivo existente)
   ├── e2e/              ⏳ Pendiente
@@ -57,16 +57,16 @@
 ✅ register-form.test.tsx - 20 tests
 ✅ share-list-dialog.test.tsx - 14 tests passing (5 edge cases pendientes)
 
-**Total: 490 tests passing / 490 total (100% success) 🎉** ⬆️ +128 tests desde última sesión
+**Total: 504 tests passing / 504 total (100% success) 🎉** ⬆️ +142 tests desde última sesión
 
 **Desglose por categoría:**
 - **Críticos (100% coverage)**: 362 tests ✅
   - Services: 171 tests (7 archivos)
   - Hooks: 141 tests (7 archivos)
   - Components: 50 tests (3 archivos)
-- **Secundarios (80% coverage)**: 118 tests ✅ ← NUEVO
+- **Secundarios (80% coverage)**: 132 tests ✅ ← +14 tests nuevos
   - Hooks: 53 tests (3 archivos)
-  - Components: 65 tests (4 archivos)
+  - Components: 79 tests (5 archivos) ← +14 tests
 - **Integración**: 1 test
 - **Triviales (0% coverage)**: 0 tests (diferidos)
 
@@ -78,6 +78,7 @@
 - 1fd4b57: Tests secundarios blueprint-card component (20 tests)
 - a4ef1c2: Tests secundarios recommendations-panel component (15 tests)
 - 15b25d4: Tests secundarios collaborators-section component (12 tests)
+- fdf10f3: Tests secundarios security-indicators component (14 tests) ← NUEVO
 
 ✅ **invitation-service.test.ts** - 100% coverage
 - 24 tests pasando
@@ -198,7 +199,7 @@
 
 **Críticos completados**: 17/17 = 100% ✅ 🎉**
 
-#### 🟡 SECUNDARIOS (15 archivos) - 7/15 completado (47%) ← NUEVO
+#### 🟡 SECUNDARIOS (15 archivos) - 8/15 completado (53%) ← +14 tests nuevos
 | Archivo | Coverage | Status | Tests | Commit |
 |---------|----------|--------|-------|--------|
 | **HOOKS (3/4 = 75%)** |||||
@@ -206,15 +207,16 @@
 | use-stores.ts | 80% | ✅ | 18 tests | 05f517b |
 | use-notifications.ts | 80% | ✅ | 15 tests | ac10c5c |
 | use-collaboration.ts | ⏳ | ⏳ | Verificar si necesita secundario | - |
-| **COMPONENTS (4/~7 = ~57%)** |||||
+| **COMPONENTS (5/~7 = ~71%)** ||||| ← +1 componente
 | products-kanban.tsx | 80% | ✅ | 18 tests | 109da16 |
 | blueprint-card.tsx | 80% | ✅ | 20 tests | 1fd4b57 |
 | recommendations-panel.tsx | 80% | ✅ | 15 tests | a4ef1c2 |
 | collaborators-section.tsx | 80% | ✅ | 12 tests | 15b25d4 |
-| occasion-list-dialog.tsx | - | ❌ | Requiere mocks complejos | - |
+| security-indicators.tsx | 80% | ✅ | 14 tests | fdf10f3 | ← NUEVO
+| bulk-categorization-dialog.tsx | - | ❌ | Dialog demasiado complejo | - |
+| collaboration-indicator.tsx | - | ❌ | Memory leak (setInterval) | - |
 | create-blueprint-from-list-dialog.tsx | - | ⏳ | Pendiente | - |
 | category-form.tsx | - | ⏳ | No existe aún | - |
-| store-form.tsx | - | ⏳ | No existe aún | - |
 | product-form.tsx | - | ⏳ | No existe aún | - |
 | **PAGES (0/4 = 0%)** |||||
 | list-detail page | - | ⏳ | Pendiente | - |
@@ -222,7 +224,7 @@
 | notifications page | - | ⏳ | Pendiente | - |
 | templates page | - | ⏳ | Pendiente | - |
 
-**Secundarios completados**: 7/15 = 47% (118 tests) ✅
+**Secundarios completados**: 8/15 = 53% (132 tests) ✅ ← +14 tests
 
 **Detalles de tests secundarios:**
 
@@ -288,6 +290,24 @@
 - Límite máximo (Alert warning cuando 10/10, no mostrar con <10)
 - Verificación de owner (isOwner prop basado en session userId)
 - Props listId y ownerId correctamente pasadas
+
+✅ **security-indicators.test.tsx** - 80% coverage (14 tests) - commit fdf10f3 ← NUEVO
+- **InvitationExpirationBadge** (5 tests):
+  - Badge con variant según días restantes (destructive/secondary/default)
+  - Mensajes dinámicos: "Expirada", "Expira mañana", "Expira en X días", "X días restantes"
+  - Mock de validateInvitationExpiration (advanced-security)
+  - Props: createdAt, expirationDays (default 7)
+- **TemporaryLinkIndicator** (6 tests):
+  - Cálculo de horas restantes con fechas
+  - Indicador visual (red/green dot)
+  - Mensajes: "Enlace expirado", "Expira en menos de 1 hora", "Expira en Xh", "Expira en X días"
+  - Props: createdAt, expirationHours (default 24)
+  - Fake timers para consistencia de fechas (setSystemTime)
+- **InvitationLimitsWarning** (4 tests):
+  - Null render cuando <80% (30/50)
+  - Warning cuando >=80% (40/50): "Te quedan 10 invitaciones"
+  - Límite alcanzado 100% (50/50): "Has alcanzado el límite"
+  - Props: currentCount, maxInvitations (default 50)
 
 #### ⚪ TRIVIALES (25 archivos) - N/A
 Excluidos de coverage (componentes shadcn/ui, layouts, utilidades simples)
