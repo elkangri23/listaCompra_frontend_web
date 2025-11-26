@@ -73,7 +73,7 @@ describe('LoginForm (CRÍTICO - 100% coverage)', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('alert')).toHaveTextContent(/requerido|obligatorio|email/i);
+        expect(screen.getByText(/el correo electrónico es obligatorio/i)).toBeInTheDocument();
       });
     });
 
@@ -88,7 +88,7 @@ describe('LoginForm (CRÍTICO - 100% coverage)', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('alert')).toBeInTheDocument();
+        expect(screen.getByText(/ingresa un correo electrónico válido/i)).toBeInTheDocument();
       });
     });
 

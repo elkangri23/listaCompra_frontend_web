@@ -83,7 +83,7 @@ describe('RegisterForm (CRÍTICO - 100% coverage)', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('alert')).toBeInTheDocument();
+        expect(screen.getByText(/el nombre debe tener al menos 2 caracteres/i)).toBeInTheDocument();
       });
     });
 
