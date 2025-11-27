@@ -282,7 +282,7 @@ export function BulkCategorizationDialog({
                             </SelectItem>
                           ))}
                           {categoriesData?.categorias
-                            .filter(c => 
+                            ?.filter(c => 
                               c.nombre !== result.suggestedCategory.nombre &&
                               !result.alternativeCategories?.some(alt => alt.nombre === c.nombre)
                             )
