@@ -57,7 +57,7 @@
 ✅ register-form.test.tsx - 20 tests
 ✅ share-list-dialog.test.tsx - 14 tests passing (5 edge cases pendientes)
 
-**Total: 603 tests passing / 603 total (100% success) 🎉** ⬆️ +50 tests nuevos
+**Total: 648 tests / 648 total (603 unitarios + 45 E2E) 🎉** ⬆️ +95 tests nuevos
 
 **Desglose por categoría:**
 - **Críticos (100% coverage)**: 362 tests ✅
@@ -69,7 +69,7 @@
   - Components: 188 tests (12 archivos) ← +64 tests totales
 - **Integración**: 1 test
 - **Triviales (0% coverage)**: 0 tests (diferidos)
-- **E2E**: 15 tests (Playwright)
+- **E2E**: 45 tests (Playwright) ✅ ← +30 tests nuevos (4 flujos completos)
 
 **Git commits realizados (21 commits totales):**
 - b5568a9: Tests secundarios use-categories (20 tests)
@@ -393,14 +393,14 @@ Excluidos de coverage (componentes shadcn/ui, layouts, utilidades simples)
 **225/225 tests passing (100%)** ✅
 
 ### 🎉 RESUMEN TOTAL
-- **Tests totales**: 603/603 passing (100% success rate)
-- **Commits**: 21 commits pushed a GitHub
+- **Tests totales**: 648 tests (603 unitarios + 45 E2E)
+- **Commits**: 24 commits pushed a GitHub
 - **Cobertura patrón 100/80/0**: Implementado completamente
-  - Críticos: 362 tests (100% coverage)
-  - Secundarios: 225 tests (80% coverage)
-  - Triviales: 0 tests (diferidos)
+  - Críticos: 362 tests (100% coverage) ✅
+  - Secundarios: 225 tests (80% coverage) ✅
+  - E2E: 45 tests (4 flujos completos) ✅
   - Integración: 1 test
-  - E2E: 15 tests
+  - Triviales: 0 tests (diferidos)
 
 ### 📝 ARCHIVOS SECUNDARIOS COMPLETADOS (15/15)
 **Hooks (3):**
@@ -617,17 +617,36 @@ module.exports = {
   - ✅ hero (12 tests)
   - **Total**: 225 tests secundarios ✅
 
-### 🎯 PENDIENTE (Próximos Sprints)
-- [ ] **Configurar Playwright para E2E** (Estimado: 2-3 horas)
-  - Instalar Playwright: `npm install -D @playwright/test`
-  - Configurar playwright.config.ts
-  - Crear estructura tests/e2e/
+### ✅ COMPLETADO (27 nov 2025)
+- [x] **Configurar Playwright para E2E** ✅
+  - ✅ Playwright instalado (@playwright/test)
+  - ✅ playwright.config.ts configurado (timeouts, reporters, webServer)
+  - ✅ Chromium instalado
+  - ✅ Scripts npm: test:e2e, test:e2e:ui
+  - ✅ Estructura tests/e2e/ creada
+  - ✅ helpers.ts con utilidades compartidas
   
-- [ ] **Implementar flujos E2E críticos** (Estimado: 8 horas)
-  - [ ] auth-flow.spec.ts (login/registro/logout)
-  - [ ] create-list-flow.spec.ts (crear lista + productos)
-  - [ ] share-list-flow.spec.ts (compartir + aceptar invitación)
-  - [ ] ai-categorization-flow.spec.ts (categorización AI + recomendaciones)
+- [x] **Implementar flujos E2E críticos (45 tests totales)** ✅
+  - [x] **auth-flow.spec.ts** (10 tests) ✅
+    - Login válido/inválido, validación email
+    - Registro, validación contraseñas, términos
+    - Logout, persistencia, expiración, callbackUrl
+  - [x] **create-list-flow.spec.ts** (12 tests) ✅
+    - Crear lista, agregar/editar/eliminar productos
+    - Marcar comprado, filtrar categorías
+    - Validaciones, navegación entre listas
+  - [x] **share-list-flow.spec.ts** (12 tests) ✅
+    - Compartir por email (LECTURA/ESCRITURA)
+    - Enlace temporal, copiar portapapeles
+    - Aceptar/rechazar invitaciones, permisos
+    - Revocar acceso, indicadores visuales
+  - [x] **ai-categorization-flow.spec.ts** (11 tests) ✅
+    - Categorizar individual/masivo con AI
+    - Generar lista por ocasión
+    - Recomendaciones con contexto personalizado
+    - Nivel confianza, historial, manejo errores
+
+### 🎯 PENDIENTE (Próximos Sprints)
   
 - [ ] **Configurar CI/CD con GitHub Actions** (Estimado: 2 horas)
   - Crear .github/workflows/test.yml
