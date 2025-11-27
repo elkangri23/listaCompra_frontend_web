@@ -78,7 +78,7 @@ export function AIProductForm({
         onCategorySuggestionSelected?.(mainSuggestion.tiendaId);
         
         toast.success('Categoría sugerida por IA', {
-          description: `${mainSuggestion.nombre} (${mainSuggestion.confidence}% confianza)`,
+          description: `${mainSuggestion.nombre}`,
           icon: <Sparkles className="h-4 w-4" />,
         });
       }
