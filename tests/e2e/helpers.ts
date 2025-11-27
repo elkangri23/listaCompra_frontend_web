@@ -24,12 +24,14 @@ export const TEST_ADMIN = {
  */
 export async function login(page: Page, email: string, password: string) {
   await page.goto('/login');
-  await page.fill('input[name="email"]', email);
-  await page.fill('input[name="password"]', password);
+  
+  // Usar IDs específicos del formulario real
+  await page.fill('#email', email);
+  await page.fill('#password', password);
   await page.click('button[type="submit"]');
   
-  // Esperar redirección al dashboard
-  await page.waitForURL('/dashboard', { timeout: 10000 });
+  // Esperar redirección al dashboard (más tiempo por si el servidor es lento)
+  await page.waitForURL('/dashboard', { timeout: 15000 });
   await expect(page).toHaveURL('/dashboard');
 }
 
@@ -55,18 +57,25 @@ export async function register(
   page: Page, 
   email: string, 
   password: string, 
-  nombre: string
+  nombre: string,
+  apellidos: string = 'Test'
 ) {
   await page.goto('/register');
-  await page.fill('input[name="nombre"]', nombre);
-  await page.fill('input[name="email"]', email);
-  await page.fill('input[name="password"]', password);
-  await page.fill('input[name="confirmPassword"]', password);
-  await page.check('input[name="aceptaTerminos"]');
+  
+  // Usar IDs específicos del formulario real
+  await page.fill('#nombre', nombre);
+  await page.fill('#apellidos', apellidos);
+  await page.fill('#email', email);
+  await page.fill('#password', password);
+  await page.fill('#confirmPassword', password);
+  
+  // Aceptar términos (usar ID correcto)
+  await page.check('#termsAccepted');
+  
   await page.click('button[type="submit"]');
   
-  // Esperar mensaje de éxito o redirección
-  await page.waitForTimeout(2000);
+  // Esperar mensaje de éxito o redirección al login
+  await page.waitForTimeout(3000);
 }
 
 /**
@@ -159,8 +168,10 @@ export async function shareList(
 /**
  * Esperar a que un toast aparezca con un mensaje específico
  */
-export async function waitForToast(page: Page, message: string) {
-  const toast = page.locator('[data-sonner-toast]', { hasText: message });
+export async function waitForToast(page: Page, message: string | RegExp) {
+  const toast = typeof message === 'string' 
+    ? page.locator('[data-sonner-toast]', { hasText: message })
+    : page.locator('[data-sonner-toast]').filter({ hasText: message });
   await expect(toast).toBeVisible({ timeout: 5000 });
 }
 

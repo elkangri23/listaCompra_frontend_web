@@ -12,6 +12,9 @@ import { login, createList, addProduct, waitForToast, TEST_USER } from './helper
 
 test.describe('Flujo de Categorización con AI', () => {
   test.beforeEach(async ({ page }) => {
+    // Navegar primero para tener contexto
+    await page.goto('/');
+    
     // Login
     await login(page, TEST_USER.email, TEST_USER.password);
     await expect(page).toHaveURL('/dashboard');
@@ -294,7 +297,9 @@ test.describe('Flujo de Categorización con AI', () => {
         if (await reason.isVisible()) {
           const text = await reason.textContent();
           expect(text).toBeTruthy();
-          expect(text.length).toBeGreaterThan(0);
+          if (text) {
+            expect(text.length).toBeGreaterThan(0);
+          }
         }
       }
     }

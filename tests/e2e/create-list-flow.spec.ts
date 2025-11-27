@@ -13,6 +13,9 @@ import { login, createList, addProduct, waitForToast, goToList, TEST_USER } from
 
 test.describe('Flujo de Creación de Listas y Productos', () => {
   test.beforeEach(async ({ page }) => {
+    // Navegar primero para tener contexto
+    await page.goto('/');
+    
     // Login antes de cada test
     await login(page, TEST_USER.email, TEST_USER.password);
     await expect(page).toHaveURL('/dashboard');

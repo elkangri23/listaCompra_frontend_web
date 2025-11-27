@@ -13,6 +13,9 @@ import { login, logout, createList, shareList, addProduct, waitForToast, TEST_US
 
 test.describe('Flujo de Compartir Listas', () => {
   test.beforeEach(async ({ page }) => {
+    // Navegar primero para tener contexto
+    await page.goto('/');
+    
     // Login con usuario propietario
     await login(page, TEST_USER.email, TEST_USER.password);
     await expect(page).toHaveURL('/dashboard');
