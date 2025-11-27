@@ -78,7 +78,8 @@ export function CollaborationIndicator({
       clearInterval(activityInterval);
       clearInterval(pollingInterval);
     };
-  }, [listId, session, lastUpdate, onConflictDetected]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listId, session?.user?.id]); // onConflictDetected y lastUpdate excluidos intencionalmente
 
   if (activeUsers.length === 0) {
     return null;

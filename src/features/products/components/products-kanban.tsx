@@ -62,7 +62,10 @@ export function ProductsKanban({
   const handleDragOver = (categoryId: string) => (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    setDragOverCategoryId(categoryId);
+    // Solo actualizar si cambia para evitar renders infinitos
+    if (dragOverCategoryId !== categoryId) {
+      setDragOverCategoryId(categoryId);
+    }
   };
 
   const handleDragLeave = () => {
