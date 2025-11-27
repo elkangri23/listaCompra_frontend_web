@@ -270,14 +270,18 @@ export function OccasionListDialog({ open: controlledOpen, onOpenChange }: Occas
         <DialogFooter className="gap-2">
           {!showPreview ? (
             <>
-              <Button variant="outline" onClick={handleClose}>
+              <Button 
+                variant="outline" 
+                onClick={handleClose}
+                className="border-gray-300 hover:bg-gray-100"
+              >
                 Cancelar
               </Button>
               <Button
                 variant="outline"
                 onClick={handlePreview}
                 disabled={!selectedOccasion || previewList.isPending}
-                className="gap-2"
+                className="gap-2 border-blue-300 text-blue-700 hover:bg-blue-50"
               >
                 {previewList.isPending ? (
                   <>
@@ -294,7 +298,7 @@ export function OccasionListDialog({ open: controlledOpen, onOpenChange }: Occas
               <Button
                 onClick={handleGenerate}
                 disabled={!selectedOccasion || generateList.isPending}
-                className="gap-2"
+                className="gap-2 bg-green-600 hover:bg-green-700 text-white"
               >
                 {generateList.isPending ? (
                   <>
@@ -311,13 +315,17 @@ export function OccasionListDialog({ open: controlledOpen, onOpenChange }: Occas
             </>
           ) : (
             <>
-              <Button variant="outline" onClick={() => setShowPreview(false)}>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowPreview(false)}
+                className="border-gray-300 hover:bg-gray-100"
+              >
                 Modificar
               </Button>
               <Button
                 onClick={handleGenerate}
                 disabled={generateList.isPending}
-                className="gap-2"
+                className="gap-2 bg-green-600 hover:bg-green-700 text-white"
               >
                 {generateList.isPending ? (
                   <>
