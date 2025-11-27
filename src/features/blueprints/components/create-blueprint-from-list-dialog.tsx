@@ -154,13 +154,18 @@ export function CreateBlueprintFromListDialog({
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
+        <DialogFooter className="gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => setOpen(false)}
+            className="border-gray-300 hover:bg-gray-100"
+          >
             Cancelar
           </Button>
           <Button
             onClick={handleCreate}
             disabled={!nombre.trim() || createBlueprintMutation.isPending}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
           >
             {createBlueprintMutation.isPending ? (
               <>

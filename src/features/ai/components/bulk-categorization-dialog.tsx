@@ -105,7 +105,7 @@ export function BulkCategorizationDialog({
         const categoryName = overrideCategory || result.suggestedCategory.nombre;
         
         // Buscar ID de categoría por nombre
-        const category = categoriesData?.categorias.find(c => c.nombre === categoryName);
+        const category = categoriesData?.categorias?.find(c => c.nombre === categoryName);
         if (category) {
           categorizations.set(product.id, category.id);
         }
@@ -308,16 +308,20 @@ export function BulkCategorizationDialog({
           </div>
         )}
 
-        <DialogFooter>
+        <DialogFooter className="gap-2">
           {!showPreview ? (
             <>
-              <Button variant="outline" onClick={handleClose}>
+              <Button 
+                variant="outline" 
+                onClick={handleClose}
+                className="border-gray-300 hover:bg-gray-100"
+              >
                 Cancelar
               </Button>
               <Button
                 onClick={handleCategorize}
                 disabled={selectedProducts.size === 0 || bulkCategorize.isPending}
-                className="gap-2"
+                className="gap-2 bg-purple-600 hover:bg-purple-700 text-white"
               >
                 {bulkCategorize.isPending ? (
                   <>
@@ -337,12 +341,13 @@ export function BulkCategorizationDialog({
               <Button
                 variant="outline"
                 onClick={() => setShowPreview(false)}
+                className="border-gray-300 hover:bg-gray-100"
               >
                 Volver
               </Button>
               <Button
                 onClick={handleApplyCategories}
-                className="gap-2"
+                className="gap-2 bg-green-600 hover:bg-green-700 text-white"
               >
                 <CheckCircle2 className="h-4 w-4" />
                 Aplicar Categorías
