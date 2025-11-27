@@ -57,19 +57,21 @@
 ✅ register-form.test.tsx - 20 tests
 ✅ share-list-dialog.test.tsx - 14 tests passing (5 edge cases pendientes)
 
-**Total: 648 tests / 648 total (603 unitarios + 45 E2E) 🎉** ⬆️ +95 tests nuevos
+**Total: 602 tests pasando / 648 tests escritos (603 unitarios + 45 E2E)** 
 
 **Desglose por categoría:**
 - **Críticos (100% coverage)**: 362 tests ✅
   - Services: 171 tests (7 archivos)
   - Hooks: 141 tests (7 archivos)
   - Components: 50 tests (3 archivos)
-- **Secundarios (80% coverage)**: 225 tests ✅ ← +48 tests nuevos (15/15 archivos = 100% COMPLETADO)
+- **Secundarios (80% coverage)**: 225 tests ✅ (15/15 archivos = 100% COMPLETADO)
   - Hooks: 53 tests (3 archivos)
-  - Components: 188 tests (12 archivos) ← +64 tests totales
+  - Components: 188 tests (12 archivos)
 - **Integración**: 1 test
 - **Triviales (0% coverage)**: 0 tests (diferidos)
-- **E2E**: 45 tests (Playwright) ✅ ← +30 tests nuevos (4 flujos completos)
+- **E2E**: 45 tests escritos ⚠️ **NECESITAN ADAPTACIÓN A HTML REAL**
+  - **Estado**: 0/45 pasando (selectores genéricos no coinciden con implementación)
+  - **Prerequisito**: npm run dev activo + adaptación de selectores
 
 **Git commits realizados (21 commits totales):**
 - b5568a9: Tests secundarios use-categories (20 tests)
@@ -163,21 +165,22 @@
 
 ### Coverage Global
 - **Global**: ~22% statements (objetivo: 75%) 🟡 +16% desde inicio
-- **Archivos críticos completados**: 14/17 (82.4%) ⬆️
+- **Archivos críticos completados**: 17/17 (100%) ✅ 🎉
   - Services: 7/7 (100%) ✅
   - Hooks: 7/7 (100%) ✅
-  - Components: 0/3 (0%) ⏳
-  - product-service.ts: 100% ✅
-  - invitation-service.ts: 100% ✅
-  - ai-service.ts: 100% ✅
-- **Resto de servicios**: 12 pendientes (70.6%)
+  - Components: 3/3 (100%) ✅
+- **Archivos secundarios**: 15/15 (100%) ✅
+- **Resto de servicios**: 12 pendientes (implementación futura)
 
 ### Tests Ejecutados
-- **Total test suites**: 17 total (14 fully passing, 3 con edge cases menores) ✅
-- **Total tests**: 362 passed / 362 total (100% success rate) ✅ 🎉 ⬆️ +50 tests funcionales
-- **Tiempo de ejecución**: ~15s para todos los tests unitarios
-- **Velocidad**: ~24 tests/segundo
-- **Nota**: 5 edge cases pendientes en share-list-dialog (toast.error assertions)
+- **Total test suites**: 32 unitarios (31 passing, 1 con timeout)
+- **Total tests unitarios**: 602 passed / 603 total (99.8% success rate) ✅
+- **Total tests E2E**: 0 passed / 45 total ⚠️ (necesitan adaptación)
+- **Tiempo de ejecución unitarios**: ~42s para todos los tests
+- **Velocidad**: ~14 tests/segundo
+- **Problemas conocidos**:
+  - 1 test unitario con timeout en share-list-dialog (limpiar formulario)
+  - 45 tests E2E con selectores genéricos que no coinciden con HTML real
 
 ### Cobertura por Categoría (según patrón 100/80/0)
 
@@ -617,7 +620,7 @@ module.exports = {
   - ✅ hero (12 tests)
   - **Total**: 225 tests secundarios ✅
 
-### ✅ COMPLETADO (27 nov 2025)
+### ⚠️ EN PROGRESO (27 nov 2025) - E2E Tests Necesitan Adaptación
 - [x] **Configurar Playwright para E2E** ✅
   - ✅ Playwright instalado (@playwright/test)
   - ✅ playwright.config.ts configurado (timeouts, reporters, webServer)
@@ -626,27 +629,79 @@ module.exports = {
   - ✅ Estructura tests/e2e/ creada
   - ✅ helpers.ts con utilidades compartidas
   
-- [x] **Implementar flujos E2E críticos (45 tests totales)** ✅
-  - [x] **auth-flow.spec.ts** (10 tests) ✅
+- [ ] **Adaptar flujos E2E a implementación real (45 tests creados)** ⚠️ **PENDIENTE ADAPTACIÓN**
+  - **Estado actual**: Tests escritos con selectores genéricos que no coinciden con la implementación real
+  - **Problema identificado**: Los tests esperan elementos HTML que no existen en la aplicación
+    - Ejemplo: `page.locator('h1')` con texto "Iniciar sesión" - la página no tiene `<h1>`
+    - Selectores necesitan revisarse contra el HTML real de cada página
+  - **Prerequisito**: Servidor Next.js debe estar corriendo (`npm run dev` en puerto 3000)
+  
+  - [ ] **auth-flow.spec.ts** (10 tests) ⚠️ **Necesita adaptación**
     - Login válido/inválido, validación email
     - Registro, validación contraseñas, términos
     - Logout, persistencia, expiración, callbackUrl
-  - [x] **create-list-flow.spec.ts** (12 tests) ✅
+    - **Acción requerida**: Actualizar selectores según LoginForm real
+  - [ ] **create-list-flow.spec.ts** (12 tests) ⚠️ **Necesita adaptación**
     - Crear lista, agregar/editar/eliminar productos
     - Marcar comprado, filtrar categorías
     - Validaciones, navegación entre listas
-  - [x] **share-list-flow.spec.ts** (12 tests) ✅
+  - [ ] **share-list-flow.spec.ts** (12 tests) ⚠️ **Necesita adaptación**
     - Compartir por email (LECTURA/ESCRITURA)
     - Enlace temporal, copiar portapapeles
     - Aceptar/rechazar invitaciones, permisos
     - Revocar acceso, indicadores visuales
-  - [x] **ai-categorization-flow.spec.ts** (11 tests) ✅
+  - [ ] **ai-categorization-flow.spec.ts** (11 tests) ⚠️ **Necesita adaptación**
     - Categorizar individual/masivo con AI
     - Generar lista por ocasión
     - Recomendaciones con contexto personalizado
     - Nivel confianza, historial, manejo errores
 
 ### 🎯 PENDIENTE (Próximos Sprints)
+
+#### ⚠️ PROBLEMAS CONOCIDOS A RESOLVER
+
+1. **Test unitario con timeout** (Prioridad: ALTA)
+   - Archivo: `tests/unit/components/share-list-dialog.test.tsx`
+   - Test: "debe limpiar formulario después de invitar exitosamente"
+   - Error: Timeout 5000ms excedido
+   - Solución: Aumentar timeout a 10s o revisar async behavior
+   - Tiempo estimado: 15 minutos
+
+2. **Tests E2E auth-flow parcialmente adaptados** ⚙️ **EN PROGRESO**
+   - **Problema**: Los 45 tests E2E fueron escritos con selectores genéricos
+   - **Causa raíz**: No se verificó el HTML real de la aplicación durante la escritura
+   - **Impacto**: 0/45 tests pasando (100% fallo)
+   - **Ejemplos de problemas**:
+     - Login: busca `<h1>` con "Iniciar sesión" pero no existe
+     - Selectores usan `input[name="email"]` pero pueden tener otros atributos
+     - Textos esperados no coinciden con los reales
+   - **Solución requerida**:
+     - Revisar cada página en el navegador (con DevTools)
+     - Actualizar selectores en helpers.ts y *.spec.ts
+     - Usar data-testid para mayor estabilidad
+     - Re-ejecutar tests uno por uno verificando cada selector
+   - **Tiempo estimado**: 8-10 horas (2h por flujo × 4 flujos)
+   - **Prerequisito**: Servidor Next.js corriendo en puerto 3000
+
+3. **Coverage global aún bajo** (Prioridad: BAJA)
+   - Actual: ~22% global
+   - Objetivo: 75% global
+   - Faltan: Utilidades, pages, middleware, contexts
+
+#### 📋 PRÓXIMAS ACCIONES PRIORIZADAS
+
+- [ ] **INMEDIATO: Arreglar test unitario timeout** (15 min)
+  - Aumentar timeout en share-list-dialog.test.tsx
+  - Verificar assertions asíncronas
+  
+- [ ] **CRÍTICO: Adaptar tests E2E a HTML real** (8-10 horas)
+  - Paso 1: Documentar estructura HTML de cada página clave
+  - Paso 2: Actualizar helpers.ts con selectores reales
+  - Paso 3: Actualizar auth-flow.spec.ts (2h)
+  - Paso 4: Actualizar create-list-flow.spec.ts (2h)
+  - Paso 5: Actualizar share-list-flow.spec.ts (2h)
+  - Paso 6: Actualizar ai-categorization-flow.spec.ts (2h)
+  - Paso 7: Ejecutar suite completa y verificar
   
 - [ ] **Configurar CI/CD con GitHub Actions** (Estimado: 2 horas)
   - Crear .github/workflows/test.yml
@@ -694,8 +749,27 @@ module.exports = {
 
 ---
 
-**Estado**: ✅ **5 servicios críticos completados (29.4%)**, momentum excelente, 109 tests pasando  
-**Próxima acción**: Continuar con admin-service.test.ts y advanced-security.test.ts (CRÍTICOS)  
+---
+
+## 📊 RESUMEN FINAL - Estado Actual del Proyecto
+
+**Tests Unitarios**: ✅ **99.8% completados** (602/603 pasando)
+- Críticos: 362/362 ✅ (100%)
+- Secundarios: 225/225 ✅ (100%)
+- Integración: 1/1 ✅
+- Pendiente: 1 test con timeout (fix estimado: 15 min)
+
+**Tests E2E**: ⚠️ **Requieren adaptación** (0/45 pasando)
+- Infraestructura: ✅ Playwright configurado correctamente
+- Problema: Selectores genéricos no coinciden con HTML real
+- Solución: Revisar y adaptar selectores a implementación real
+- Tiempo estimado: 8-10 horas
+
+**Próxima acción INMEDIATA**: 
+1. Arreglar timeout en share-list-dialog.test.tsx (15 min)
+2. Adaptar tests E2E empezando por auth-flow (2h)
+
 **Bloqueos**: Ninguno  
-**Riesgos**: Problema de memoria en coverage completo (mitigable ejecutando tests individuales)  
-**Velocidad actual**: ~20 tests/hora, estimado 17h para completar críticos restantes
+**Riesgos**: Tests E2E necesitan inversión de tiempo para adaptación  
+**Velocidad actual**: ~14 tests/segundo en unitarios  
+**Commits totales**: 25 commits a GitHub
