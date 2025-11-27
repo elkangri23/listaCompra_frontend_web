@@ -88,7 +88,7 @@ export function BulkCategorizationDialog({
       setShowPreview(true);
 
       toast.success(
-        `${result.data.batchStats.successful} productos categorizados (${result.data.batchStats.averageConfidence.toFixed(0)}% confianza promedio)`
+        `${result.data.batchStats.successful} productos categorizados (${result.data.batchStats.averageConfidence.toFixed(0)}% de precisión)`
       );
     } catch (error: any) {
       toast.error(error?.response?.data?.message || 'Error al categorizar productos');
@@ -104,8 +104,22 @@ export function BulkCategorizationDialog({
         const overrideCategory = categoryOverrides.get(product.id);
         const categoryName = overrideCategory || result.suggestedCategory.nombre;
         
-        // Buscar ID de categoría por nombre
-        const category = categoriesData?.categorias?.find(c => c.nombre === categoryName);
+        // Buscar ID de categoría por nombre exacto
+        let category = categoriesData?.categorias?.find(c => c.nombre === categoryName);
+        
+        // Si no existe, buscar por nombre similar (case insensitive)
+        if (!category && categoriesData?.categorias) {
+          category = categoriesData.categorias.find(c => 
+            c.nombre.toLowerCase() === categoryName.toLowerCase()
+          );
+        }
+        
+        // Si aún no existe, usar la primera categoría disponible como fallback
+        if (!category && categoriesData?.categorias && categoriesData.categorias.length > 0) {
+          category = categoriesData.categorias[0];
+          console.warn(`Categoría "${categoryName}" no encontrada, usando "${category.nombre}" como fallback`);
+        }
+        
         if (category) {
           categorizations.set(product.id, category.id);
         }
@@ -252,8 +266,7 @@ export function BulkCategorizationDialog({
                           variant={result.suggestedCategory.confidence >= 80 ? 'default' : 'secondary'}
                           className="gap-1"
                         >
-                          {result.source === 'cache' ? '⚡' : result.source === 'ai' ? '🤖' : '📁'}
-                          {result.suggestedCategory.confidence}% confianza
+                          {result.source === 'cache' ? '⚡ Rápido' : result.source === 'ai' ? '🤖 IA' : '📁 BD'}
                         </Badge>
                         {result.source === 'cache' && (
                           <span className="text-xs text-muted-foreground">(desde caché)</span>
@@ -278,7 +291,7 @@ export function BulkCategorizationDialog({
                           </SelectItem>
                           {result.alternativeCategories?.map((alt) => (
                             <SelectItem key={alt.nombre} value={alt.nombre}>
-                              {alt.nombre} ({alt.confidence}%)
+                              {alt.nombre}
                             </SelectItem>
                           ))}
                           {categoriesData?.categorias
