@@ -101,7 +101,7 @@ export function OccasionListDialog({ open: controlledOpen, onOpenChange }: Occas
           Lista por Ocasión
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <PartyPopper className="h-5 w-5 text-pink-600" />
