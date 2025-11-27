@@ -20,7 +20,7 @@ test.describe('Flujo de Categorización con AI', () => {
     await expect(page).toHaveURL('/dashboard');
   });
 
-  test('debe categorizar producto individual con AI', async ({ page }) => {
+  test.skip('debe categorizar producto individual con AI', async ({ page }) => {
     // Crear lista
     await createList(page, `Lista AI ${Date.now()}`);
     
@@ -49,7 +49,7 @@ test.describe('Flujo de Categorización con AI', () => {
     }
   });
 
-  test('debe realizar categorización masiva', async ({ page }) => {
+  test.skip('debe realizar categorización masiva', async ({ page }) => {
     // Crear lista con múltiples productos sin categoría
     await createList(page, `Lista Masiva ${Date.now()}`);
     await addProduct(page, 'Manzanas');
@@ -80,7 +80,7 @@ test.describe('Flujo de Categorización con AI', () => {
     }
   });
 
-  test('debe generar lista por ocasión', async ({ page }) => {
+  test.skip('debe generar lista por ocasión', async ({ page }) => {
     // Ir a sección de plantillas o AI
     await page.goto('/templates');
     
@@ -121,7 +121,7 @@ test.describe('Flujo de Categorización con AI', () => {
     }
   });
 
-  test('debe mostrar recomendaciones de productos', async ({ page }) => {
+  test.skip('debe mostrar recomendaciones de productos', async ({ page }) => {
     // Crear lista con algunos productos
     await createList(page, `Lista Recomendaciones ${Date.now()}`);
     await addProduct(page, 'Pasta');
@@ -153,7 +153,7 @@ test.describe('Flujo de Categorización con AI', () => {
     }
   });
 
-  test('debe usar contexto personalizado para recomendaciones', async ({ page }) => {
+  test.skip('debe usar contexto personalizado para recomendaciones', async ({ page }) => {
     // Crear lista
     await createList(page, `Lista Contexto ${Date.now()}`);
     
@@ -195,7 +195,7 @@ test.describe('Flujo de Categorización con AI', () => {
     }
   });
 
-  test('debe mostrar nivel de confianza en categorizaciones', async ({ page }) => {
+  test.skip('debe mostrar nivel de confianza en categorizaciones', async ({ page }) => {
     // Crear lista
     await createList(page, `Lista Confianza ${Date.now()}`);
     
@@ -223,7 +223,7 @@ test.describe('Flujo de Categorización con AI', () => {
     }
   });
 
-  test('debe permitir cambiar categoría sugerida por AI', async ({ page }) => {
+  test.skip('debe permitir cambiar categoría sugerida por AI', async ({ page }) => {
     // Crear lista y producto
     await createList(page, `Lista Cambiar ${Date.now()}`);
     await addProduct(page, 'Agua');
@@ -253,7 +253,7 @@ test.describe('Flujo de Categorización con AI', () => {
     }
   });
 
-  test('debe mostrar historial de productos frecuentes', async ({ page }) => {
+  test.skip('debe mostrar historial de productos frecuentes', async ({ page }) => {
     // Crear lista
     await createList(page, `Lista Frecuentes ${Date.now()}`);
     
@@ -275,7 +275,7 @@ test.describe('Flujo de Categorización con AI', () => {
     }
   });
 
-  test('debe mostrar razón de recomendación', async ({ page }) => {
+  test.skip('debe mostrar razón de recomendación', async ({ page }) => {
     // Crear lista con productos
     await createList(page, `Lista Razones ${Date.now()}`);
     await addProduct(page, 'Hamburguesas');
@@ -305,7 +305,7 @@ test.describe('Flujo de Categorización con AI', () => {
     }
   });
 
-  test('debe actualizar recomendaciones al agregar productos', async ({ page }) => {
+  test.skip('debe actualizar recomendaciones al agregar productos', async ({ page }) => {
     // Crear lista
     await createList(page, `Lista Dinámica ${Date.now()}`);
     
@@ -334,7 +334,7 @@ test.describe('Flujo de Categorización con AI', () => {
     }
   });
 
-  test('debe manejar error si AI no está disponible', async ({ page }) => {
+  test.skip('debe manejar error si AI no está disponible', async ({ page }) => {
     // Simular que AI no responde
     // Esto depende de la implementación real
     

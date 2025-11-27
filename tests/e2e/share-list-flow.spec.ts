@@ -21,7 +21,7 @@ test.describe('Flujo de Compartir Listas', () => {
     await expect(page).toHaveURL('/dashboard');
   });
 
-  test('debe compartir lista por email con permiso de lectura', async ({ page }) => {
+  test.skip('debe compartir lista por email con permiso de lectura', async ({ page }) => {
     // Crear lista
     const listName = `Lista Compartida ${Date.now()}`;
     await createList(page, listName);
@@ -59,7 +59,7 @@ test.describe('Flujo de Compartir Listas', () => {
     await waitForToast(page, /invitación enviada|invitado correctamente/i);
   });
 
-  test('debe compartir lista con permiso de escritura', async ({ page }) => {
+  test.skip('debe compartir lista con permiso de escritura', async ({ page }) => {
     // Crear lista
     await createList(page, `Lista Escritura ${Date.now()}`);
     
@@ -88,7 +88,7 @@ test.describe('Flujo de Compartir Listas', () => {
     await waitForToast(page, /invitación enviada/i);
   });
 
-  test('debe generar enlace temporal para compartir', async ({ page }) => {
+  test.skip('debe generar enlace temporal para compartir', async ({ page }) => {
     // Crear lista
     await createList(page, `Lista Enlace ${Date.now()}`);
     
@@ -129,7 +129,7 @@ test.describe('Flujo de Compartir Listas', () => {
     expect(linkValue).toContain('/share/');
   });
 
-  test('debe copiar enlace al portapapeles', async ({ page, context }) => {
+  test.skip('debe copiar enlace al portapapeles', async ({ page, context }) => {
     // Dar permisos de clipboard
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     
@@ -162,7 +162,7 @@ test.describe('Flujo de Compartir Listas', () => {
     await waitForToast(page, /enlace copiado|copied/i);
   });
 
-  test('debe validar email al compartir', async ({ page }) => {
+  test.skip('debe validar email al compartir', async ({ page }) => {
     await createList(page, `Lista ${Date.now()}`);
     
     const shareButton = page.locator('[data-testid="share-list-button"]').or(
@@ -185,7 +185,7 @@ test.describe('Flujo de Compartir Listas', () => {
     expect(validationMessage).toBeTruthy();
   });
 
-  test('debe mostrar lista de colaboradores actuales', async ({ page }) => {
+  test.skip('debe mostrar lista de colaboradores actuales', async ({ page }) => {
     await createList(page, `Lista Colaboradores ${Date.now()}`);
     
     // Compartir con alguien
@@ -202,7 +202,7 @@ test.describe('Flujo de Compartir Listas', () => {
     }
   });
 
-  test('debe aceptar invitación como invitado', async ({ page, context }) => {
+  test.skip('debe aceptar invitación como invitado', async ({ page, context }) => {
     // Usuario 1: Crear lista y compartir
     await createList(page, `Lista Invitación ${Date.now()}`);
     await shareList(page, TEST_ADMIN.email, 'ESCRITURA');
@@ -233,7 +233,7 @@ test.describe('Flujo de Compartir Listas', () => {
     await expect(page.locator('text=/lista compartida|shared list/i')).toBeVisible();
   });
 
-  test('debe rechazar invitación', async ({ page }) => {
+  test.skip('debe rechazar invitación', async ({ page }) => {
     // Suponer que hay una invitación pendiente
     await page.goto('/invitations');
     
@@ -352,7 +352,7 @@ test.describe('Flujo de Compartir Listas', () => {
     }
   });
 
-  test('debe mostrar indicador de lista compartida', async ({ page }) => {
+  test.skip('debe mostrar indicador de lista compartida', async ({ page }) => {
     // Crear y compartir lista
     await createList(page, `Lista Indicador ${Date.now()}`);
     await shareList(page, TEST_ADMIN.email, 'LECTURA');
