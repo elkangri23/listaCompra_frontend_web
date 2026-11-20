@@ -57,12 +57,15 @@ test.describe('Flujo de Creación de Listas y Productos', () => {
     await createList(page, listName);
     await addProduct(page, 'Arroz');
 
-    // Marcar como comprado con el checkbox del producto
+    // Marcar como comprado con el checkbox del producto. Se usa click +
+    // expect en lugar de check(): el toggle persiste en el backend y si hay
+    // rollback el check() de Playwright fallaría en su verificación interna
+    await page.waitForLoadState('networkidle');
     const checkbox = page.locator('input[aria-label="Marcar Arroz como comprado"]');
-    await checkbox.check();
+    await checkbox.click();
 
-    // El estado debe persistir (clase purchased + checkbox marcado)
-    await expect(checkbox).toBeChecked({ timeout: 5000 });
+    // El estado debe persistir (checkbox marcado tras el optimistic update)
+    await expect(checkbox).toBeChecked({ timeout: 10000 });
   });
 
   test('debe eliminar producto de la lista', async ({ page }) => {

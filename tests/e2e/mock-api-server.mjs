@@ -181,9 +181,8 @@ function suggestCategory(nombre) {
 // ============ Router ============
 
 const server = http.createServer(async (req, res) => {
-  if (process.env.MOCK_LOG) {
-    console.log(`[mock] ${req.method} ${req.url}`);
-  }
+  // Log de peticiones: visible en los logs del WebServer de Playwright en CI
+  console.log(`[mock] ${req.method} ${req.url}`);
   if (req.method === 'OPTIONS') {
     sendJson(res, 204);
     return;
