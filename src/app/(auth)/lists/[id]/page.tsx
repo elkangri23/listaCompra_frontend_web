@@ -265,14 +265,16 @@ export default function ListDetailPage() {
 
   // Handlers Sprint 2
   const handleBulkCategorize = async (categorizations: Map<string, string>) => {
-    const promises = Array.from(categorizations.entries()).map(([productId, categoryId]) =>
-      updateProductMutation.mutateAsync({
+    for (const [productId, categoriaId] of categorizations.entries()) {
+      await updateProductMutation.mutateAsync({
         productId,
-        data: { categoriaId: categoryId },
-      })
-    );
-    await Promise.all(promises);
-    setBulkDialogOpen(false);
+        data: { categoriaId },
+      });
+      await new Promise(resolve => setTimeout(resolve, 150)); // 150ms entre cada petición
+    }
+    // Forzar recarga de productos
+    await new Promise(resolve => setTimeout(resolve, 300));
+    router.refresh();
   };
 
   const handleMoveProduct = async (productId: string, newCategoryId: string | null) => {

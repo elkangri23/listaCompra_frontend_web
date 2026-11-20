@@ -327,14 +327,14 @@ export function BulkCategorizationDialog({
               <Button 
                 variant="outline" 
                 onClick={handleClose}
-                className="border-gray-300 hover:bg-gray-100"
+                className="border-gray-300 hover:bg-gray-100 px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 Cancelar
               </Button>
               <Button
                 onClick={handleCategorize}
                 disabled={selectedProducts.size === 0 || bulkCategorize.isPending}
-                className="gap-2 bg-purple-600 hover:bg-purple-700 text-white"
+                className="gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 {bulkCategorize.isPending ? (
                   <>
@@ -354,13 +354,13 @@ export function BulkCategorizationDialog({
               <Button
                 variant="outline"
                 onClick={() => setShowPreview(false)}
-                className="border-gray-300 hover:bg-gray-100"
+                className="border-gray-300 hover:bg-gray-100 px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 Volver
               </Button>
               <Button
                 onClick={handleApplyCategories}
-                className="gap-2 bg-green-600 hover:bg-green-700 text-white"
+                className="gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 <CheckCircle2 className="h-4 w-4" />
                 Aplicar Categorías
