@@ -1,10 +1,12 @@
 /InfoDoc
 .env.local
 node_modules
-package-lock.json
 .next
 out
 .env
+
+# Coverage
+coverage/
 
 # Playwright
 playwright-report/
