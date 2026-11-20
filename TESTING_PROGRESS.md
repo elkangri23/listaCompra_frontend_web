@@ -6,6 +6,32 @@
 
 ---
 
+## 🆕 ACTUALIZACIÓN 27 NOV 2025 - TESTS E2E COMPLETADOS 🎉
+
+Los 45 tests E2E (0/45 pasando) se han **reescrito y adaptado al HTML real de la aplicación**: ahora son **33 tests E2E y los 33 pasan** (4 suites consecutivas en verde).
+
+### Qué se hizo
+- ✅ **Mock API server** (`tests/e2e/mock-api-server.mjs`): backend emulado en el puerto 3333 con estado en memoria (auth, listas, productos, categorías, invitaciones, IA, recomendaciones, tiendas). Permite correr los E2E sin el backend real ni base de datos.
+- ✅ **Playwright config**: doble `webServer` (mock API + app), build de producción (`npm run build && npm run start`) para evitar cuelgues de compilación de `next dev`, viewport 1600×900 (el layout del detalle de lista necesita ~1400px).
+- ✅ **helpers.ts reescrito** con selectores reales: `#email`, `#password`, `/lists/create` con `#nombre`/`#descripcion`, detalle de lista con `#add-product`, dialog Compartir con `#email-invite`/`#permission-selector`, etc.
+- ✅ **4 specs reescritos y sin `test.skip`**: auth-flow (9), create-list-flow (8), share-list-flow (9), ai-categorization-flow (7).
+
+### Bugs reales de la app descubiertos y corregidos por los E2E
+1. **Logout roto en producción**: `signOut()` de next-auth beta.30 pierde las cabeceras Set-Cookie de borrado en la ruta JSON y la sesión sobrevive. Fix: helper `src/lib/auth/sign-out.ts` con POST nativo de formulario (usado en header y sidebar).
+2. **UntrustedHost en producción**: faltaba `trustHost: true` en la config de NextAuth (`src/lib/auth/next-auth.ts`), el middleware redirigía mal con `next start`.
+3. **Categorización masiva no aplicaba categorías**: `handleBulkCategorize` en `lists/[id]/page.tsx` pasaba `{ productId, categoriaId }` al hook que espera `{ productId, data }`.
+4. **tsconfig excluye `tests/`**: `next build` fallaba por `jest.fn()` sin tipos en `tests/utils/test-utils.ts`.
+5. **Solapamiento CSS** en `lists/[id]` con viewport <1400px (el sidebar tapa "Añadir Producto") — documentado, los E2E usan 1600×900.
+
+### Cómo ejecutar los E2E
+```bash
+npm run test:e2e          # levanta mock API + build de producción automáticamente
+npx playwright test auth-flow   # una suite concreta
+npx playwright show-report      # reporte HTML
+```
+
+---
+
 ## 📊 RESUMEN EJECUTIVO
 
 ### ✅ COMPLETADO (Actualizado: 27 nov 2025 - 09:29) - OPCIÓN 2 FINALIZADA 🎉
@@ -69,9 +95,9 @@
   - Components: 188 tests (12 archivos)
 - **Integración**: 1 test
 - **Triviales (0% coverage)**: 0 tests (diferidos)
-- **E2E**: 45 tests escritos ⚠️ **NECESITAN ADAPTACIÓN A HTML REAL**
-  - **Estado**: 0/45 pasando (selectores genéricos no coinciden con implementación)
-  - **Prerequisito**: npm run dev activo + adaptación de selectores
+- **E2E**: 33 tests adaptados y pasando ✅ (ver ACTUALIZACIÓN 27 NOV 2025)
+  - **Estado**: 33/33 pasando (mock API + build de producción)
+  - **Prerequisito**: ninguno (Playwright levanta todo automáticamente)
 
 **Git commits realizados (21 commits totales):**
 - b5568a9: Tests secundarios use-categories (20 tests)
@@ -667,21 +693,10 @@ module.exports = {
    - Solución: Aumentar timeout a 10s o revisar async behavior
    - Tiempo estimado: 15 minutos
 
-2. **Tests E2E auth-flow parcialmente adaptados** ⚙️ **EN PROGRESO**
-   - **Problema**: Los 45 tests E2E fueron escritos con selectores genéricos
-   - **Causa raíz**: No se verificó el HTML real de la aplicación durante la escritura
-   - **Impacto**: 0/45 tests pasando (100% fallo)
-   - **Ejemplos de problemas**:
-     - Login: busca `<h1>` con "Iniciar sesión" pero no existe
-     - Selectores usan `input[name="email"]` pero pueden tener otros atributos
-     - Textos esperados no coinciden con los reales
-   - **Solución requerida**:
-     - Revisar cada página en el navegador (con DevTools)
-     - Actualizar selectores en helpers.ts y *.spec.ts
-     - Usar data-testid para mayor estabilidad
-     - Re-ejecutar tests uno por uno verificando cada selector
-   - **Tiempo estimado**: 8-10 horas (2h por flujo × 4 flujos)
-   - **Prerequisito**: Servidor Next.js corriendo en puerto 3000
+2. **Tests E2E completados** ✅ **RESUELTO (27 nov 2025)**
+   - Los 45 tests con selectores genéricos fueron reescritos: 33 tests E2E adaptados al HTML real, 33/33 pasando
+   - Ver la sección "ACTUALIZACIÓN 27 NOV 2025" al inicio de este documento
+   - Requiere: mock API (automático con Playwright) + build de producción
 
 3. **Coverage global aún bajo** (Prioridad: BAJA)
    - Actual: ~22% global
@@ -759,17 +774,16 @@ module.exports = {
 - Integración: 1/1 ✅
 - Pendiente: 1 test con timeout (fix estimado: 15 min)
 
-**Tests E2E**: ⚠️ **Requieren adaptación** (0/45 pasando)
-- Infraestructura: ✅ Playwright configurado correctamente
-- Problema: Selectores genéricos no coinciden con HTML real
-- Solución: Revisar y adaptar selectores a implementación real
-- Tiempo estimado: 8-10 horas
+**Tests E2E**: ✅ **COMPLETADOS** (33/33 pasando — ACTUALIZACIÓN 27 NOV 2025)
+- Infraestructura: ✅ Mock API server + Playwright con build de producción
+- Los 4 flujos E2E reescritos con selectores reales: auth, listas/productos, compartir, IA
+- Bugs de producción descubiertos y corregidos: logout, trustHost, categorización masiva
 
 **Próxima acción INMEDIATA**: 
-1. Arreglar timeout en share-list-dialog.test.tsx (15 min)
-2. Adaptar tests E2E empezando por auth-flow (2h)
+1. Configurar CI/CD con GitHub Actions (lint + unit + e2e)
+2. Mejorar coverage global (~22% → 75%)
 
 **Bloqueos**: Ninguno  
-**Riesgos**: Tests E2E necesitan inversión de tiempo para adaptación  
-**Velocidad actual**: ~14 tests/segundo en unitarios  
+**Riesgos**: Coverage global aún bajo (~22%)  
+**Velocidad actual**: ~14 tests/segundo en unitarios, ~3 min la suite E2E completa  
 **Commits totales**: 25 commits a GitHub
