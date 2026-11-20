@@ -1,313 +1,162 @@
 import { test, expect } from '@playwright/test';
-import { login, createList, addProduct, waitForToast, goToList, TEST_USER } from './helpers';
+import {
+  login,
+  createList,
+  addProduct,
+  waitForDashboard,
+  TEST_USER,
+} from './helpers';
 
 /**
  * Tests E2E para flujo de creación de listas y productos
- * - Crear lista nueva
- * - Editar lista
- * - Agregar productos a lista
- * - Marcar producto como comprado
- * - Eliminar producto
- * - Eliminar lista
+ * Basados en la implementación real:
+ * - /lists/create: #nombre, #descripcion, botón "Crear Lista"
+ * - /lists/[id]: #add-product, #add-cantidad, #add-urgente,
+ *   botón "Añadir Producto", checkbox por producto, botón eliminar con
+ *   aria-label "Eliminar <producto>", título editable de la lista
  */
 
 test.describe('Flujo de Creación de Listas y Productos', () => {
   test.beforeEach(async ({ page }) => {
-    // Navegar primero para tener contexto
-    await page.goto('/');
-    
-    // Login antes de cada test
     await login(page, TEST_USER.email, TEST_USER.password);
-    await expect(page).toHaveURL('/dashboard');
+    await waitForDashboard(page);
   });
 
-  test.skip('debe crear una nueva lista vacía', async ({ page }) => {
-    // TODO: Requiere login funcional y selectores de dashboard
-    // Click en botón crear lista
-    const createButton = page.locator('[data-testid="create-list-button"]').or(
-      page.locator('button:has-text("Nueva lista")')
-    ).first();
-    
-    await createButton.click();
-    
-    // Esperar dialog o formulario
-    await page.waitForSelector('input[name="nombre"]', { timeout: 5000 });
-    
-    // Llenar formulario
+  test('debe crear una nueva lista vacía', async ({ page }) => {
     const listName = `Lista Test ${Date.now()}`;
-    await page.fill('input[name="nombre"]', listName);
-    await page.fill('textarea[name="descripcion"]', 'Descripción de prueba');
-    
-    // Submit
-    await page.click('button[type="submit"]');
-    
-    // Debe redirigir a la nueva lista
-    await page.waitForURL(/\/lists\/\d+/, { timeout: 10000 });
-    
-    // Verificar que se muestra el nombre
-    await expect(page.locator(`text=${listName}`)).toBeVisible();
+    const listId = await createList(page, listName, 'Descripción de prueba');
+
+    // Debe redirigir a la nueva lista y mostrar el nombre
+    await expect(page).toHaveURL(`/lists/${listId}`);
+    await expect(
+      page.locator(`[aria-label*="Nombre de la lista"]`).filter({ hasText: listName })
+    ).toBeVisible({ timeout: 10000 });
+
+    // Mensaje de lista vacía
+    await expect(page.locator('text=No hay productos en esta lista')).toBeVisible();
   });
 
-  test.skip('debe crear lista y agregar productos', async ({ page }) => {
-    // TODO: Requiere login funcional
+  test('debe crear lista y agregar productos', async ({ page }) => {
     const listName = `Lista Compras ${Date.now()}`;
-    
-    // Crear lista
     await createList(page, listName, 'Lista para test E2E');
-    
-    // Verificar que estamos en la página de la lista
-    expect(page.url()).toMatch(/\/lists\/\d+/);
-    
-    // Agregar primer producto
-    await addProduct(page, 'Leche', { cantidad: 2, precio: 1.50 });
-    
-    // Verificar que aparece en la lista
-    await expect(page.locator('text=Leche')).toBeVisible();
-    
-    // Agregar segundo producto
+
+    // Agregar productos
+    await addProduct(page, 'Leche', { cantidad: 2 });
     await addProduct(page, 'Pan', { cantidad: 1, urgente: true });
-    
-    // Verificar ambos productos
-    await expect(page.locator('text=Leche')).toBeVisible();
-    await expect(page.locator('text=Pan')).toBeVisible();
+
+    // Verificar ambos productos en la página
+    await expect(page.locator(`p:has-text("Leche")`).first()).toBeVisible();
+    await expect(page.locator(`p:has-text("Pan")`).first()).toBeVisible();
+
+    // El producto urgente debe mostrar el badge "Urgente"
+    await expect(page.locator('[class*="urgentBadge"]:has-text("Urgente")')).toBeVisible();
   });
 
-  test.skip('debe marcar producto como comprado', async ({ page }) => {
-    // TODO: Requiere login funcional
-    // Crear lista con producto
+  test('debe marcar producto como comprado', async ({ page }) => {
     const listName = `Lista ${Date.now()}`;
     await createList(page, listName);
     await addProduct(page, 'Arroz');
-    
-    // Esperar que el producto aparezca
-    await expect(page.locator('text=Arroz')).toBeVisible();
-    
-    // Buscar checkbox o botón para marcar como comprado
-    const productRow = page.locator('[data-testid="product-item"]').or(
-      page.locator('li:has-text("Arroz")')
-    ).first();
-    
-    const checkbox = productRow.locator('input[type="checkbox"]').first();
+
+    // Marcar como comprado con el checkbox del producto
+    const checkbox = page.locator('input[aria-label="Marcar Arroz como comprado"]');
     await checkbox.check();
-    
-    // Verificar estado (puede tener clase, strikethrough, badge, etc)
-    await page.waitForTimeout(1000);
-    
-    // El producto debe tener algún indicador visual de "comprado"
-    const isChecked = await checkbox.isChecked();
-    expect(isChecked).toBeTruthy();
+
+    // El estado debe persistir (clase purchased + checkbox marcado)
+    await expect(checkbox).toBeChecked({ timeout: 5000 });
   });
 
-  test.skip('debe editar nombre y descripción de lista', async ({ page }) => {
-    // TODO: Requiere login funcional
-    // Crear lista
-    const originalName = `Lista Original ${Date.now()}`;
-    await createList(page, originalName, 'Descripción original');
-    
-    // Buscar botón de editar
-    const editButton = page.locator('[data-testid="edit-list-button"]').or(
-      page.locator('button:has-text("Editar")')
-    ).first();
-    
-    await editButton.click();
-    
-    // Esperar formulario de edición
-    await page.waitForSelector('input[name="nombre"]');
-    
-    // Cambiar nombre y descripción
-    const newName = `Lista Editada ${Date.now()}`;
-    await page.fill('input[name="nombre"]', newName);
-    await page.fill('textarea[name="descripcion"]', 'Descripción actualizada');
-    
-    // Guardar cambios
-    await page.click('button:has-text("Guardar")');
-    
-    // Verificar cambios
-    await page.waitForTimeout(1000);
-    await expect(page.locator(`text=${newName}`)).toBeVisible();
-  });
-
-  test.skip('debe eliminar producto de la lista', async ({ page }) => {
-    // TODO: Requiere login funcional
-    // Crear lista con producto
-    await createList(page, `Lista ${Date.now()}`);
+  test('debe eliminar producto de la lista', async ({ page }) => {
+    const listName = `Lista ${Date.now()}`;
+    await createList(page, listName);
     await addProduct(page, 'Producto a Eliminar');
-    
-    // Verificar que existe
-    await expect(page.locator('text=Producto a Eliminar')).toBeVisible();
-    
-    // Buscar botón eliminar
-    const productRow = page.locator('text=Producto a Eliminar').locator('..');
-    const deleteButton = productRow.locator('[data-testid="delete-product-button"]').or(
-      productRow.locator('button:has-text("Eliminar")')
-    ).first();
-    
-    // Click eliminar
-    await deleteButton.click();
-    
-    // Manejar confirmación si existe
-    page.on('dialog', dialog => dialog.accept());
-    
-    // Esperar que desaparezca
-    await expect(page.locator('text=Producto a Eliminar')).not.toBeVisible({ timeout: 5000 });
+
+    await expect(page.locator('p:has-text("Producto a Eliminar")')).toBeVisible();
+
+    // Botón de eliminar con aria-label real
+    await page.click('button[aria-label="Eliminar Producto a Eliminar"]');
+
+    // El producto debe desaparecer de la lista
+    await expect(page.locator('p:has-text("Producto a Eliminar")')).not.toBeVisible({
+      timeout: 5000,
+    });
+    // Y aparece el estado vacío de nuevo
+    await expect(page.locator('text=No hay productos en esta lista')).toBeVisible();
   });
 
-  test.skip('debe filtrar productos por categoría', async ({ page }) => {
-    // TODO: Requiere login funcional
-    // Crear lista
-    await createList(page, `Lista Categorías ${Date.now()}`);
-    
-    // Agregar productos de diferentes categorías
-    await addProduct(page, 'Manzanas', { categoria: 'Frutas' });
-    await addProduct(page, 'Leche', { categoria: 'Lácteos' });
-    await addProduct(page, 'Pan', { categoria: 'Panadería' });
-    
-    // Verificar que todos están visibles
-    await expect(page.locator('text=Manzanas')).toBeVisible();
-    await expect(page.locator('text=Leche')).toBeVisible();
-    await expect(page.locator('text=Pan')).toBeVisible();
-    
-    // Filtrar por categoría (si existe la funcionalidad)
-    const categoryFilter = page.locator('select[name="categoria"]').or(
-      page.locator('[data-testid="category-filter"]')
-    ).first();
-    
-    if (await categoryFilter.isVisible()) {
-      await categoryFilter.selectOption({ label: 'Frutas' });
-      
-      // Solo Manzanas debe estar visible
-      await expect(page.locator('text=Manzanas')).toBeVisible();
-      await expect(page.locator('text=Leche')).not.toBeVisible();
-      await expect(page.locator('text=Pan')).not.toBeVisible();
-    }
-  });
+  test('debe editar el nombre de la lista', async ({ page }) => {
+    const originalName = `Lista Original ${Date.now()}`;
+    const listId = await createList(page, originalName);
 
-  test.skip('debe mostrar contador de productos', async ({ page }) => {
-    // TODO: Requiere login funcional
-    // Crear lista
-    await createList(page, `Lista Contador ${Date.now()}`);
-    
-    // Inicialmente 0 productos
-    const counter = page.locator('[data-testid="products-count"]').or(
-      page.locator('text=/\\d+ productos?/i')
-    ).first();
-    
-    // Agregar 3 productos
-    await addProduct(page, 'Producto 1');
-    await addProduct(page, 'Producto 2');
-    await addProduct(page, 'Producto 3');
-    
-    // Verificar contador
-    await expect(counter).toContainText('3');
-  });
+    // El título es un botón que al hacer click activa la edición inline
+    await page.click(`[aria-label*="Nombre de la lista"]`);
+    const nameInput = page.locator('input[aria-label="Editar nombre de la lista"]');
+    await expect(nameInput).toBeVisible();
 
-  test.skip('debe eliminar lista completa', async ({ page }) => {
-    // TODO: Requiere login funcional
-    // Crear lista
-    const listName = `Lista a Eliminar ${Date.now()}`;
-    await createList(page, listName);
-    
-    // Agregar un producto
-    await addProduct(page, 'Producto');
-    
-    // Buscar botón eliminar lista
-    const deleteListButton = page.locator('[data-testid="delete-list-button"]').or(
-      page.locator('button:has-text("Eliminar lista")')
-    ).first();
-    
-    // Configurar handler para confirmación
-    page.on('dialog', dialog => dialog.accept());
-    
-    await deleteListButton.click();
-    
-    // Debe redirigir al dashboard
-    await page.waitForURL('/dashboard', { timeout: 10000 });
-    
-    // La lista no debe aparecer en dashboard
-    await expect(page.locator(`text=${listName}`)).not.toBeVisible();
-  });
+    const newName = `Lista Editada ${Date.now()}`;
+    await nameInput.fill(newName);
+    await nameInput.press('Enter');
 
-  test.skip('debe validar campos obligatorios al crear lista', async ({ page }) => {
-    // TODO: Requiere login funcional
-    // Click en crear lista
-    const createButton = page.locator('[data-testid="create-list-button"]').or(
-      page.locator('button:has-text("Nueva lista")')
-    ).first();
-    
-    await createButton.click();
-    
-    // Esperar formulario
-    await page.waitForSelector('input[name="nombre"]');
-    
-    // Intentar submit sin nombre
-    await page.click('button[type="submit"]');
-    
-    // Verificar validación
-    const nameInput = page.locator('input[name="nombre"]');
-    const validationMessage = await nameInput.evaluate(
-      (el: HTMLInputElement) => el.validationMessage
-    );
-    
-    expect(validationMessage).toBeTruthy();
-  });
-
-  test.skip('debe validar campos obligatorios al agregar producto', async ({ page }) => {
-    // TODO: Requiere login funcional
-    // Crear lista
-    await createList(page, `Lista ${Date.now()}`);
-    
-    // Abrir formulario de producto
-    const addButton = page.locator('[data-testid="add-product-button"]').or(
-      page.locator('button:has-text("Agregar producto")')
-    ).first();
-    
-    await addButton.click();
-    
-    // Intentar submit sin nombre
-    await page.waitForSelector('input[name="nombre"]');
-    await page.click('button[type="submit"]');
-    
-    // Verificar validación
-    const nameInput = page.locator('input[name="nombre"]');
-    const validationMessage = await nameInput.evaluate(
-      (el: HTMLInputElement) => el.validationMessage
-    );
-    
-    expect(validationMessage).toBeTruthy();
-  });
-
-  test.skip('debe mostrar lista vacía con mensaje apropiado', async ({ page }) => {
-    // TODO: Requiere login funcional
-    // Crear lista sin productos
-    const listName = `Lista Vacía ${Date.now()}`;
-    await createList(page, listName);
-    
-    // Debe mostrar mensaje de lista vacía
+    // El nuevo nombre debe mostrarse
     await expect(
-      page.locator('text=/no hay productos|lista vacía|agrega tu primer producto/i')
-    ).toBeVisible();
+      page.locator(`[aria-label*="Nombre de la lista"]`).filter({ hasText: newName })
+    ).toBeVisible({ timeout: 10000 });
+
+    // Persistir recargando (PUT /lists/:id)
+    await page.reload();
+    await expect(
+      page.locator(`[aria-label*="Nombre de la lista"]`).filter({ hasText: newName })
+    ).toBeVisible({ timeout: 10000 });
   });
 
-  test.skip('debe navegar entre listas desde dashboard', async ({ page }) => {
-    // TODO: Requiere login funcional
-    // Crear 2 listas
+  test('debe validar nombre obligatorio al crear lista', async ({ page }) => {
+    await page.goto('/lists/create');
+
+    // Intentar enviar el formulario vacío
+    await page.click('button:has-text("Crear Lista")');
+
+    // El formulario muestra error de validación real
+    await expect(page.locator('#nombre-error')).toBeVisible({ timeout: 5000 });
+    await expect(page).toHaveURL(/\/lists\/create/);
+  });
+
+  test('debe eliminar lista completa', async ({ page }) => {
+    const listName = `Lista a Eliminar ${Date.now()}`;
+    const listId = await createList(page, listName);
+    await addProduct(page, 'Producto temporal');
+
+    // Aceptar el diálogo de confirmación (window.confirm)
+    page.once('dialog', (dialog) => dialog.accept());
+
+    await page.click('button[title="Eliminar lista"]');
+
+    // Debe redirigir al dashboard
+    await page.waitForURL(/\/dashboard/, { timeout: 15000 });
+
+    // La lista no debe aparecer
+    await expect(page.locator(`h3:has-text("${listName}")`)).not.toBeVisible();
+
+    // Verificar también que el backend ya no la tiene
+    await page.goto('/lists');
+    await expect(page.locator(`h2:has-text("${listName}")`)).not.toBeVisible();
+  });
+
+  test('debe navegar entre listas desde el dashboard', async ({ page }) => {
     const list1Name = `Lista 1 ${Date.now()}`;
     const list2Name = `Lista 2 ${Date.now()}`;
-    
-    await createList(page, list1Name);
-    await page.goto('/dashboard');
-    await createList(page, list2Name);
-    
+
+    const id1 = await createList(page, list1Name);
+    const id2 = await createList(page, list2Name);
+
     // Volver al dashboard
     await page.goto('/dashboard');
-    
-    // Ambas listas deben aparecer
-    await expect(page.locator(`text=${list1Name}`)).toBeVisible();
-    await expect(page.locator(`text=${list2Name}`)).toBeVisible();
-    
-    // Click en lista 1
-    await page.click(`text=${list1Name}`);
-    await expect(page).toHaveURL(/\/lists\/\d+/);
-    await expect(page.locator(`text=${list1Name}`)).toBeVisible();
+    await waitForDashboard(page);
+
+    // Ambas listas deben aparecer como tarjetas
+    await expect(page.locator(`h3:has-text("${list1Name}")`)).toBeVisible({ timeout: 15000 });
+    await expect(page.locator(`h3:has-text("${list2Name}")`)).toBeVisible({ timeout: 15000 });
+
+    // Click en la lista 1 y verificar navegación
+    await page.click(`h3:has-text("${list1Name}")`);
+    await expect(page).toHaveURL(`/lists/${id1}`, { timeout: 15000 });
   });
 });

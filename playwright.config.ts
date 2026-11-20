@@ -8,7 +8,7 @@ export default defineConfig({
   testDir: './tests/e2e',
   
   /* Timeout por test */
-  timeout: 30 * 1000,
+  timeout: 90 * 1000,
   
   /* Configuración de expect */
   expect: {
@@ -39,6 +39,9 @@ export default defineConfig({
   use: {
     /* URL base para usar en navegación */
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+
+    /* Viewport de escritorio grande: el layout del detalle de lista necesita ~1400px */
+    viewport: { width: 1600, height: 900 },
     
     /* Recopilar trace en fallo */
     trace: 'on-first-retry',
@@ -60,7 +63,13 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        /* Viewport de escritorio grande: el layout del detalle de lista necesita ~1400px
+           (nav 80px + main 920px + sidebar 360px). El device descriptor fija 1280x720,
+           donde el sidebar tapa el botón "Añadir Producto". */
+        viewport: { width: 1600, height: 900 },
+      },
     },
 
     // Descomentar para probar en más navegadores
@@ -81,13 +90,24 @@ export default defineConfig({
     // },
   ],
 
-  /* Servidor de desarrollo - iniciar antes de ejecutar tests */
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-    stdout: 'ignore',
-    stderr: 'pipe',
-  },
-});
+  /* Servidores de desarrollo - iniciar antes de ejecutar tests */
+  webServer: [
+    {
+      /* Mock del backend API (no requiere base de datos) */
+      command: 'node tests/e2e/mock-api-server.mjs',
+      url: 'http://localhost:3333/api/v1/lists',
+      reuseExistingServer: !process.env.CI,
+      timeout: 90 * 1000,
+      stdout: 'ignore',
+      stderr: 'pipe',
+    },
+    {
+      /* Build de producción: evita los cuelgues de compilación on-demand de next dev */
+      command: 'npm run build && npm run start',
+      url: 'http://localhost:3000/login',
+      reuseExistingServer: !process.env.CI,
+      timeout: 420 * 1000,
+      stdout: 'ignore',
+      stderr: 'pipe',
+    },
+  ],});

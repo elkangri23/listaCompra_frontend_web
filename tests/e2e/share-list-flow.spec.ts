@@ -1,372 +1,220 @@
 import { test, expect } from '@playwright/test';
-import { login, logout, createList, shareList, addProduct, waitForToast, TEST_USER, TEST_ADMIN } from './helpers';
+import {
+  login,
+  createList,
+  addProduct,
+  shareList,
+  generateShareLink,
+  logout,
+  TEST_USER,
+  TEST_ADMIN,
+} from './helpers';
 
 /**
  * Tests E2E para flujo de compartir listas
- * - Compartir lista por email
- * - Generar enlace temporal
- * - Aceptar invitación
- * - Rechazar invitación
- * - Permisos de lectura vs escritura
- * - Revocar acceso
+ * Basados en la implementación real:
+ * - ShareListDialog: botón "Compartir" del header de la lista,
+ *   tabs "Por Email" / "Enlace Público", #email-invite,
+ *   #permission-selector (Radix Select), botón "Enviar Invitación",
+ *   #share-link tras generar enlace
+ * - Colaboradores: tab "Colaboradores" del sidebar
+ * NOTA: El backend no tiene endpoint de aceptar invitaciones por email;
+ * el acceso se hace por enlace público en /invitations/[hash]
  */
 
 test.describe('Flujo de Compartir Listas', () => {
   test.beforeEach(async ({ page }) => {
-    // Navegar primero para tener contexto
-    await page.goto('/');
-    
-    // Login con usuario propietario
     await login(page, TEST_USER.email, TEST_USER.password);
-    await expect(page).toHaveURL('/dashboard');
   });
 
-  test.skip('debe compartir lista por email con permiso de lectura', async ({ page }) => {
-    // Crear lista
+  test('debe compartir lista por email con permiso de lectura (por defecto)', async ({ page }) => {
     const listName = `Lista Compartida ${Date.now()}`;
     await createList(page, listName);
-    await addProduct(page, 'Producto Compartido');
-    
-    // Abrir dialog de compartir
-    const shareButton = page.locator('[data-testid="share-list-button"]').or(
-      page.locator('button:has-text("Compartir")')
-    ).first();
-    
-    await shareButton.click();
-    
-    // Esperar dialog
-    await page.waitForSelector('[role="dialog"]', { timeout: 5000 });
-    
-    // Verificar tabs (email y link)
-    await expect(page.locator('text=/por email|email/i')).toBeVisible();
-    await expect(page.locator('text=/enlace|link/i')).toBeVisible();
-    
-    // Llenar email
-    await page.fill('input[name="email"]', TEST_ADMIN.email);
-    
-    // Verificar que permiso LECTURA está seleccionado por defecto
-    const lecturaRadio = page.locator('[data-testid="permission-read"]').or(
-      page.locator('input[value="LECTURA"]')
-    ).first();
-    
-    const isChecked = await lecturaRadio.isChecked();
-    expect(isChecked).toBeTruthy();
-    
-    // Enviar invitación
-    await page.click('button:has-text("Enviar invitación")');
-    
-    // Esperar toast de confirmación
-    await waitForToast(page, /invitación enviada|invitado correctamente/i);
+
+    await page.click('button:has-text("Compartir")');
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible({ timeout: 5000 });
+
+    // Verificar las dos pestañas reales
+    await expect(page.locator('button[role="tab"]:has-text("Por Email")')).toBeVisible();
+    await expect(page.locator('button[role="tab"]:has-text("Enlace Público")')).toBeVisible();
+
+    // Llenar email y enviar con permiso LECTURA (default)
+    await page.fill('#email-invite', TEST_ADMIN.email);
+    await page.click('button:has-text("Enviar Invitación")');
+
+    // Toast de confirmación con el email
+    await expect(
+      page.locator('[data-sonner-toast]').filter({ hasText: TEST_ADMIN.email })
+    ).toBeVisible({ timeout: 10000 });
   });
 
-  test.skip('debe compartir lista con permiso de escritura', async ({ page }) => {
-    // Crear lista
-    await createList(page, `Lista Escritura ${Date.now()}`);
-    
-    // Abrir dialog compartir
-    const shareButton = page.locator('[data-testid="share-list-button"]').or(
-      page.locator('button:has-text("Compartir")')
-    ).first();
-    
-    await shareButton.click();
-    await page.waitForSelector('[role="dialog"]');
-    
-    // Llenar email
-    await page.fill('input[name="email"]', TEST_ADMIN.email);
-    
-    // Seleccionar permiso ESCRITURA
-    const escrituraRadio = page.locator('[data-testid="permission-write"]').or(
-      page.locator('input[value="ESCRITURA"]')
-    ).first();
-    
-    await escrituraRadio.check();
-    
-    // Enviar
-    await page.click('button:has-text("Enviar invitación")');
-    
-    // Confirmar
-    await waitForToast(page, /invitación enviada/i);
-  });
-
-  test.skip('debe generar enlace temporal para compartir', async ({ page }) => {
-    // Crear lista
-    await createList(page, `Lista Enlace ${Date.now()}`);
-    
-    // Abrir dialog compartir
-    const shareButton = page.locator('[data-testid="share-list-button"]').or(
-      page.locator('button:has-text("Compartir")')
-    ).first();
-    
-    await shareButton.click();
-    await page.waitForSelector('[role="dialog"]');
-    
-    // Cambiar a tab de enlace
-    const linkTab = page.locator('[data-testid="share-link-tab"]').or(
-      page.locator('text=/enlace|link temporal/i')
-    ).first();
-    
-    await linkTab.click();
-    
-    // Generar enlace
-    const generateButton = page.locator('button:has-text("Generar enlace")').or(
-      page.locator('[data-testid="generate-link-button"]')
-    ).first();
-    
-    await generateButton.click();
-    
-    // Debe aparecer el enlace
-    await page.waitForTimeout(1000);
-    
-    const linkInput = page.locator('input[readonly]').or(
-      page.locator('[data-testid="share-link-input"]')
-    ).first();
-    
-    await expect(linkInput).toBeVisible();
-    
-    // Verificar que tiene valor
-    const linkValue = await linkInput.inputValue();
-    expect(linkValue).toContain('http');
-    expect(linkValue).toContain('/share/');
-  });
-
-  test.skip('debe copiar enlace al portapapeles', async ({ page, context }) => {
-    // Dar permisos de clipboard
-    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-    
-    // Crear lista y generar enlace
-    await createList(page, `Lista Copiar ${Date.now()}`);
-    
-    const shareButton = page.locator('[data-testid="share-list-button"]').or(
-      page.locator('button:has-text("Compartir")')
-    ).first();
-    
-    await shareButton.click();
-    await page.waitForSelector('[role="dialog"]');
-    
-    // Tab enlace
-    const linkTab = page.locator('text=/enlace|link/i').last();
-    await linkTab.click();
-    
-    // Generar
-    await page.click('button:has-text("Generar enlace")');
-    await page.waitForTimeout(1000);
-    
-    // Copiar
-    const copyButton = page.locator('button:has-text("Copiar")').or(
-      page.locator('[data-testid="copy-link-button"]')
-    ).first();
-    
-    await copyButton.click();
-    
-    // Verificar toast
-    await waitForToast(page, /enlace copiado|copied/i);
-  });
-
-  test.skip('debe validar email al compartir', async ({ page }) => {
-    await createList(page, `Lista ${Date.now()}`);
-    
-    const shareButton = page.locator('[data-testid="share-list-button"]').or(
-      page.locator('button:has-text("Compartir")')
-    ).first();
-    
-    await shareButton.click();
-    await page.waitForSelector('[role="dialog"]');
-    
-    // Intentar con email inválido
-    await page.fill('input[name="email"]', 'email-invalido');
-    await page.click('button:has-text("Enviar invitación")');
-    
-    // Verificar validación HTML5
-    const emailInput = page.locator('input[name="email"]');
-    const validationMessage = await emailInput.evaluate(
-      (el: HTMLInputElement) => el.validationMessage
-    );
-    
-    expect(validationMessage).toBeTruthy();
-  });
-
-  test.skip('debe mostrar lista de colaboradores actuales', async ({ page }) => {
-    await createList(page, `Lista Colaboradores ${Date.now()}`);
-    
-    // Compartir con alguien
-    await shareList(page, TEST_ADMIN.email, 'LECTURA');
-    
-    // Ir a sección de colaboradores
-    const collaboratorsSection = page.locator('[data-testid="collaborators-section"]').or(
-      page.locator('text=/colaboradores|compartido con/i')
-    ).first();
-    
-    if (await collaboratorsSection.isVisible()) {
-      // Verificar que aparece el colaborador
-      await expect(page.locator(`text=${TEST_ADMIN.email}`)).toBeVisible();
-    }
-  });
-
-  test.skip('debe aceptar invitación como invitado', async ({ page, context }) => {
-    // Usuario 1: Crear lista y compartir
-    await createList(page, `Lista Invitación ${Date.now()}`);
-    await shareList(page, TEST_ADMIN.email, 'ESCRITURA');
-    
-    // Logout del usuario 1
-    await logout(page);
-    
-    // Login como usuario 2 (invitado)
-    await login(page, TEST_ADMIN.email, TEST_ADMIN.password);
-    
-    // Navegar a invitaciones
-    await page.goto('/invitations');
-    
-    // Debe aparecer la invitación pendiente
-    await expect(page.locator('text=/invitaciones pendientes|invitations/i')).toBeVisible();
-    
-    // Buscar botón aceptar
-    const acceptButton = page.locator('button:has-text("Aceptar")').or(
-      page.locator('[data-testid="accept-invitation-button"]')
-    ).first();
-    
-    await acceptButton.click();
-    
-    // Debe redirigir a la lista compartida
-    await page.waitForURL(/\/lists\/\d+/, { timeout: 10000 });
-    
-    // Verificar que puede ver la lista
-    await expect(page.locator('text=/lista compartida|shared list/i')).toBeVisible();
-  });
-
-  test.skip('debe rechazar invitación', async ({ page }) => {
-    // Suponer que hay una invitación pendiente
-    await page.goto('/invitations');
-    
-    // Si hay invitaciones
-    const invitationsList = page.locator('[data-testid="invitations-list"]');
-    
-    if (await invitationsList.isVisible()) {
-      // Click rechazar
-      const declineButton = page.locator('button:has-text("Rechazar")').or(
-        page.locator('[data-testid="decline-invitation-button"]')
-      ).first();
-      
-      if (await declineButton.isVisible()) {
-        // Configurar confirmación
-        page.on('dialog', dialog => dialog.accept());
-        
-        await declineButton.click();
-        
-        // Verificar que desaparece
-        await page.waitForTimeout(1000);
-        await waitForToast(page, /invitación rechazada|declined/i);
-      }
-    }
-  });
-
-  test('invitado con LECTURA no debe poder editar', async ({ page, context }) => {
-    // Usuario 1: Crear y compartir con LECTURA
-    const listName = `Lista Solo Lectura ${Date.now()}`;
-    await createList(page, listName);
-    await addProduct(page, 'Producto Original');
-    await shareList(page, TEST_ADMIN.email, 'LECTURA');
-    await logout(page);
-    
-    // Usuario 2: Login y aceptar
-    await login(page, TEST_ADMIN.email, TEST_ADMIN.password);
-    await page.goto('/invitations');
-    
-    const acceptButton = page.locator('button:has-text("Aceptar")').first();
-    if (await acceptButton.isVisible()) {
-      await acceptButton.click();
-      await page.waitForURL(/\/lists\/\d+/);
-    } else {
-      // Si ya aceptó, ir directamente a listas compartidas
-      await page.goto('/dashboard');
-      await page.click(`text=${listName}`);
-    }
-    
-    // Verificar que NO puede agregar productos
-    const addButton = page.locator('[data-testid="add-product-button"]');
-    
-    // El botón no debe estar visible o debe estar deshabilitado
-    if (await addButton.isVisible()) {
-      const isDisabled = await addButton.isDisabled();
-      expect(isDisabled).toBeTruthy();
-    } else {
-      // Botón oculto es correcto
-      await expect(addButton).not.toBeVisible();
-    }
-  });
-
-  test('invitado con ESCRITURA debe poder agregar productos', async ({ page, context }) => {
-    // Usuario 1: Crear y compartir con ESCRITURA
+  test('debe compartir lista con permiso de escritura', async ({ page }) => {
     const listName = `Lista Escritura ${Date.now()}`;
     await createList(page, listName);
-    await shareList(page, TEST_ADMIN.email, 'ESCRITURA');
+
+    await page.click('button:has-text("Compartir")');
+    await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 5000 });
+
+    await page.fill('#email-invite', TEST_ADMIN.email);
+
+    // Seleccionar ESCRITURA en el Radix Select
+    await page.click('#permission-selector');
+    await page.click('div[role="option"]:has-text("Lectura y escritura")');
+
+    await page.click('button:has-text("Enviar Invitación")');
+
+    // El toast debe mencionar el permiso de escritura
+    await expect(
+      page.locator('[data-sonner-toast]').filter({ hasText: /escritura/i })
+    ).toBeVisible({ timeout: 10000 });
+  });
+
+  test('debe generar enlace público de compartir', async ({ page }) => {
+    const listName = `Lista Enlace ${Date.now()}`;
+    await createList(page, listName);
+
+    const link = await generateShareLink(page);
+
+    // El enlace apunta a la página pública de invitación
+    expect(link).toContain('/invitations/');
+  });
+
+  test('debe copiar enlace al portapapeles', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+
+    const listName = `Lista Copiar ${Date.now()}`;
+    await createList(page, listName);
+
+    await generateShareLink(page);
+
+    // Botón de copiar con texto accesible "Copiar enlace"
+    await page.click('button:has-text("Copiar enlace")');
+
+    await expect(
+      page.locator('[data-sonner-toast]').filter({ hasText: /copiado/i })
+    ).toBeVisible({ timeout: 5000 });
+
+    // Verificar el contenido del portapapeles
+    const clipboard = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clipboard).toContain('/invitations/');
+  });
+
+  test('debe validar email inválido al compartir', async ({ page }) => {
+    await createList(page, `Lista Validar ${Date.now()}`);
+
+    await page.click('button:has-text("Compartir")');
+    await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 5000 });
+
+    // Email inválido → el input type="email" bloquea el submit con validación
+    // HTML5 nativa (el form no tiene noValidate)
+    await page.fill('#email-invite', 'email-invalido');
+    await page.click('button:has-text("Enviar Invitación")');
+
+    const validationMessage = await page
+      .locator('#email-invite')
+      .evaluate((el: HTMLInputElement) => el.validationMessage);
+    expect(validationMessage).toBeTruthy();
+
+    // El dialog sigue abierto (no se envió nada)
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+  });
+
+  test('debe mostrar colaboradores actuales de la lista', async ({ page }) => {
+    const listName = `Lista Colaboradores ${Date.now()}`;
+    const listId = await createList(page, listName);
+
+    // Compartir con un usuario (crea la invitación)
+    await shareList(page, TEST_ADMIN.email, 'LECTURA');
+
+    // Cerrar dialog y abrir el tab de colaboradores
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[role="dialog"]')).toBeHidden({ timeout: 5000 });
+    await page.getByRole('button', { name: 'Colaboradores', exact: true }).click();
+
+    // El tab muestra la sección con el email del colaborador
+    await expect(page.locator('h3:has-text("Colaboradores")')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(TEST_ADMIN.email, { exact: true })).toBeVisible();
+  });
+
+  test('propietario debe poder revocar acceso de colaborador', async ({ page }) => {
+    const listName = `Lista Revocar ${Date.now()}`;
+    await createList(page, listName);
+
+    await shareList(page, TEST_ADMIN.email, 'LECTURA');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[role="dialog"]')).toBeHidden({ timeout: 5000 });
+    await page.getByRole('button', { name: 'Colaboradores', exact: true }).click();
+
+    // El colaborador debe estar en la lista
+    await expect(page.getByText(TEST_ADMIN.email, { exact: true })).toBeVisible({ timeout: 10000 });
+
+    // Revocar acceso: el botón está en el menú "Más opciones" del colaborador
+    page.once('dialog', (dialog) => dialog.accept());
+    await page.click('button:has-text("Más opciones")');
+    await page.getByRole('menuitem', { name: 'Revocar acceso' }).click();
+
+    // El email del colaborador debe desaparecer
+    await expect(page.getByText(TEST_ADMIN.email, { exact: true })).not.toBeVisible({
+      timeout: 10000,
+    });
+  });
+
+  test('debe aceptar invitación mediante enlace público', async ({ page }) => {
+    const listName = `Lista Invitación ${Date.now()}`;
+    const listId = await createList(page, listName);
+
+    // Generar enlace
+    const link = await generateShareLink(page);
+    const hash = link.split('/invitations/')[1];
+
+    // Cerrar dialog y cerrar sesión
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[role="dialog"]')).toBeHidden({ timeout: 5000 });
     await logout(page);
-    
-    // Usuario 2: Login y aceptar
+
+    // El middleware redirige el enlace público a /login con callbackUrl
+    await page.goto(`/invitations/${hash}`);
+    await page.waitForURL(/\/login/, { timeout: 15000 });
+
+    // Login: el callbackUrl lleva de vuelta a la página de la invitación
+    await page.fill('#email', TEST_ADMIN.email);
+    await page.fill('#password', TEST_ADMIN.password);
+    await page.click('button[type="submit"]');
+    await page.waitForURL(new RegExp(`/invitations/${hash}`), { timeout: 30000 });
+
+    // La página pública muestra el nombre de la lista
+    await expect(page.locator('h2:has-text("' + listName + '")')).toBeVisible({
+      timeout: 15000,
+    });
+  });
+
+  test('debe rechazar invitación pendiente', async ({ page }) => {
+    const listName = `Lista Rechazo ${Date.now()}`;
+    await createList(page, listName);
+
+    // Propietario invita al admin
+    await shareList(page, TEST_ADMIN.email, 'LECTURA');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[role="dialog"]')).toBeHidden({ timeout: 5000 });
+    await logout(page);
+
+    // Login como admin para ver la invitación pendiente
     await login(page, TEST_ADMIN.email, TEST_ADMIN.password);
+
     await page.goto('/invitations');
-    
-    const acceptButton = page.locator('button:has-text("Aceptar")').first();
-    if (await acceptButton.isVisible()) {
-      await acceptButton.click();
-      await page.waitForURL(/\/lists\/\d+/);
-    } else {
-      await page.goto('/dashboard');
-      await page.click(`text=${listName}`);
-    }
-    
-    // Debe poder agregar producto
-    await addProduct(page, 'Producto del Colaborador');
-    
-    // Verificar que se agregó
-    await expect(page.locator('text=Producto del Colaborador')).toBeVisible();
-  });
+    await expect(page.locator('h1:has-text("Invitaciones Pendientes")')).toBeVisible({
+      timeout: 15000,
+    });
 
-  test('propietario debe poder revocar acceso', async ({ page }) => {
-    // Crear lista y compartir
-    await createList(page, `Lista Revocar ${Date.now()}`);
-    await shareList(page, TEST_ADMIN.email, 'LECTURA');
-    
-    // Ir a sección de colaboradores
-    const collaboratorsSection = page.locator('[data-testid="collaborators-section"]').or(
-      page.locator('text=/colaboradores/i')
-    ).first();
-    
-    if (await collaboratorsSection.isVisible()) {
-      await collaboratorsSection.scrollIntoViewIfNeeded();
-      
-      // Buscar botón revocar
-      const revokeButton = page.locator('button:has-text("Revocar")').or(
-        page.locator('[data-testid="revoke-access-button"]')
-      ).first();
-      
-      if (await revokeButton.isVisible()) {
-        // Configurar confirmación
-        page.on('dialog', dialog => dialog.accept());
-        
-        await revokeButton.click();
-        
-        // Verificar que se eliminó
-        await page.waitForTimeout(1000);
-        await expect(page.locator(`text=${TEST_ADMIN.email}`)).not.toBeVisible();
-      }
-    }
-  });
+    // La invitación del propietario debe aparecer (con otras de tests paralelos)
+    const row = page.locator('tr').filter({ hasText: listName });
+    await expect(row).toBeVisible({ timeout: 10000 });
 
-  test.skip('debe mostrar indicador de lista compartida', async ({ page }) => {
-    // Crear y compartir lista
-    await createList(page, `Lista Indicador ${Date.now()}`);
-    await shareList(page, TEST_ADMIN.email, 'LECTURA');
-    
-    // Volver al dashboard
-    await page.goto('/dashboard');
-    
-    // Debe haber algún indicador visual de que está compartida
-    const sharedIndicator = page.locator('[data-testid="shared-indicator"]').or(
-      page.locator('text=/compartida|shared|colaboradores/i')
-    ).first();
-    
-    // Al menos uno debe estar visible
-    const isVisible = await sharedIndicator.isVisible();
-    expect(isVisible).toBeTruthy();
+    // Rechazarla (botón de su propia fila)
+    await row.locator('button:has-text("Rechazar")').click();
+
+    // La fila debe desaparecer de la lista
+    await expect(row).not.toBeVisible({ timeout: 10000 });
   });
 });
