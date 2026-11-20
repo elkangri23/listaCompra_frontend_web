@@ -93,12 +93,13 @@ export default defineConfig({
   /* Servidores de desarrollo - iniciar antes de ejecutar tests */
   webServer: [
     {
-      /* Mock del backend API (no requiere base de datos) */
+      /* Mock del backend API (no requiere base de datos).
+         stdout: 'pipe' para ver las peticiones [mock] en los logs de CI */
       command: 'node tests/e2e/mock-api-server.mjs',
       url: 'http://localhost:3333/api/v1/lists',
       reuseExistingServer: !process.env.CI,
       timeout: 90 * 1000,
-      stdout: 'ignore',
+      stdout: 'pipe',
       stderr: 'pipe',
     },
     {

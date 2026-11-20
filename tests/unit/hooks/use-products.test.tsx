@@ -270,15 +270,22 @@ describe('useProducts hooks (CRÍTICO - 100% coverage)', () => {
   });
 
   describe('useToggleProductPurchased', () => {
-    it('debe marcar producto como comprado (optimistic update)', async () => {
+    it('debe marcar producto como comprado (optimistic update + API)', async () => {
+      (productService.togglePurchased as jest.Mock).mockResolvedValue({
+        id: 'p1',
+        comprado: true,
+      });
+
       const { result } = renderHook(() => useToggleProductPurchased('list-1'), { wrapper });
 
       result.current.mutate({ productId: 'p1', purchased: true });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      // No debe llamar al servicio (temporalmente desactivado)
-      expect(productService.togglePurchased).not.toHaveBeenCalled();
+      // Debe persistir en el backend
+      expect(productService.togglePurchased).toHaveBeenCalledWith('list-1', 'p1', {
+        comprado: true,
+      });
     });
 
     it('debe manejar rollback en caso de error', async () => {
