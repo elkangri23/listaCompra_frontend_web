@@ -83,6 +83,9 @@ const customJestConfig = {
     '<rootDir>/tests/**/*.test.{ts,tsx}',
     '<rootDir>/tests/**/*.spec.{ts,tsx}',
   ],
+
+  // Los specs de Playwright (E2E) corren fuera de Jest
+  testPathIgnorePatterns: ['/node_modules/', '/tests/e2e/'],
   
   // Configuración adicional
   coverageDirectory: '<rootDir>/coverage',
