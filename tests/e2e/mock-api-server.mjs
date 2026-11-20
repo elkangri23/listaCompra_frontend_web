@@ -381,9 +381,9 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    if (seg[0] === 'lists' && seg[3] === 'purchase' && method === 'PATCH') {
+    if (seg[0] === 'lists' && seg[2] === 'products' && seg[4] === 'purchase' && method === 'PATCH') {
       const list = state.lists.get(seg[1]);
-      const product = list?.products.get(seg[2]);
+      const product = list?.products.get(seg[3]);
       if (!list || !product) {
         sendJson(res, 404, { success: false, message: 'Producto no encontrado' });
         return;
