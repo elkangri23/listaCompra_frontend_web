@@ -106,7 +106,7 @@ export default defineConfig({
       command: 'npm run build && npm run start',
       url: 'http://localhost:3000/login',
       reuseExistingServer: !process.env.CI,
-      timeout: 420 * 1000,
+      timeout: 900 * 1000,
       stdout: 'ignore',
       stderr: 'pipe',
     },
