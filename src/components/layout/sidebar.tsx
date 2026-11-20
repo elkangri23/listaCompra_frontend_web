@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, File, Settings, LogOut, Mail, Bell } from 'lucide-react';
 import { useNotifications } from '@/features/notifications/hooks/use-notifications';
+import { signOutViaForm } from '@/lib/auth/sign-out';
 
 const links = [
   { href: '/dashboard', label: 'Panel Principal', icon: Home },
@@ -43,7 +44,7 @@ export function Sidebar() {
         </nav>
       </div>
       <div>
-        <button>
+        <button onClick={() => signOutViaForm('/login')}>
           <LogOut />
           <span>Cerrar Sesión</span>
         </button>

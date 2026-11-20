@@ -97,6 +97,9 @@ const callbacks: NextAuthConfig['callbacks'] = {
 
 export const authConfig: NextAuthConfig = {
   secret: process.env.NEXTAUTH_SECRET,
+  /* Necesario tras proxies/Vercel y para que auth() funcione con next start
+     (sin esto, en producción falla con UntrustedHost) */
+  trustHost: true,
   session: {
     strategy: 'jwt',
   },

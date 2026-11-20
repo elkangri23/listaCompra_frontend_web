@@ -2,14 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { signOut } from 'next-auth/react'
+import { signOutViaForm } from '@/lib/auth/sign-out'
 import styles from './app-header.module.css'
 
 export function AppHeader() {
   const pathname = usePathname()
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/login' })
+    await signOutViaForm('/login')
   }
 
   return (
