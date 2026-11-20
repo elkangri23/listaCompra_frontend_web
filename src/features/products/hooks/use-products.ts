@@ -145,19 +145,17 @@ export const useToggleProductPurchased = (listId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    // TEMPORAL: Desactivada llamada a API para evitar rate limiting
-    // Solo actualiza estado local (UI) sin persistir en backend
-    mutationFn: async ({
+    // Persiste en el backend (PATCH /lists/:id/products/:pid/purchase).
+    // NOTA: antes estaba deshabilitado "para evitar rate limiting", pero sin
+    // persistir el check no se guarda y el auto-refresh de 10s revierte el
+    // estado en la UI (bug E2E marcar-producto-comprado).
+    mutationFn: ({
       productId,
       purchased,
     }: {
       productId: string;
       purchased: boolean;
-    }) => {
-      // Simulamos éxito sin llamar a la API
-      return Promise.resolve({ id: productId, comprado: purchased });
-      // COMENTADO: productService.togglePurchased(listId, productId, { comprado: purchased })
-    },
+    }) => productService.togglePurchased(listId, productId, { comprado: purchased }),
     // Optimistic update for instant UI feedback (solo frontend)
     onMutate: async ({ productId, purchased }) => {
       // Cancel any outgoing refetches
