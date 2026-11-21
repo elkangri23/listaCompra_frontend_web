@@ -787,3 +787,21 @@ module.exports = {
 **Riesgos**: Coverage global aún bajo (~22%)  
 **Velocidad actual**: ~14 tests/segundo en unitarios, ~3 min la suite E2E completa  
 **Commits totales**: 25 commits a GitHub
+
+---
+
+## ACTUALIZACIÓN 28 NOV 2025 - Coverage 72% → 97.6%
+
+**Cobertura global**: **97.58% statements / 84.34% branches / 97.82% functions / 97.6% lines**
+- Antes: 72.45% / 61.02% / 72.67% / 72.11% (con 19 archivos por debajo del 75%)
+
+**Nuevos tests (114)**:
+- Servicios al 100%: collaborator-service, store-service, category-service, notification-service, blueprint-service
+- Hooks al ~100%: use-profile, use-collaborators (lists + invitations), use-permissions, use-revoke-access, use-update-permissions, use-share-list, use-invitation-by-hash
+- Validadores: password-schema, profile-schema
+- Componentes: profile-form (mock funcional de form UI que conecta react-hook-form), forgot-password-form, change-password-form, session-status
+- Barrel `src/**/index.ts` excluido del coverage (solo reexportan, no medible)
+
+**Thresholds de Jest**: subidos de 45/50/45/45 → **95/80/95/95** (statements/branches/functions/lines global)
+
+**Totales**: 718 tests unitarios pasando (43 suites) + 33 E2E
