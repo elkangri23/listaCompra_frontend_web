@@ -18,17 +18,15 @@ const customJestConfig = {
   },
   
   // Coverage thresholds
-  // NOTA: se usan thresholds globales porque Jest aplica los thresholds por
-  // globo a CADA archivo: los archivos de src/ aún sin tests (profile-form,
-  // change-password-form, collaborator-service, etc.) los romperían.
-  // Objetivo: subir el global a 75% completando el coverage pendiente
-  // (ver TESTING_PROGRESS.md). Valores actuales con margen.
+  // Actualizado tras cubrir los servicios/hooks/componentes pendientes.
+  // Valores actuales: 97.6% statements / 84.3% branches / 97.8% functions / 97.6% lines.
+  // Margen para evitar fallos intermitentes; objetivo a futuro: 100/85.
   coverageThreshold: {
     global: {
-      statements: 45,
-      branches: 50,
-      functions: 45,
-      lines: 45,
+      statements: 95,
+      branches: 80,
+      functions: 95,
+      lines: 95,
     },
   },
   
@@ -56,6 +54,8 @@ const customJestConfig = {
     '!**/__tests__/**',
     '!**/*.test.{ts,tsx}',
     '!**/*.spec.{ts,tsx}',
+    // Los barrels (index.ts) solo reexportan símbolos; su cobertura es medible pero no significativa
+    '!src/**/index.ts',
   ],
   
   // Rutas de tests
