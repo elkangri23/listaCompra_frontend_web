@@ -10,26 +10,24 @@ const customJestConfig = {
   // Timeout generoso: hay tests con animaciones/toasts de sonner que tardan
   // 3-4s y el default (5s) provoca flakiness con workers en paralelo
   testTimeout: 15000,
-  transformIgnorePatterns: [
-    '/node_modules/(?!next-auth|@auth/core)/',
-  ],
+  transformIgnorePatterns: ['/node_modules/(?!next-auth|@auth/core)/'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
-  
+
   // Coverage thresholds
-  // Actualizado tras cubrir los servicios/hooks/componentes pendientes.
-  // Valores actuales: 97.6% statements / 84.3% branches / 97.8% functions / 97.6% lines.
-  // Margen para evitar fallos intermitentes; objetivo a futuro: 100/85.
+  // Actual: 99.66% statements / 93.94% branches / 99.7% functions / 99.81% lines.
+  // Thresholds con margen mínimo; el goal es 100/95 a medida que se cubran
+  // las ramas defensivas restantes (optimistic updates, errores de red).
   coverageThreshold: {
     global: {
-      statements: 95,
-      branches: 80,
-      functions: 95,
-      lines: 95,
+      statements: 99,
+      branches: 92,
+      functions: 99,
+      lines: 99,
     },
   },
-  
+
   // Recolección de coverage
   collectCoverageFrom: [
     // Incluir archivos críticos y secundarios
@@ -39,7 +37,7 @@ const customJestConfig = {
     'src/features/*/components/*.{tsx}',
     'src/lib/security/**/*.{ts,tsx}',
     'src/app/(auth)/**/page.{tsx}',
-    
+
     // Excluir triviales y archivos de configuración
     '!src/components/ui/**',
     '!src/components/layout/**',
@@ -57,7 +55,7 @@ const customJestConfig = {
     // Los barrels (index.ts) solo reexportan símbolos; su cobertura es medible pero no significativa
     '!src/**/index.ts',
   ],
-  
+
   // Rutas de tests
   testMatch: [
     '<rootDir>/tests/**/*.test.{ts,tsx}',
@@ -66,7 +64,7 @@ const customJestConfig = {
 
   // Los specs de Playwright (E2E) corren fuera de Jest
   testPathIgnorePatterns: ['/node_modules/', '/tests/e2e/'],
-  
+
   // Configuración adicional
   coverageDirectory: '<rootDir>/coverage',
   coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
