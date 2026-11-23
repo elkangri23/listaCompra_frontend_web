@@ -103,8 +103,14 @@ export default defineConfig({
       stderr: 'pipe',
     },
     {
-      /* Build de producción: evita los cuelgues de compilación on-demand de next dev */
+      /* Build de producción: evita los cuelgues de compilación on-demand de next dev.
+         El stream SSE se desactiva en E2E: mantiene la conexión abierta y
+         'networkidle' nunca llegaría a resolverse. */
       command: 'npm run build && npm run start',
+      env: {
+        ...process.env,
+        NEXT_PUBLIC_LIST_SYNC_DISABLED: '1',
+      } as NodeJS.ProcessEnv,
       url: 'http://localhost:3000/login',
       reuseExistingServer: !process.env.CI,
       timeout: 900 * 1000,

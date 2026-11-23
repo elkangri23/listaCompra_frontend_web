@@ -49,6 +49,12 @@ export function useListSync(
   userIdRef.current = userId;
 
   useEffect(() => {
+    // El stream mantiene la conexión abierta: se puede desactivar (p.ej. en E2E,
+    // donde 'networkidle' de Playwright nunca se resolvería con un SSE activo)
+    if (process.env.NEXT_PUBLIC_LIST_SYNC_DISABLED === '1') {
+      return;
+    }
+
     if (!enabled || !listId || status !== 'authenticated' || !token) {
       return;
     }
