@@ -11,12 +11,14 @@
 Los 45 tests E2E (0/45 pasando) se han **reescrito y adaptado al HTML real de la aplicación**: ahora son **33 tests E2E y los 33 pasan** (4 suites consecutivas en verde).
 
 ### Qué se hizo
+
 - ✅ **Mock API server** (`tests/e2e/mock-api-server.mjs`): backend emulado en el puerto 3333 con estado en memoria (auth, listas, productos, categorías, invitaciones, IA, recomendaciones, tiendas). Permite correr los E2E sin el backend real ni base de datos.
 - ✅ **Playwright config**: doble `webServer` (mock API + app), build de producción (`npm run build && npm run start`) para evitar cuelgues de compilación de `next dev`, viewport 1600×900 (el layout del detalle de lista necesita ~1400px).
 - ✅ **helpers.ts reescrito** con selectores reales: `#email`, `#password`, `/lists/create` con `#nombre`/`#descripcion`, detalle de lista con `#add-product`, dialog Compartir con `#email-invite`/`#permission-selector`, etc.
 - ✅ **4 specs reescritos y sin `test.skip`**: auth-flow (9), create-list-flow (8), share-list-flow (9), ai-categorization-flow (7).
 
 ### Bugs reales de la app descubiertos y corregidos por los E2E
+
 1. **Logout roto en producción**: `signOut()` de next-auth beta.30 pierde las cabeceras Set-Cookie de borrado en la ruta JSON y la sesión sobrevive. Fix: helper `src/lib/auth/sign-out.ts` con POST nativo de formulario (usado en header y sidebar).
 2. **UntrustedHost en producción**: faltaba `trustHost: true` en la config de NextAuth (`src/lib/auth/next-auth.ts`), el middleware redirigía mal con `next start`.
 3. **Categorización masiva no aplicaba categorías**: `handleBulkCategorize` en `lists/[id]/page.tsx` pasaba `{ productId, categoriaId }` al hook que espera `{ productId, data }`.
@@ -24,6 +26,7 @@ Los 45 tests E2E (0/45 pasando) se han **reescrito y adaptado al HTML real de la
 5. **Solapamiento CSS** en `lists/[id]` con viewport <1400px (el sidebar tapa "Añadir Producto") — documentado, los E2E usan 1600×900.
 
 ### Cómo ejecutar los E2E
+
 ```bash
 npm run test:e2e          # levanta mock API + build de producción automáticamente
 npx playwright test auth-flow   # una suite concreta
@@ -37,6 +40,7 @@ npx playwright show-report      # reporte HTML
 ### ✅ COMPLETADO (Actualizado: 27 nov 2025 - 09:29) - OPCIÓN 2 FINALIZADA 🎉
 
 #### 1. Configuración de Testing (100%)
+
 - ✅ **jest.config.js** actualizado con thresholds 100/80/0
 - ✅ **package.json** con scripts de testing:
   - `npm run test:coverage` - Ejecución con coverage completo
@@ -83,9 +87,10 @@ npx playwright show-report      # reporte HTML
 ✅ register-form.test.tsx - 20 tests
 ✅ share-list-dialog.test.tsx - 14 tests passing (5 edge cases pendientes)
 
-**Total: 602 tests pasando / 648 tests escritos (603 unitarios + 45 E2E)** 
+**Total: 602 tests pasando / 648 tests escritos (603 unitarios + 45 E2E)**
 
 **Desglose por categoría:**
+
 - **Críticos (100% coverage)**: 362 tests ✅
   - Services: 171 tests (7 archivos)
   - Hooks: 141 tests (7 archivos)
@@ -100,6 +105,7 @@ npx playwright show-report      # reporte HTML
   - **Prerequisito**: ninguno (Playwright levanta todo automáticamente)
 
 **Git commits realizados (21 commits totales):**
+
 - b5568a9: Tests secundarios use-categories (20 tests)
 - 05f517b: Tests secundarios use-stores (18 tests)
 - ac10c5c: Tests secundarios use-notifications (15 tests)
@@ -117,6 +123,7 @@ npx playwright show-report      # reporte HTML
 - 54e329c: Tests secundarios hero component (12 tests) - OPCIÓN 2 COMPLETADA ✅
 
 ✅ **invitation-service.test.ts** - 100% coverage
+
 - 24 tests pasando
 - Cobertura: 100% statements, 100% branches, 100% functions, 100% lines
 - Casos testeados:
@@ -130,6 +137,7 @@ npx playwright show-report      # reporte HTML
   - revokePermission: revocación de acceso, permisos
 
 ✅ **ai-service.test.ts** - 100% coverage
+
 - 23 tests pasando
 - Cobertura: 100% statements, 100% branches, 100% functions, 100% lines
 - Casos testeados:
@@ -145,6 +153,7 @@ npx playwright show-report      # reporte HTML
 #### 3. Detalles de Tests de Hooks (141 tests)
 
 ✅ **use-admin-users.test.tsx** - 100% coverage (28 tests)
+
 - useSystemMetrics, useHealthStatus, usePerformanceMetrics - Monitoreo del sistema
 - useAdminUsers - Lista paginada con búsqueda
 - useUpdateUserStatus - Activar/desactivar usuarios con invalidación dual
@@ -154,6 +163,7 @@ npx playwright show-report      # reporte HTML
 - useSecurityAlerts - Alertas de seguridad con auto-refetch
 
 ✅ **use-blueprints.test.tsx** - 100% coverage (25 tests)
+
 - useBlueprints - Listado con filtros por categoría/búsqueda
 - useBlueprintById - Query individual con enabled validation
 - useCreateBlueprint, useUpdateBlueprint, useDeleteBlueprint - CRUD completo
@@ -161,12 +171,15 @@ npx playwright show-report      # reporte HTML
 - useCreateBlueprintFromList - Transformación inversa lista → blueprint
 
 ✅ **use-collaboration.test.tsx** - 100% coverage (21 tests)
+
 - useAutoRefresh - Polling con setInterval (default 10s), callback, cleanup
 - useConflictDetection - Detección de conflictos, toast warnings, acción reload
 - Jest fake timers para intervals, múltiples refreshes, unmount cleanup
 
 #### 4. Utilidades de Testing Creadas
+
 ✅ **tests/utils/test-utils.ts**
+
 - `createTestQueryClient()` - QueryClient mockeado sin retry
 - `mockSession` - Sesión de usuario autenticado
 - `mockAdminSession` - Sesión de administrador
@@ -178,7 +191,9 @@ npx playwright show-report      # reporte HTML
 - `mockDate()` / `restoreDate()` - Mock de fechas
 
 #### 5. Documentación Creada
+
 ✅ **TESTING_STRATEGY.md** - Estrategia completa de testing
+
 - Categorización 100/80/0
 - Plan de implementación
 - Configuración de Jest
@@ -190,6 +205,7 @@ npx playwright show-report      # reporte HTML
 ### 📈 MÉTRICAS ACTUALES
 
 ### Coverage Global
+
 - **Global**: ~22% statements (objetivo: 75%) 🟡 +16% desde inicio
 - **Archivos críticos completados**: 17/17 (100%) ✅ 🎉
   - Services: 7/7 (100%) ✅
@@ -199,6 +215,7 @@ npx playwright show-report      # reporte HTML
 - **Resto de servicios**: 12 pendientes (implementación futura)
 
 ### Tests Ejecutados
+
 - **Total test suites**: 32 unitarios (31 passing, 1 con timeout)
 - **Total tests unitarios**: 602 passed / 603 total (99.8% success rate) ✅
 - **Total tests E2E**: 0 passed / 45 total ⚠️ (necesitan adaptación)
@@ -211,60 +228,63 @@ npx playwright show-report      # reporte HTML
 ### Cobertura por Categoría (según patrón 100/80/0)
 
 #### 🔴 CRÍTICOS (17 archivos) - 100% completado ✅ 🎉
-| Archivo | Coverage | Status | Tests |
-|---------|----------|--------|-------|
-| **SERVICES (7/7 = 100%)** ||||
-| list-service.ts | 100% | ✅ | 19 tests |
-| auth-service.ts | 98.36% | ✅ | 23 tests |
-| product-service.ts | 100% | ✅ | 20 tests |
-| invitation-service.ts | 100% | ✅ | 24 tests |
-| ai-service.ts | 100% | ✅ | 23 tests |
-| admin-service.ts | 100% | ✅ | 25 tests |
-| advanced-security.ts | 100% | ✅ | 37 tests |
-| **HOOKS (7/7 = 100%)** ||||
-| use-lists.ts | 100% | ✅ | 21 tests |
-| use-products.ts | 100% | ✅ | 24 tests |
-| use-invitations.ts | 100% | ✅ | 20 tests |
-| use-ai.ts | 100% | ✅ | 22 tests |
-| use-admin-users.ts | 100% | ✅ | 28 tests |
-| use-blueprints.ts | 100% | ✅ | 25 tests |
-| use-collaboration.ts | 100% | ✅ | 21 tests |
-| **COMPONENTS (3/3 = 100%)** ||||
-| login-form.tsx | 100% | ✅ | 16 tests |
-| register-form.tsx | 100% | ✅ | 20 tests |
-| share-list-dialog.tsx | 100% | ✅ | 18 tests (1 skipped - Radix UI) |
 
-**Críticos completados**: 17/17 = 100% ✅ 🎉**
+| Archivo                     | Coverage | Status | Tests                           |
+| --------------------------- | -------- | ------ | ------------------------------- |
+| **SERVICES (7/7 = 100%)**   |          |        |                                 |
+| list-service.ts             | 100%     | ✅     | 19 tests                        |
+| auth-service.ts             | 98.36%   | ✅     | 23 tests                        |
+| product-service.ts          | 100%     | ✅     | 20 tests                        |
+| invitation-service.ts       | 100%     | ✅     | 24 tests                        |
+| ai-service.ts               | 100%     | ✅     | 23 tests                        |
+| admin-service.ts            | 100%     | ✅     | 25 tests                        |
+| advanced-security.ts        | 100%     | ✅     | 37 tests                        |
+| **HOOKS (7/7 = 100%)**      |          |        |                                 |
+| use-lists.ts                | 100%     | ✅     | 21 tests                        |
+| use-products.ts             | 100%     | ✅     | 24 tests                        |
+| use-invitations.ts          | 100%     | ✅     | 20 tests                        |
+| use-ai.ts                   | 100%     | ✅     | 22 tests                        |
+| use-admin-users.ts          | 100%     | ✅     | 28 tests                        |
+| use-blueprints.ts           | 100%     | ✅     | 25 tests                        |
+| use-collaboration.ts        | 100%     | ✅     | 21 tests                        |
+| **COMPONENTS (3/3 = 100%)** |          |        |                                 |
+| login-form.tsx              | 100%     | ✅     | 16 tests                        |
+| register-form.tsx           | 100%     | ✅     | 20 tests                        |
+| share-list-dialog.tsx       | 100%     | ✅     | 18 tests (1 skipped - Radix UI) |
+
+**Críticos completados**: 17/17 = 100% ✅ 🎉\*\*
 
 #### ✅ SECUNDARIOS (15 archivos) - 15/15 completado (100%) ✅ 🎉 OPCIÓN 2 COMPLETADA
-| Archivo | Coverage | Status | Tests | Commit |
-|---------|----------|--------|-------|--------|
-| **HOOKS (3/3 = 100%)** |||||
-| use-categories.ts | 80% | ✅ | 20 tests | b5568a9 |
-| use-stores.ts | 80% | ✅ | 18 tests | 05f517b |
-| use-notifications.ts | 80% | ✅ | 15 tests | ac10c5c |
-| **COMPONENTS (12/12 = 100%)** ||||| ← +4 componentes nuevos
-| products-kanban.tsx | 80% | ✅ | 18 tests | 109da16 |
-| blueprint-card.tsx | 80% | ✅ | 20 tests | 1fd4b57 |
-| recommendations-panel.tsx | 80% | ✅ | 15 tests | a4ef1c2 |
-| collaborators-section.tsx | 80% | ✅ | 12 tests | 15b25d4 |
-| security-indicators.tsx | 80% | ✅ | 14 tests | fdf10f3 |
-| invitations-list.tsx | 80% | ✅ | 15 tests | 9e2bc65 |
-| product-suggestions.tsx | 80% | ✅ | 18 tests | 62b35c2 |
-| edit-list-form.tsx | 80% | ✅ | 12 tests | c011924 |
-| notification-center.tsx | 80% | ✅ | 12 tests | 82b07cd | ← NUEVO
-| lists-table.tsx | 80% | ✅ | 12 tests | 951d303 | ← NUEVO
-| system-health-panel.tsx | 80% | ✅ | 15 tests | 7fa6370 | ← NUEVO
-| hero.tsx | 80% | ✅ | 12 tests | 54e329c | ← NUEVO
-| **COMPONENTES DESCARTADOS** |||||
-| bulk-categorization-dialog.tsx | - | ❌ | Dialog demasiado complejo | - |
-| collaboration-indicator.tsx | - | ❌ | Memory leak (setInterval) | - |
+
+| Archivo                        | Coverage | Status | Tests                     | Commit  |
+| ------------------------------ | -------- | ------ | ------------------------- | ------- | ----------------------- |
+| **HOOKS (3/3 = 100%)**         |          |        |                           |         |
+| use-categories.ts              | 80%      | ✅     | 20 tests                  | b5568a9 |
+| use-stores.ts                  | 80%      | ✅     | 18 tests                  | 05f517b |
+| use-notifications.ts           | 80%      | ✅     | 15 tests                  | ac10c5c |
+| **COMPONENTS (12/12 = 100%)**  |          |        |                           |         | ← +4 componentes nuevos |
+| products-kanban.tsx            | 80%      | ✅     | 18 tests                  | 109da16 |
+| blueprint-card.tsx             | 80%      | ✅     | 20 tests                  | 1fd4b57 |
+| recommendations-panel.tsx      | 80%      | ✅     | 15 tests                  | a4ef1c2 |
+| collaborators-section.tsx      | 80%      | ✅     | 12 tests                  | 15b25d4 |
+| security-indicators.tsx        | 80%      | ✅     | 14 tests                  | fdf10f3 |
+| invitations-list.tsx           | 80%      | ✅     | 15 tests                  | 9e2bc65 |
+| product-suggestions.tsx        | 80%      | ✅     | 18 tests                  | 62b35c2 |
+| edit-list-form.tsx             | 80%      | ✅     | 12 tests                  | c011924 |
+| notification-center.tsx        | 80%      | ✅     | 12 tests                  | 82b07cd | ← NUEVO                 |
+| lists-table.tsx                | 80%      | ✅     | 12 tests                  | 951d303 | ← NUEVO                 |
+| system-health-panel.tsx        | 80%      | ✅     | 15 tests                  | 7fa6370 | ← NUEVO                 |
+| hero.tsx                       | 80%      | ✅     | 12 tests                  | 54e329c | ← NUEVO                 |
+| **COMPONENTES DESCARTADOS**    |          |        |                           |         |
+| bulk-categorization-dialog.tsx | -        | ❌     | Dialog demasiado complejo | -       |
+| collaboration-indicator.tsx    | -        | ❌     | Memory leak (setInterval) | -       |
 
 **Secundarios completados**: 15/15 = 100% (225 tests) ✅ ← +48 tests totales 🎉
 
 **Detalles de tests secundarios:**
 
 ✅ **use-categories.test.tsx** - 80% coverage (20 tests) - commit b5568a9
+
 - CRUD completo para categorías
 - Query con filtros por tienda
 - Toggle status (activo/inactivo)
@@ -273,6 +293,7 @@ npx playwright show-report      # reporte HTML
 - Error handling (permisos, dependencias)
 
 ✅ **use-stores.test.tsx** - 80% coverage (18 tests) - commit 05f517b
+
 - CRUD completo para tiendas
 - Query con búsqueda y filtro activas
 - Toggle active status
@@ -280,6 +301,7 @@ npx playwright show-report      # reporte HTML
 - Enabled validation para queries condicionales
 
 ✅ **use-notifications.test.tsx** - 80% coverage (15 tests) - commit ac10c5c
+
 - Query paginado (page, limit)
 - markAsRead mutation con invalidación
 - deleteNotification con doble invalidación
@@ -287,6 +309,7 @@ npx playwright show-report      # reporte HTML
 - Edge cases (lista vacía, todas leídas)
 
 ✅ **products-kanban.test.tsx** - 80% coverage (18 tests) - commit 109da16
+
 - Renderizado de columnas por categoría + "Sin Categoría"
 - Agrupación de productos por categoría
 - Badges (Comprado, Urgente, Pendiente)
@@ -297,6 +320,7 @@ npx playwright show-report      # reporte HTML
 - Edge cases (listas vacías, categorías inactivas)
 
 ✅ **blueprint-card.test.tsx** - 80% coverage (20 tests) - commit 1fd4b57
+
 - Renderizado básico (nombre, descripción, icono, contador de productos)
 - Badges de visibilidad (Pública/Privada con íconos Globe/Lock)
 - Badge de contador de usos (singular/plural)
@@ -309,6 +333,7 @@ npx playwright show-report      # reporte HTML
 - Edge cases (sin descripción, sin tags, sin usos, contador singular)
 
 ✅ **recommendations-panel.test.tsx** - 80% coverage (15 tests) - commit a4ef1c2
+
 - Renderizado básico (título, descripción, iconos, botones Contexto/Actualizar)
 - Estados (loading con spinner, error con reintentar, vacío con mensaje)
 - Recomendaciones con datos (lista completa, badges prioridad, descripción)
@@ -320,6 +345,7 @@ npx playwright show-report      # reporte HTML
 - Edge cases (sin metadata, contexto vacío)
 
 ✅ **collaborators-section.test.tsx** - 80% coverage (12 tests) - commit 15b25d4
+
 - Renderizado básico (título con contador, descripción informativa)
 - Estados (loading con GeneralLoading, error message)
 - Lista de colaboradores (vacía, con datos, CollaboratorItem render)
@@ -328,6 +354,7 @@ npx playwright show-report      # reporte HTML
 - Props listId y ownerId correctamente pasadas
 
 ✅ **security-indicators.test.tsx** - 80% coverage (14 tests) - commit fdf10f3
+
 - **InvitationExpirationBadge** (5 tests):
   - Badge con variant según días restantes (destructive/secondary/default)
   - Mensajes dinámicos: "Expirada", "Expira mañana", "Expira en X días", "X días restantes"
@@ -346,6 +373,7 @@ npx playwright show-report      # reporte HTML
   - Props: currentCount, maxInvitations (default 50)
 
 ✅ **invitations-list.test.tsx** - 80% coverage (15 tests) - commit 9e2bc65 ← NUEVO
+
 - Renderizado de tabla con encabezados (Lista, Invitado por, Fecha, Estado, Acciones)
 - Estados: loading (null render), lista vacía con mensaje informativo
 - Formateo de fechas con toLocaleDateString('es-ES')
@@ -356,28 +384,33 @@ npx playwright show-report      # reporte HTML
 - ProcessingId state: solo deshabilita botones de invitación procesándose
 
 ✅ **product-suggestions.test.tsx** - 80% coverage (18 tests) - commit 62b35c2
+
 - **Análisis de frecuencia** (6 tests):
   - Análisis de productos comprados con Map (case-insensitive)
   - Ordenamiento por frecuencia descendente
   - Filtrado de productos ya existentes en lista actual
 
 ✅ **edit-list-form.test.tsx** - 80% coverage (12 tests) - commit c011924
+
 - **Renderizado inicial** (6 tests): Form fields, inicialización nombre/descripción, botón "Guardar", placeholders
 - **Actualización de campos** (2 tests): Update nombre/descripción con userEvent
 - **Submit del formulario** (4 tests): onSubmit callback, preventDefault, valores vacíos/sin modificaciones
 
 ✅ **notification-center.test.tsx** - 80% coverage (12 tests) - commit 82b07cd
+
 - **Renderizado inicial** (4 tests): Título, estados loading/error/empty con mensajes apropiados
 - **Renderizado de notificaciones** (4 tests): Mensajes, Badge "Nueva" para no leídas, formatDistanceToNow (es-ES)
 - **Acciones de notificaciones** (4 tests): markAsRead/deleteNotification mutate, botones condicionales
 
 ✅ **lists-table.test.tsx** - 80% coverage (12 tests) - commit 951d303
+
 - **Renderizado inicial** (4 tests): Encabezados de tabla, filas vacías, todas las listas, Next.js Links a /lists/:id
 - **Botones de acción** (2 tests): Editar/Eliminar buttons por fila
 - **Actualización de listas** (2 tests): updateListMutation.mutate con id/data correctos
 - **Eliminación de listas** (4 tests): window.confirm antes de delete, mutate, cancelación
 
 ✅ **system-health-panel.test.tsx** - 80% coverage (15 tests) - commit 7fa6370
+
 - **Renderizado del estado del sistema** (9 tests):
   - Título "Estado del Sistema"
   - Badges dinámicos: "✓ Saludable" (healthy), "⚠ Degradado" (degraded), "✗ Caído" (down)
@@ -392,6 +425,7 @@ npx playwright show-report      # reporte HTML
   - Error rate conditional styling: >5% text-red-600, ≤5% text-muted-foreground
 
 ✅ **hero.test.tsx** - 80% coverage (12 tests) - commit 54e329c - OPCIÓN 2 COMPLETADA ✅
+
 - **Renderizado básico** (4 tests):
   - Renderizado del Hero component con role="img"
   - backgroundImage style aplicado correctamente con URL prop
@@ -409,6 +443,7 @@ npx playwright show-report      # reporte HTML
   - Clases base mantenidas sin props opcionales
 
 #### ⚪ TRIVIALES (25 archivos) - N/A
+
 Excluidos de coverage (componentes shadcn/ui, layouts, utilidades simples)
 
 ---
@@ -416,12 +451,15 @@ Excluidos de coverage (componentes shadcn/ui, layouts, utilidades simples)
 ## 🎯 RESULTADO FINAL
 
 ### ✅ OPCIÓN 1 COMPLETADA: Archivos Críticos (17/17 = 100%)
+
 **362/362 tests passing (100%)** ✅
 
 ### ✅ OPCIÓN 2 COMPLETADA: Archivos Secundarios (15/15 = 100%)
+
 **225/225 tests passing (100%)** ✅
 
 ### 🎉 RESUMEN TOTAL
+
 - **Tests totales**: 648 tests (603 unitarios + 45 E2E)
 - **Commits**: 24 commits pushed a GitHub
 - **Cobertura patrón 100/80/0**: Implementado completamente
@@ -432,12 +470,15 @@ Excluidos de coverage (componentes shadcn/ui, layouts, utilidades simples)
   - Triviales: 0 tests (diferidos)
 
 ### 📝 ARCHIVOS SECUNDARIOS COMPLETADOS (15/15)
+
 **Hooks (3):**
+
 1. use-categories (20 tests)
 2. use-stores (18 tests)
 3. use-notifications (15 tests)
 
 **Components (12):**
+
 1. products-kanban (18 tests)
 2. blueprint-card (20 tests)
 3. recommendations-panel (15 tests)
@@ -456,6 +497,7 @@ Excluidos de coverage (componentes shadcn/ui, layouts, utilidades simples)
 ---
 
 ## 🎯 PRÓXIMOS PASOS (OPCIONALES)
+
 **Estado**: 17/17 archivos críticos con tests completos
 
 3. ✅ **ai-service.test.ts** - COMPLETADO
@@ -480,6 +522,7 @@ Excluidos de coverage (componentes shadcn/ui, layouts, utilidades simples)
    - Tiempo: 1h
 
 #### Hooks (7 archivos)
+
 6. ⏳ **use-lists.test.tsx**
    - useListsQuery, useCreateList, useUpdateList, useDeleteList
    - Estimado: 1.5h
@@ -509,6 +552,7 @@ Excluidos de coverage (componentes shadcn/ui, layouts, utilidades simples)
     - Estimado: 1h
 
 #### Componentes (4 archivos)
+
 13. ⏳ **login-form.test.tsx**
     - Renderizado, validación, submit, errores
     - Estimado: 1h
@@ -528,12 +572,14 @@ Excluidos de coverage (componentes shadcn/ui, layouts, utilidades simples)
 **Total Críticos Restantes**: 12 archivos, ~17 horas de desarrollo (antes: 22h)
 
 ### Prioridad Media (Secundarios - 15 archivos)
+
 - Tests de integración de páginas
 - Tests de componentes interactivos
 - Tests de hooks secundarios
 - **Estimado**: 15 horas
 
 ### Prioridad Baja (E2E - 4 flujos)
+
 - auth-flow.spec.ts
 - create-list-flow.spec.ts
 - share-list-flow.spec.ts
@@ -545,17 +591,20 @@ Excluidos de coverage (componentes shadcn/ui, layouts, utilidades simples)
 ## 🐛 PROBLEMAS IDENTIFICADOS
 
 ### 1. ⚠️ Memoria Insuficiente en Coverage Completo
+
 **Síntoma**: `FATAL ERROR: JavaScript heap out of memory` al ejecutar `npm run test:coverage`
 
 **Causa**: Jest intenta recopilar coverage de todos los archivos, incluyendo componentes React complejos
 
 **Solución Temporal**: Ejecutar tests individuales por servicio
+
 ```bash
 npm test -- list-service.test.ts
 npm test -- auth-service.test.ts
 ```
 
 **Solución Permanente** (implementar):
+
 ```javascript
 // jest.config.js - añadir
 module.exports = {
@@ -571,6 +620,7 @@ module.exports = {
 ```
 
 ### 2. ⚠️ Warnings de TypeScript en test-utils.ts
+
 **Síntoma**: Errores de `jest` no encontrado en utilidades de testing
 
 **Causa**: Falta definición de tipos globales de Jest
@@ -580,6 +630,7 @@ module.exports = {
 **Mejora Opcional**: Añadir `@types/jest` al tsconfig de tests
 
 ### 3. ⚠️ Coverage Threshold Failures
+
 **Síntoma**: 50+ avisos de thresholds no cumplidos
 
 **Causa**: Archivos críticos sin tests aún
@@ -591,17 +642,20 @@ module.exports = {
 ## 🎓 APRENDIZAJES Y MEJORES PRÁCTICAS
 
 ### Estructura de Tests
+
 ✅ **Patrón AAA**: Arrange-Act-Assert
 ✅ **Nomenclatura clara**: `debe + [acción] + [resultado esperado]`
 ✅ **Tests independientes**: Cada test resetea mocks con beforeEach
 ✅ **Coverage real**: Tests que validan comportamiento, no solo coverage
 
 ### Mocking
+
 ✅ **Axios mockeado**: Todos los servicios usan axiosInstance mockeado
 ✅ **Respuestas realistas**: Mocks con estructura idéntica a la API real
 ✅ **Errores específicos**: Tests para cada código de error HTTP
 
 ### Organización
+
 ✅ **Tests por servicio**: Un archivo de test por servicio
 ✅ **Agrupación lógica**: describe() por función, subdivisión por casos
 ✅ **Utilidades centralizadas**: test-utils.ts reutilizable
@@ -611,22 +665,26 @@ module.exports = {
 ## 📋 CHECKLIST DE CONTINUACIÓN
 
 ### Inmediato (Hoy) ✅ COMPLETADO
+
 - [x] Implementar product-service.test.ts (CRÍTICO) ✅
 - [x] Implementar invitation-service.test.ts (CRÍTICO) ✅
 - [x] Implementar ai-service.test.ts (CRÍTICO) ✅
 
 ### Próximo (Continuación)
+
 - [ ] Implementar admin-service.test.ts (CRÍTICO)
 - [ ] Implementar advanced-security.test.ts (CRÍTICO)
 - [ ] Implementar use-lists.test.tsx (CRÍTICO)
 
 ### Esta Semana - ✅ COMPLETADO
+
 - [x] Completar todos los tests de servicios críticos (7/7) ✅
 - [x] Completar todos los tests de hooks críticos (7/7) ✅
 - [x] Completar todos los tests de componentes críticos (3/3) ✅
 - [x] Alcanzar 100% iniciación de tests en archivos críticos (17/17) ✅
 
 ### ✅ COMPLETADO (27 nov 2025)
+
 - [x] Resolver edge cases en componentes críticos ✅
 - [x] **Implementar tests secundarios (15/15 archivos - 80% coverage)** ✅ 🎉
   - ✅ use-categories (20 tests)
@@ -647,6 +705,7 @@ module.exports = {
   - **Total**: 225 tests secundarios ✅
 
 ### ⚠️ EN PROGRESO (27 nov 2025) - E2E Tests Necesitan Adaptación
+
 - [x] **Configurar Playwright para E2E** ✅
   - ✅ Playwright instalado (@playwright/test)
   - ✅ playwright.config.ts configurado (timeouts, reporters, webServer)
@@ -654,14 +713,12 @@ module.exports = {
   - ✅ Scripts npm: test:e2e, test:e2e:ui
   - ✅ Estructura tests/e2e/ creada
   - ✅ helpers.ts con utilidades compartidas
-  
 - [ ] **Adaptar flujos E2E a implementación real (45 tests creados)** ⚠️ **PENDIENTE ADAPTACIÓN**
   - **Estado actual**: Tests escritos con selectores genéricos que no coinciden con la implementación real
   - **Problema identificado**: Los tests esperan elementos HTML que no existen en la aplicación
     - Ejemplo: `page.locator('h1')` con texto "Iniciar sesión" - la página no tiene `<h1>`
     - Selectores necesitan revisarse contra el HTML real de cada página
   - **Prerequisito**: Servidor Next.js debe estar corriendo (`npm run dev` en puerto 3000)
-  
   - [ ] **auth-flow.spec.ts** (10 tests) ⚠️ **Necesita adaptación**
     - Login válido/inválido, validación email
     - Registro, validación contraseñas, términos
@@ -708,7 +765,6 @@ module.exports = {
 - [ ] **INMEDIATO: Arreglar test unitario timeout** (15 min)
   - Aumentar timeout en share-list-dialog.test.tsx
   - Verificar assertions asíncronas
-  
 - [ ] **CRÍTICO: Adaptar tests E2E a HTML real** (8-10 horas)
   - Paso 1: Documentar estructura HTML de cada página clave
   - Paso 2: Actualizar helpers.ts con selectores reales
@@ -717,27 +773,24 @@ module.exports = {
   - Paso 5: Actualizar share-list-flow.spec.ts (2h)
   - Paso 6: Actualizar ai-categorization-flow.spec.ts (2h)
   - Paso 7: Ejecutar suite completa y verificar
-  
 - [ ] **Configurar CI/CD con GitHub Actions** (Estimado: 2 horas)
   - Crear .github/workflows/test.yml
   - Jobs: lint, unit tests, e2e tests
   - Coverage reports automáticos
 
 ### 🔧 Optimizaciones Técnicas
+
 - [ ] **Resolver problema de memoria en coverage completo**
   - Configurar maxWorkers: 2 en jest.config.js
   - Añadir workerIdleMemoryLimit: '512MB'
   - Excluir node_modules de coverage
-  
 - [ ] **Añadir coverage badges en README**
   - Integrar con Codecov o Coveralls
   - Badges: tests passing, coverage %, E2E status
-  
 - [ ] **Configurar pre-commit hooks con Husky**
   - `npm install -D husky lint-staged`
   - Pre-commit: lint + prettier + tests afectados
   - Pre-push: tests completos
-  
 - [ ] **Documentar flujos de testing en DEVELOPMENT_STANDARDS.md**
   - Guía de testing para nuevos colaboradores
   - Patrones de tests (100/80/0)
@@ -748,6 +801,7 @@ module.exports = {
 ## 🏆 MÉTRICAS DE ÉXITO
 
 ### Fase 1: Tests Críticos - ✅ COMPLETADO
+
 - **Progreso**: 100% (17/17 archivos) ✅ 🎉
 - **Coverage crítico**: ~100% promedio en archivos completados
 - **Tests pasando**: 362/362 ✅ (100% success rate) 🎉
@@ -755,6 +809,7 @@ module.exports = {
 - **Estado**: Todos los archivos críticos tienen tests comprehensivos
 
 ### Objetivo Final (100/80/0)
+
 - **Críticos**: 100% coverage en 17 archivos
 - **Secundarios**: 80% coverage en 15 archivos
 - **Triviales**: 0% coverage (excluidos)
@@ -769,17 +824,20 @@ module.exports = {
 ## 📊 RESUMEN FINAL - Estado Actual del Proyecto
 
 **Tests Unitarios**: ✅ **99.8% completados** (602/603 pasando)
+
 - Críticos: 362/362 ✅ (100%)
 - Secundarios: 225/225 ✅ (100%)
 - Integración: 1/1 ✅
 - Pendiente: 1 test con timeout (fix estimado: 15 min)
 
 **Tests E2E**: ✅ **COMPLETADOS** (33/33 pasando — ACTUALIZACIÓN 27 NOV 2025)
+
 - Infraestructura: ✅ Mock API server + Playwright con build de producción
 - Los 4 flujos E2E reescritos con selectores reales: auth, listas/productos, compartir, IA
 - Bugs de producción descubiertos y corregidos: logout, trustHost, categorización masiva
 
-**Próxima acción INMEDIATA**: 
+**Próxima acción INMEDIATA**:
+
 1. Configurar CI/CD con GitHub Actions (lint + unit + e2e)
 2. Mejorar coverage global (~22% → 75%)
 
@@ -793,9 +851,11 @@ module.exports = {
 ## ACTUALIZACIÓN 28 NOV 2025 - Coverage 72% → 97.6%
 
 **Cobertura global**: **97.58% statements / 84.34% branches / 97.82% functions / 97.6% lines**
+
 - Antes: 72.45% / 61.02% / 72.67% / 72.11% (con 19 archivos por debajo del 75%)
 
 **Nuevos tests (114)**:
+
 - Servicios al 100%: collaborator-service, store-service, category-service, notification-service, blueprint-service
 - Hooks al ~100%: use-profile, use-collaborators (lists + invitations), use-permissions, use-revoke-access, use-update-permissions, use-share-list, use-invitation-by-hash
 - Validadores: password-schema, profile-schema
@@ -805,3 +865,24 @@ module.exports = {
 **Thresholds de Jest**: subidos de 45/50/45/45 → **95/80/95/95** (statements/branches/functions/lines global)
 
 **Totales**: 718 tests unitarios pasando (43 suites) + 33 E2E
+
+---
+
+## ACTUALIZACIÓN 28 NOV 2025 (II) - CU-17 + CU-31 + Husky + coverage 99.7%
+
+**Features nuevas**:
+
+- **CU-17 (tiempo real)**: cliente SSE por fetch con reconexión/backoff (`src/lib/api/sse-client.ts`),
+  hook `useListSync` que invalida queries ante eventos de colaboradores; flag `NEXT_PUBLIC_LIST_SYNC_DISABLED` para E2E.
+- **CU-31 (proveedor LLM)**: backend acepta keys OpenAI-compatibles + endpoints admin
+  (GET/PUT/POST /ai/admin/config con test de conexión); frontend `/settings` con
+  `AISettingsForm` (provider/model/apiUrl/apiKey + probar conexión), solo admins.
+
+**Calidad**:
+
+- Husky + lint-staged activos (pre-commit: next lint --fix + prettier); `prepare: husky` en npm install
+- tsconfig: types de jest + jest-dom; excluye tests co-ubicados (16 errores preexistentes)
+- **Coverage: 99.66% statements / 93.94% branches / 99.7% functions / 99.81% lines**
+- **Thresholds de Jest: 99/92/99/99** (subidos desde 95/80/95/95)
+
+**Totales**: 806 tests unitarios (48 suites) + 33 E2E · CI verde
