@@ -7,6 +7,7 @@ import { LayoutGrid, Table as TableIcon, Sparkles } from 'lucide-react';
 import styles from './list-detail.module.css';
 import { useList, useUpdateList, useDeleteList } from '@/features/lists/hooks/use-lists';
 import { useProducts, useCreateProduct, useDeleteProduct, useToggleProductPurchased, useUpdateProduct } from '@/features/products/hooks/use-products';
+import { useListSync } from '@/features/lists/hooks/use-list-sync';
 import { useCategories } from '@/features/categories/hooks/use-categories';
 import { ShareListDialog } from '@/features/invitations/components/share-list-dialog';
 import { CollaboratorsSection } from '@/features/invitations/components/collaborators-section';
@@ -51,6 +52,9 @@ export default function ListDetailPage() {
 
   // Fetch products for the list
   const { data: productsData, isError: isProductsError, error: productsError } = useProducts(listId, { page: 1, limit: 200 });
+
+  // Sincronización en tiempo real (CU-17): refleja los cambios de colaboradores
+  useListSync(listId);
 
   // Fetch categories (use tiendaId from list if available)
   const tiendaId = (listData as any)?.tiendaId;

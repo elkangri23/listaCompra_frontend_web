@@ -722,6 +722,31 @@ function productsForOccasion(occasion) {
   return map[occasion] || map.desayuno;
 }
 
+//
+// CU-17: stream SSE de listas (mock mínimo: una conexión estable que solo
+// emite keep-alive; los flujos E2E no dependen de eventos en tiempo real)
+//
+server.get('/api/v1/lists/:id/stream', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+    'X-Accel-Buffering': 'no',
+  });
+  res.write(
+    `event: LIST_STREAM_CONNECTED\ndata: ${JSON.stringify({
+      listId: req.params.id,
+      type: 'LIST_STREAM_CONNECTED',
+      payload: {},
+      timestamp: new Date().toISOString(),
+    })}\n\n`
+  );
+  const keepAlive = setInterval(() => {
+    res.write(`event: keep-alive\ndata: ${JSON.stringify({ timestamp: new Date().toISOString() })}\n\n`);
+  }, 30000);
+  req.on('close', () => clearInterval(keepAlive));
+});
+
 server.listen(PORT, () => {
   console.log(`🧪 Mock API server listening on http://localhost:${PORT}/api/v1`);
 });

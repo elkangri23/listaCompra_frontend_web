@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { getSession } from 'next-auth/react'
+import { API_BASE_URL } from '@/lib/api/api-url'
 
-const baseURL =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') || 'http://localhost:3333/api/v1'
+const baseURL = API_BASE_URL
 
 export const axiosInstance = axios.create({
   baseURL,
