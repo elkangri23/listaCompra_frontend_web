@@ -886,3 +886,29 @@ module.exports = {
 - **Thresholds de Jest: 99/92/99/99** (subidos desde 95/80/95/95)
 
 **Totales**: 806 tests unitarios (48 suites) + 33 E2E · CI verde
+
+---
+
+## ACTUALIZACIÓN 29 NOV 2025 - CU-MFA fase 1 (TOTP) frontend
+
+**Feature**: login en dos pasos con TOTP (código de 6 dígitos de app
+autenticadora) + códigos de respaldo de un solo uso. Backend: commit
+`feat(mfa): fase 1 — TOTP completo en backend` (spec: `../design-auth-mfa/design_draft.md` v3.1).
+
+**Frontend**:
+
+- `auth-service.login()` retorna unión `LoginStep1Result`; con TOTP activo
+  devuelve `{ mfaRequired: true, challengeId }` (sin tokens).
+- `next-auth`: authorize con branching explícito (mfaStepSchema antes de
+  loginSchema), token intermedio `mfaPending` con TTL 5 min (`mfaExp`),
+  `session.mfaRequired` para detectar el estado intermedio.
+- `mfa-service.ts`: status/setup/verify-enable/disable/login/mfa con mapeo
+  de los dos sobres de error reales (nested errorMiddleware + plano limiters).
+- `MfaChallengeForm`: paso 2 accesible (one-time-code, inputmode numeric,
+  aria-live, toggle backup code).
+- `/profile` → pestaña Seguridad: `TotpSecuritySection` con QR + fallback
+  manual + backup codes descargables + disable con step-up.
+
+**Totales**: 845 tests unitarios (51 suites) · cobertura sobre umbrales
+99/92/99/99 · CI verde. Pendiente: fase 2 passkeys (WebAuthn), fase 3 E2E
+con Playwright virtual authenticator (requiere Docker).
