@@ -11,6 +11,7 @@ import { useListSync } from '@/features/lists/hooks/use-list-sync';
 import { useCategories } from '@/features/categories/hooks/use-categories';
 import { ShareListDialog } from '@/features/invitations/components/share-list-dialog';
 import { CollaboratorsSection } from '@/features/invitations/components/collaborators-section';
+import { AuditHistorySection } from '@/features/audit/components/audit-history-section';
 import { BulkCategorizationDialog } from '@/features/ai/components/bulk-categorization-dialog';
 import { ProductsKanban } from '@/features/products/components/products-kanban';
 import { RecommendationsPanel } from '@/features/ai/components/recommendations-panel';
@@ -28,7 +29,7 @@ export default function ListDetailPage() {
   const [newProduct, setNewProduct] = useState('');
   const [newCantidad, setNewCantidad] = useState(1);
   const [newUrgente, setNewUrgente] = useState(false);
-  const [activeTab, setActiveTab] = useState<'suggestions' | 'details' | 'collaborators'>('details');
+  const [activeTab, setActiveTab] = useState<'suggestions' | 'details' | 'collaborators' | 'audit'>('details');
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [editingNombre, setEditingNombre] = useState('');
   const [editingCantidad, setEditingCantidad] = useState(1);
@@ -675,6 +676,12 @@ export default function ListDetailPage() {
                 >
                   <p className={styles.tabText}>Colaboradores</p>
                 </button>
+                <button
+                  className={`${styles.tab} ${activeTab === 'audit' ? styles.tabActive : styles.tabInactive}`}
+                  onClick={() => setActiveTab('audit')}
+                >
+                  <p className={styles.tabText}>Cambios</p>
+                </button>
               </div>
             </div>
 
@@ -757,6 +764,8 @@ export default function ListDetailPage() {
                 </div>
               ) : activeTab === 'collaborators' ? (
                 <CollaboratorsSection listId={listId} ownerId={list?.propietarioId} />
+              ) : activeTab === 'audit' ? (
+                <AuditHistorySection listId={listId} />
               ) : (
                 <RecommendationsPanel
                   listId={listId}
