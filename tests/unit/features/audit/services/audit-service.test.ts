@@ -60,6 +60,28 @@ describe('audit-service', () => {
         params: { page: 2, pageSize: 10, changeType: 'DELETE' },
       });
     });
+
+    it('pasa usuario y rango de fechas como query params', async () => {
+      mockedGet.mockResolvedValue({
+        data: { success: true, data: { entries: [], total: 0, page: 1, pageSize: 10, totalPages: 0 } },
+      });
+
+      await auditService.getListAuditHistory('l1', {
+        changedByUserId: 'u2',
+        startDate: '2026-11-01',
+        endDate: '2026-11-26',
+      });
+
+      expect(mockedGet).toHaveBeenCalledWith('/audit/lists/l1', {
+        params: {
+          page: 1,
+          pageSize: 10,
+          changedByUserId: 'u2',
+          startDate: '2026-11-01',
+          endDate: '2026-11-26',
+        },
+      });
+    });
   });
 
   describe('getListCollaborators', () => {

@@ -39,21 +39,23 @@ function entityName(entry: AuditEntryDto): string {
 }
 
 function describe(entry: AuditEntryDto, actor: string): string {
+  const isYou = actor === 'Tú';
+  const verb = (you: string, other: string) => (isYou ? you : other);
   const name = entityName(entry);
   if (entry.entityType === 'Lista') {
-    if (entry.changeType === 'DELETE') return `${actor} eliminó la lista`;
-    if (entry.changeType === 'CREATE') return `${actor} creó la lista`;
-    return `${actor} actualizó la lista`;
+    if (entry.changeType === 'DELETE') return `${actor} ${verb('eliminaste', 'eliminó')} la lista`;
+    if (entry.changeType === 'CREATE') return `${actor} ${verb('creaste', 'creó')} la lista`;
+    return `${actor} ${verb('actualizaste', 'actualizó')} la lista`;
   }
   // Producto
-  if (entry.changeType === 'DELETE') return `${actor} eliminó ${name}`;
-  if (entry.changeType === 'CREATE') return `${actor} añadió ${name}`;
+  if (entry.changeType === 'DELETE') return `${actor} ${verb('eliminaste', 'eliminó')} ${name}`;
+  if (entry.changeType === 'CREATE') return `${actor} ${verb('añadiste', 'añadió')} ${name}`;
   if (entry.changedFields?.includes('comprado')) {
     return entry.newValue?.['comprado']
-      ? `${actor} marcó como comprado ${name}`
-      : `${actor} desmarcó ${name}`;
+      ? `${actor} ${verb('marcaste', 'marcó')} como comprado ${name}`
+      : `${actor} ${verb('desmarcaste', 'desmarcó')} ${name}`;
   }
-  return `${actor} actualizó ${name}`;
+  return `${actor} ${verb('actualizaste', 'actualizó')} ${name}`;
 }
 
 function changeSummary(entry: AuditEntryDto): string | null {
@@ -150,59 +152,57 @@ export const AuditHistorySection: React.FC<AuditHistorySectionProps> = ({ listId
           Aún no hay cambios registrados en esta lista.
         </p>
       ) : (
-        <>
-          <ul className="space-y-3">
-            {entries.map((entry) => {
-              const summary = changeSummary(entry);
-              return (
-                <li key={entry.id} className="flex gap-3 text-sm">
-                  <span
-                    className={`shrink-0 self-start rounded-full px-2 py-0.5 text-xs font-medium ${CHANGE_BADGE[entry.changeType]}`}
-                  >
-                    {CHANGE_LABEL[entry.changeType]}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-gray-900">{describe(entry, actorName(entry))}</p>
-                    {summary && <p className="text-gray-500 break-words">{summary}</p>}
-                    <p className="text-xs text-gray-400">
-                      {new Date(entry.timestamp).toLocaleString('es-ES', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+        <ul className="space-y-3">
+          {entries.map((entry) => {
+            const summary = changeSummary(entry);
+            return (
+              <li key={entry.id} className="flex gap-3 text-sm">
+                <span
+                  className={`shrink-0 self-start rounded-full px-2 py-0.5 text-xs font-medium ${CHANGE_BADGE[entry.changeType]}`}
+                >
+                  {CHANGE_LABEL[entry.changeType]}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-gray-900">{describe(entry, actorName(entry))}</p>
+                  {summary && <p className="text-gray-500 break-words">{summary}</p>}
+                  <p className="text-xs text-gray-400">
+                    {new Date(entry.timestamp).toLocaleString('es-ES', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4 text-sm">
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-                className="px-3 py-1 border border-gray-300 rounded-md disabled:opacity-50"
-              >
-                Anterior
-              </button>
-              <span className="text-gray-500">
-                Página {page} de {totalPages}
-              </span>
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages}
-                className="px-3 py-1 border border-gray-300 rounded-md disabled:opacity-50"
-              >
-                Siguiente
-              </button>
-            </div>
-          )}
-        </>
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4 text-sm">
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            className="px-3 py-1 border border-gray-300 rounded-md disabled:opacity-50"
+          >
+            Anterior
+          </button>
+          <span className="text-gray-500">
+            Página {page} de {totalPages}
+          </span>
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+            className="px-3 py-1 border border-gray-300 rounded-md disabled:opacity-50"
+          >
+            Siguiente
+          </button>
+        </div>
       )}
     </div>
   );
