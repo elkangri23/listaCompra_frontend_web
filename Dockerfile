@@ -26,11 +26,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/next.config.js ./next.config.js
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
+# Como en el backend: los archivos del builder son de root y el proceso
+# corre como node; sin --chown, Next no podría escribir su caché.
+COPY --chown=node:node --from=builder /app/node_modules ./node_modules
+COPY --chown=node:node --from=builder /app/package.json ./package.json
+COPY --chown=node:node --from=builder /app/next.config.js ./next.config.js
+COPY --chown=node:node --from=builder /app/public ./public
+COPY --chown=node:node --from=builder /app/.next ./.next
 
 USER node
 EXPOSE 3000
