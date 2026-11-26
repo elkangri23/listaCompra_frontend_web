@@ -1,0 +1,66 @@
+# listaCompra frontend — validación + despliegue automático
+# Copiar a: elkangri23/listaCompra_frontend_web/.github/workflows/deploy.yml
+# Se dispara con cada push a main. Primero valida; solo si todo lo
+# obligatorio pasa, entra por SSH al VPS y redespliega SOLO el servicio web.
+# Si algo falla, la versión en vivo sigue corriendo.
+#
+# Gate obligatorio (falla = no se despliega):
+#   npm ci, tsc --noEmit, next build (con las variables reales de
+#   producción, que se fijan en el build), build de la imagen Docker.
+# En modo informe (no bloquea, de momento):
+#   tests y lint — el frontend no tiene confirmado script de jest, así
+#   que van en informe hasta verificar el package.json (ver README-CICD.md).
+# NEXTAUTH_SECRET llega como secreto de GitHub; sin él el build de Next
+# no puede fijar NEXTAUTH_URL. Nunca va en el repo.
+# El frontend NO toca la base de datos: redesplegar web no corre
+# migraciones. Si un cambio necesita a la vez backend y frontend, el
+# orden seguro es backend primero (la API nueva es compatible hacia
+# atrás) y luego frontend.
+name: Deploy frontend
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: listacompra-frontend-deploy
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_API_URL: https://listacompra.laurafernandezenfermeria.com/api/v1
+      NEXTAUTH_URL: https://listacompra.laurafernandezenfermeria.com
+      NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - name: Tests (informe; no bloquea hasta confirmar el script)
+        run: npm test -- --ci --passWithNoTests
+        continue-on-error: true
+      - name: Lint (informe; no bloquea hasta confirmar la config)
+        run: npm run lint
+        continue-on-error: true
+      - name: Build de Next.js (fija las variables de producción)
+        run: npm run build
+      - name: Build de la imagen Docker
+        run: docker build --build-arg NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} -t listacompra-web:ci .
+
+  deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Desplegar web en el VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: deploy web
