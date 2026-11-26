@@ -79,7 +79,7 @@ export default function Home() {
 
         <footer className={styles.footer}>
           <div className={styles.footerLinks}>
-            <Link href="#" className={styles.footerLink}>Política de Privacidad</Link>
+            <Link href="/privacidad" className={styles.footerLink}>Política de Privacidad</Link>
             <Link href="/terminos" className={styles.footerLink}>Términos de Servicio</Link>
           </div>
           <p className={styles.footerCopy}>© 2024 GroceryMate. Todos los derechos reservados.</p>

@@ -4,8 +4,9 @@ import { useState } from 'react'
 import styles from './profile.module.css'
 import { TotpSecuritySection } from '@/features/settings/components/totp-security-section'
 import { PasskeyList } from '@/features/settings/components/passkey-list'
+import { GdprSection } from '@/features/gdpr/components/gdpr-section'
 
-type Tab = 'perfil' | 'seguridad' | 'preferencias'
+type Tab = 'perfil' | 'seguridad' | 'preferencias' | 'privacidad'
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<Tab>('perfil')
@@ -50,6 +51,12 @@ export default function ProfilePage() {
             onClick={() => setActiveTab('preferencias')}
           >
             <p className={styles.tabText}>Preferencias</p>
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'privacidad' ? styles.tabActive : styles.tabInactive}`}
+            onClick={() => setActiveTab('privacidad')}
+          >
+            <p className={styles.tabText}>Privacidad</p>
           </button>
         </div>
       </div>
@@ -185,6 +192,12 @@ export default function ProfilePage() {
               </button>
             </div>
           </div>
+        </>
+      )}
+      {activeTab === 'privacidad' && (
+        <>
+          <h3 className={styles.sectionTitle}>Mis datos</h3>
+          <GdprSection />
         </>
       )}
     </div>
