@@ -17,6 +17,14 @@ jest.mock('@/features/auth/services/auth-service', () => ({
   registerUser: jest.fn(),
 }));
 
+jest.mock('@/features/auth/components/turnstile-widget', () => ({
+  TurnstileWidget: ({ onToken }: { onToken: (token: string) => void }) => (
+    <button type="button" data-testid="turnstile-mock" onClick={() => onToken('token-mock')}>
+      captcha de prueba
+    </button>
+  ),
+}));
+
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
@@ -415,6 +423,86 @@ describe('RegisterForm (CRÍTICO - 100% coverage)', () => {
         const nombreInput = screen.getByLabelText(/nombre/i);
         expect(nombreInput).toHaveAttribute('aria-invalid', 'true');
         expect(nombreInput).toHaveAttribute('aria-describedby', 'nombre-error');
+      });
+    });
+  });
+
+  describe('Captcha Turnstile', () => {
+    const previousSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+    beforeEach(() => {
+      process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY = 'site-key-test';
+    });
+
+    afterEach(() => {
+      if (previousSiteKey === undefined) {
+        delete process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+      } else {
+        process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY = previousSiteKey;
+      }
+    });
+
+    const fillValidForm = async (user: ReturnType<typeof userEvent.setup>) => {
+      await user.type(screen.getByLabelText(/nombre/i), 'Juan');
+      await user.type(screen.getByLabelText(/apellidos/i), 'García');
+      await user.type(screen.getByLabelText(/correo electrónico/i), 'juan@example.com');
+      await user.type(screen.getByLabelText(/^contraseña$/i), 'password123');
+      await user.type(screen.getByLabelText(/confirmar contraseña/i), 'password123');
+      await user.click(screen.getByRole('checkbox', { name: /acepto los términos/i }));
+    };
+
+    it('no muestra el captcha sin site key', () => {
+      delete process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+      render(<RegisterForm />);
+
+      expect(screen.queryByTestId('turnstile-mock')).not.toBeInTheDocument();
+    });
+
+    it('muestra el captcha cuando hay site key', () => {
+      render(<RegisterForm />);
+
+      expect(screen.getByTestId('turnstile-mock')).toBeInTheDocument();
+    });
+
+    it('mantiene el botón deshabilitado hasta resolver el captcha', async () => {
+      const user = userEvent.setup({ delay: null });
+      render(<RegisterForm />);
+
+      await user.click(screen.getByRole('checkbox', { name: /acepto los términos/i }));
+
+      expect(screen.getByRole('button', { name: /crear cuenta/i })).toBeDisabled();
+    });
+
+    it('bloquea el envío sin resolver el captcha', async () => {
+      const user = userEvent.setup({ delay: null });
+      const { container } = render(<RegisterForm />);
+
+      await fillValidForm(user);
+      fireEvent.submit(container.querySelector('form') as HTMLFormElement);
+
+      expect(await screen.findByText(/completa la verificación de seguridad/i)).toBeInTheDocument();
+      expect(registerUser).not.toHaveBeenCalled();
+    });
+
+    it('envía el token cuando el captcha está resuelto', async () => {
+      const user = userEvent.setup({ delay: null });
+      (registerUser as jest.Mock).mockResolvedValue({ success: true });
+
+      render(<RegisterForm />);
+
+      await fillValidForm(user);
+      await user.click(screen.getByTestId('turnstile-mock'));
+      await user.click(screen.getByRole('button', { name: /crear cuenta/i }));
+
+      await waitFor(() => {
+        expect(registerUser).toHaveBeenCalledWith({
+          nombre: 'Juan',
+          apellidos: 'García',
+          email: 'juan@example.com',
+          password: 'password123',
+          aceptoTerminos: true,
+          turnstileToken: 'token-mock',
+        });
       });
     });
   });

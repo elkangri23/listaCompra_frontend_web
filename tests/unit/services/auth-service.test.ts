@@ -301,6 +301,35 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
       })
     })
 
+    it('debe enviar el token de Turnstile cuando está presente', async () => {
+      // Arrange
+      const registerRequest = {
+        nombre: 'John',
+        apellidos: 'Doe',
+        email: 'john@example.com',
+        password: 'SecurePass123!',
+        aceptoTerminos: true,
+        turnstileToken: 'token-mock',
+      }
+
+      ;(axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: { success: true },
+      })
+
+      // Act
+      await registerUser(registerRequest)
+
+      // Assert
+      expect(axiosInstance.post).toHaveBeenCalledWith('/auth/register', {
+        nombre: 'John',
+        apellidos: 'Doe',
+        email: 'john@example.com',
+        password: 'SecurePass123!',
+        aceptoTerminos: true,
+        turnstileToken: 'token-mock',
+      })
+    })
+
     it('debe rechazar email duplicado', async () => {
       // Arrange
       const registerRequest = {

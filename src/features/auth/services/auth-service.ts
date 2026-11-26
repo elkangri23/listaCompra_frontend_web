@@ -173,6 +173,7 @@ export async function registerUser(request: RegisterRequest): Promise<void> {
       email: normalizeEmail(request.email),
       password: request.password,
       aceptoTerminos: request.aceptoTerminos,
+      ...(request.turnstileToken ? { turnstileToken: request.turnstileToken } : {}),
     }
     await axiosInstance.post('/auth/register', payload)
   } catch (error) {

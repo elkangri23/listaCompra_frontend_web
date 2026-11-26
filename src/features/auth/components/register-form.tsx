@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import * as React from 'react'
 
 import { registerUser } from '@/features/auth/services/auth-service'
+import { TurnstileWidget } from '@/features/auth/components/turnstile-widget'
 import { registerSchema, type RegisterSchema } from '@/features/auth/validators/schemas'
 
 type RegisterFieldErrors = Partial<Record<keyof RegisterSchema, string>>
@@ -30,6 +31,11 @@ export function RegisterForm() {
   const [isPending, startTransition] = React.useTransition()
   const [termsAccepted, setTermsAccepted] = React.useState(false)
   const [termsError, setTermsError] = React.useState<string | null>(null)
+  // Captcha Turnstile (item 14): solo se muestra cuando hay site key
+  // configurada; sin ella el registro funciona como hasta ahora.
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''
+  const [turnstileToken, setTurnstileToken] = React.useState<string | null>(null)
+  const [turnstileError, setTurnstileError] = React.useState<string | null>(null)
 
   const handleChange = React.useCallback((event: ChangeEvent) => {
     const { name, value } = event.target
@@ -50,6 +56,17 @@ export function RegisterForm() {
     }
   }, [])
 
+  const handleTurnstileToken = React.useCallback((token: string) => {
+    setTurnstileToken(token === '' ? null : token)
+    if (token !== '') {
+      setTurnstileError(null)
+    }
+  }, [])
+
+  const handleTurnstileExpire = React.useCallback(() => {
+    setTurnstileToken(null)
+  }, [])
+
   const handleSubmit = React.useCallback(
     (event: FormEvent) => {
       event.preventDefault()
@@ -61,6 +78,12 @@ export function RegisterForm() {
         return
       }
       setTermsError(null)
+
+      if (turnstileSiteKey !== '' && !turnstileToken) {
+        setTurnstileError('Completa la verificación de seguridad para crear tu cuenta.')
+        return
+      }
+      setTurnstileError(null)
 
       const validation = registerSchema.safeParse(values)
       if (!validation.success) {
@@ -89,6 +112,7 @@ export function RegisterForm() {
             email: formData.email,
             password: formData.password,
             aceptoTerminos: termsAccepted,
+            ...(turnstileToken ? { turnstileToken } : {}),
           })
           setStatusMessage('Registro completado. Redirigiendo al inicio de sesión...')
           setValues({ ...initialValues })
@@ -103,7 +127,7 @@ export function RegisterForm() {
         }
       })
     },
-    [values, router, termsAccepted],
+    [values, router, termsAccepted, turnstileSiteKey, turnstileToken],
   )
 
   return (
@@ -264,6 +288,22 @@ export function RegisterForm() {
         </p>
       ) : null}
 
+      {turnstileSiteKey !== '' ? (
+        <div className="px-4 mt-2">
+          <TurnstileWidget
+            siteKey={turnstileSiteKey}
+            onToken={handleTurnstileToken}
+            onExpire={handleTurnstileExpire}
+          />
+        </div>
+      ) : null}
+
+      {turnstileError ? (
+        <p id="turnstile-error" role="alert" className="text-sm text-red-600 px-4">
+          {turnstileError}
+        </p>
+      ) : null}
+
       {errorMessage ? (
         <p role="alert" className="text-sm text-red-600 px-4 py-2">
           {errorMessage}
@@ -279,7 +319,7 @@ export function RegisterForm() {
       <div className="flex px-4 py-3 mt-6">
         <button
           type="submit"
-          disabled={isPending || !termsAccepted}
+          disabled={isPending || !termsAccepted || (turnstileSiteKey !== '' && !turnstileToken)}
           className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
         >
           {isPending && (

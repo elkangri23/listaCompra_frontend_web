@@ -15,7 +15,7 @@ try {
   apiOrigin = '';
 }
 
-const connectSrc = ["'self'", 'https://listacompra.laurafernandezenfermeria.com', apiOrigin]
+const connectSrc = ["'self'", 'https://listacompra.laurafernandezenfermeria.com', 'https://challenges.cloudflare.com', apiOrigin]
   .filter(Boolean)
   .filter((value, index, array) => array.indexOf(value) === index)
   .join(' ');
@@ -34,7 +34,7 @@ const nextConfig = {
           {
             key: 'Content-Security-Policy',
             value:
-              `default-src 'self'; connect-src ${connectSrc}; script-src 'self' 'unsafe-eval' 'unsafe-inline' cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data: lh3.googleusercontent.com; font-src 'self' fonts.gstatic.com; object-src 'none'; frame-ancestors 'none';`,
+              `default-src 'self'; connect-src ${connectSrc}; script-src 'self' 'unsafe-eval' 'unsafe-inline' cdn.tailwindcss.com https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data: lh3.googleusercontent.com; font-src 'self' fonts.gstatic.com; object-src 'none'; frame-ancestors 'none';`,
           },
           {
             key: 'Referrer-Policy',

@@ -97,6 +97,7 @@ export interface RegisterRequest {
   email: string
   password: string
   aceptoTerminos: boolean
+  turnstileToken?: string
 }
 
 export interface ForgotPasswordRequest {
