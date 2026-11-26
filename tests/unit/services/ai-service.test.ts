@@ -16,6 +16,7 @@ import {
   getContextExamples,
   getRecommendations,
   getProductRecommendations,
+  analyzePurchaseHabits,
 } from '@/features/ai/services/ai-service';
 import { axiosInstance } from '@/lib/api/axios-instance';
 import { createMockAxiosResponse, createMockAxiosError } from '../../utils/test-utils';
@@ -576,6 +577,56 @@ describe('aiService (CRÍTICO - 100% coverage)', () => {
         getProductRecommendations('list-1', 'invalid-prod')
       ).rejects.toMatchObject({
         response: { status: 404 },
+      });
+    });
+  });
+
+  describe('analyzePurchaseHabits', () => {
+    it('devuelve los insights y metadatos del backend', async () => {
+      const mockResponse = {
+        success: true,
+        data: {
+          insights: [
+            {
+              type: 'frequency',
+              title: 'Compras la leche cada semana',
+              description: 'La leche aparece en tus listas casi cada semana.',
+              confidence: 0.82,
+            },
+          ],
+          metadata: {
+            period: { start: '2026-08-28', end: '2026-11-26', preset: '90d' },
+            productsAnalyzed: 42,
+            listsAnalyzed: 5,
+            generatedAt: '2026-11-26T16:00:00.000Z',
+          },
+        },
+      };
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse(mockResponse)
+      );
+
+      const result = await analyzePurchaseHabits('user-1', '90d');
+
+      expect(axiosInstance.get).toHaveBeenCalledWith('/ai/purchase-habits/user-1', {
+        params: { timeRange: '90d' },
+      });
+      expect(result.insights).toHaveLength(1);
+      expect(result.metadata.productsAnalyzed).toBe(42);
+    });
+
+    it('usa 90d por defecto cuando no se pasa periodo', async () => {
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({
+          success: true,
+          data: { insights: [], metadata: { period: { start: null, end: '2026-11-26', preset: '90d' }, productsAnalyzed: 0, listsAnalyzed: 0, generatedAt: '2026-11-26T16:00:00.000Z' } },
+        })
+      );
+
+      await analyzePurchaseHabits('user-1');
+
+      expect(axiosInstance.get).toHaveBeenCalledWith('/ai/purchase-habits/user-1', {
+        params: { timeRange: '90d' },
       });
     });
   });

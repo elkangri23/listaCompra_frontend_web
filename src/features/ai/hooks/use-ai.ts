@@ -4,6 +4,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { aiService } from '../services/ai-service';
+import type { PurchaseHabitsTimeRange } from '../services/ai-service';
 import type {
   CategorizeProductRequestDto,
   BulkCategorizeRequestDto,
@@ -166,5 +167,22 @@ export const useProductRecommendations = (
     queryFn: () => aiService.getProductRecommendations(listId, productId),
     enabled: enabled && !!listId && !!productId,
     staleTime: 1000 * 60 * 5, // 5 minutos
+  });
+};
+
+/**
+ * Hook para analizar los hábitos de compra del usuario con IA.
+ * Bajo demanda (enabled): la llamada va a la IA y no debe dispararse sola.
+ */
+export const usePurchaseHabits = (
+  userId: string,
+  timeRange: PurchaseHabitsTimeRange = '90d',
+  enabled: boolean = false,
+) => {
+  return useQuery({
+    queryKey: ['ai', 'purchase-habits', userId, timeRange],
+    queryFn: () => aiService.analyzePurchaseHabits(userId, timeRange),
+    enabled: enabled && !!userId,
+    staleTime: 1000 * 60 * 30, // 30 minutos
   });
 };

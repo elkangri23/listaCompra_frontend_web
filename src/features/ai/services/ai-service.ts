@@ -176,6 +176,52 @@ export const getProductRecommendations = async (
 };
 
 /**
+ * Respuesta real del backend: GET /ai/purchase-habits/:userId (CU-30).
+ * Los insights los genera la IA a partir del historial de compras.
+ */
+export type PurchaseHabitsTimeRange = '30d' | '90d' | '365d' | 'all';
+
+export interface PurchaseHabitsResponse {
+  insights: Array<{
+    type: 'frequency' | 'seasonal' | 'preference' | 'optimization';
+    title: string;
+    description: string;
+    data?: Record<string, unknown>;
+    confidence: number;
+  }>;
+  metadata: {
+    period: {
+      start: string | null;
+      end: string;
+      preset: PurchaseHabitsTimeRange;
+    };
+    productsAnalyzed: number;
+    listsAnalyzed: number;
+    generatedAt: string;
+  };
+}
+
+interface PurchaseHabitsApiResponse {
+  success: boolean;
+  data: PurchaseHabitsResponse;
+}
+
+/**
+ * Analiza los hábitos de compra del usuario con IA.
+ * Es una llamada a la IA: usar bajo demanda, no en cada carga de página.
+ */
+export const analyzePurchaseHabits = async (
+  userId: string,
+  timeRange: PurchaseHabitsTimeRange = '90d',
+): Promise<PurchaseHabitsResponse> => {
+  const response = await axiosInstance.get<PurchaseHabitsApiResponse>(
+    `/ai/purchase-habits/${userId}`,
+    { params: { timeRange } },
+  );
+  return response.data.data;
+};
+
+/**
  * Objeto con todas las funciones del servicio de IA
  */
 export const aiService = {
@@ -187,4 +233,5 @@ export const aiService = {
   getContextExamples,
   getRecommendations,
   getProductRecommendations,
+  analyzePurchaseHabits,
 };
