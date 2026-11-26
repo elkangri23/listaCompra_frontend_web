@@ -277,6 +277,64 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    // ---------- PERFIL (13A): /auth/me ----------
+    // El usuario se identifica por el token Bearer del mock (payload con userId)
+    const authUser = (() => {
+      const header = req.headers.authorization || '';
+      const token = header.replace(/^Bearer\s+/i, '');
+      const parts = token.split('.');
+      if (parts.length !== 3) return null;
+      try {
+        const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf-8'));
+        return state.users.find((u) => u.id === payload.userId || u.id === payload.sub) || null;
+      } catch {
+        return null;
+      }
+    })();
+
+    if (path === '/auth/me' && method === 'GET') {
+      if (!authUser) return sendJson(res, 401, { success: false, message: 'Token de acceso requerido' });
+      sendJson(res, 200, {
+        id: authUser.id,
+        name: authUser.nombreCompleto,
+        email: authUser.email,
+        roles: [authUser.rol],
+        image: null,
+      });
+      return;
+    }
+
+    if (path === '/auth/me' && method === 'PATCH') {
+      if (!authUser) return sendJson(res, 401, { success: false, message: 'Token de acceso requerido' });
+      if (typeof body.name === 'string' && body.name.trim()) {
+        const [nombre, ...resto] = body.name.trim().split(/\s+/);
+        authUser.nombre = nombre;
+        authUser.apellidos = resto.join(' ');
+        authUser.nombreCompleto = body.name.trim();
+      }
+      if (typeof body.email === 'string' && body.email.trim()) {
+        authUser.email = body.email.trim().toLowerCase();
+      }
+      sendJson(res, 200, {
+        id: authUser.id,
+        name: authUser.nombreCompleto,
+        email: authUser.email,
+        roles: [authUser.rol],
+        image: null,
+      });
+      return;
+    }
+
+    if (path === '/auth/me/password' && method === 'PATCH') {
+      if (!authUser) return sendJson(res, 401, { success: false, message: 'Token de acceso requerido' });
+      if (!body.currentPassword || body.currentPassword !== authUser.password) {
+        return sendJson(res, 401, { success: false, message: 'La contraseña actual no es correcta' });
+      }
+      authUser.password = body.newPassword;
+      sendJson(res, 200, { mensaje: 'Contraseña actualizada exitosamente' });
+      return;
+    }
+
     // ---------- TIENDAS ----------
     if (path === '/stores' && method === 'GET') {
       sendJson(res, 200, {
@@ -339,6 +397,68 @@ const server = http.createServer(async (req, res) => {
         sendJson(res, 200, { success: true });
         return;
       }
+    }
+
+    // ---------- COLABORADORES (13A) ----------
+    // GET /lists/:id/collaborators, PATCH/DELETE /lists/:id/collaborators/:userId
+    if (seg[0] === 'lists' && seg[2] === 'collaborators' && seg.length === 3 && method === 'GET') {
+      const list = state.lists.get(seg[1]);
+      if (!list) return sendJson(res, 404, { success: false, message: 'Lista no encontrada' });
+      const owner = state.users.find((u) => u.id === list.propietarioId);
+      const collaborators = [];
+      if (owner) {
+        collaborators.push({
+          id: `owner-${owner.id}`,
+          userId: owner.id,
+          userName: owner.nombreCompleto,
+          userEmail: owner.email,
+          role: 'owner',
+          joinedAt: list.createdAt,
+        });
+      }
+      for (const inv of state.invitations.values()) {
+        if (inv.listId !== seg[1] || inv.status === 'RECHAZADA' || !inv.email) continue;
+        const user = state.users.find((u) => u.email === inv.email);
+        collaborators.push({
+          id: inv.id,
+          userId: user?.id || inv.id,
+          userName: user?.nombreCompleto || inv.email,
+          userEmail: inv.email,
+          role: inv.tipoPermiso === 'ESCRITURA' ? 'editor' : 'viewer',
+          joinedAt: inv.createdAt,
+        });
+      }
+      sendJson(res, 200, collaborators);
+      return;
+    }
+
+    if (seg[0] === 'lists' && seg[2] === 'collaborators' && seg.length === 4 && method === 'PATCH') {
+      const inv = [...state.invitations.values()].find(
+        (i) => i.listId === seg[1] && (i.id === seg[3] || state.users.find((u) => u.email === i.email)?.id === seg[3])
+      );
+      if (!inv) return sendJson(res, 404, { success: false, message: 'Colaborador no encontrado' });
+      if (body.role === 'editor') inv.tipoPermiso = 'ESCRITURA';
+      if (body.role === 'viewer') inv.tipoPermiso = 'LECTURA';
+      const user = state.users.find((u) => u.email === inv.email);
+      sendJson(res, 200, {
+        id: inv.id,
+        userId: user?.id || inv.id,
+        userName: user?.nombreCompleto || inv.email,
+        userEmail: inv.email,
+        role: body.role,
+        joinedAt: inv.createdAt,
+      });
+      return;
+    }
+
+    if (seg[0] === 'lists' && seg[2] === 'collaborators' && seg.length === 4 && method === 'DELETE') {
+      const inv = [...state.invitations.values()].find(
+        (i) => i.listId === seg[1] && (i.id === seg[3] || state.users.find((u) => u.email === i.email)?.id === seg[3])
+      );
+      if (inv) state.invitations.delete(inv.id);
+      res.writeHead(204);
+      res.end();
+      return;
     }
 
     if (seg[0] === 'lists' && seg[2] === 'summary' && method === 'GET') {
@@ -495,18 +615,20 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (seg[0] === 'invitations' && seg[2] === 'list' && method === 'GET') {
-      const collabs = [...state.invitations.values()]
+      // 13A: el backend real devuelve {success, message, data: [...]}, no el array directo
+      const data = [...state.invitations.values()]
         .filter((i) => i.listId === seg[1] && i.status !== 'RECHAZADA' && i.email)
         .map((i) => ({
           id: i.id,
-          listId: i.listId,
-          email: i.email,
-          status: 'PENDING',
-          // getRoleFromPermissions del frontend espera 'OWNER' | 'EDITOR' | 'VIEWER'
-          permissions: [i.tipoPermiso === 'ESCRITURA' ? 'EDITOR' : 'VIEWER'],
-          createdAt: i.createdAt,
+          listaId: i.listId,
+          hash: i.hash || '',
+          tipoPermiso: i.tipoPermiso,
+          creadaEn: i.createdAt,
+          expiraEn: new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString(),
+          activa: true,
+          emailInvitado: i.email,
         }));
-      sendJson(res, 200, collabs);
+      sendJson(res, 200, { success: true, message: 'Invitaciones obtenidas exitosamente', data });
       return;
     }
 
@@ -549,19 +671,22 @@ const server = http.createServer(async (req, res) => {
     }
 
     // ---------- IA ----------
-    if (path === '/ai/categorize' && method === 'POST') {
-      const cat = suggestCategory(body.nombre || '');
+    // 13A: el endpoint real es /ai/category-suggestions y devuelve la forma
+    // del backend: {suggestions: [{category, confidence, reasoning}], ...}
+    if (path === '/ai/category-suggestions' && method === 'POST') {
+      const cat = suggestCategory(body.productName || '');
       sendJson(res, 200, {
-        success: true,
-        data: {
-          suggestedCategory: {
-            nombre: cat.nombre,
-            tiendaId: cat.tiendaId,
+        suggestions: [
+          {
+            category: cat.nombre,
             confidence: 0.95,
+            reasoning: 'Sugerencia basada en el nombre del producto',
           },
-          source: 'ai',
-          processingTimeMs: 120,
-        },
+        ],
+        productName: body.productName || '',
+        cached: false,
+        requestId: 'req_mock_' + Date.now(),
+        timestamp: new Date().toISOString(),
       });
       return;
     }

@@ -239,34 +239,51 @@ describe('invitationService (CRÍTICO - 100% coverage)', () => {
 
   describe('getInvitationsByList', () => {
     it('debe obtener invitaciones activas de una lista', async () => {
-      const mockInvitations = [
-        {
-          id: 'inv-1',
-          usuarioId: 'user-1',
-          email: 'user1@example.com',
-          tipoPermiso: 'LECTURA',
-        },
-        {
-          id: 'inv-2',
-          usuarioId: 'user-2',
-          email: 'user2@example.com',
-          tipoPermiso: 'ESCRITURA',
-        },
-      ];
+      // Respuesta real del backend: {success, message, data: [...]}
+      const mockResponse = {
+        success: true,
+        message: 'Invitaciones obtenidas exitosamente',
+        data: [
+          {
+            id: 'inv-1',
+            listaId: 'list-1',
+            hash: 'hash1',
+            tipoPermiso: 'LECTURA',
+            creadaEn: '2026-11-26T00:00:00.000Z',
+            expiraEn: '2026-12-03T00:00:00.000Z',
+            activa: true,
+            emailInvitado: 'user1@example.com',
+          },
+          {
+            id: 'inv-2',
+            listaId: 'list-1',
+            hash: 'hash2',
+            tipoPermiso: 'ESCRITURA',
+            creadaEn: '2026-11-26T00:00:00.000Z',
+            expiraEn: '2026-12-03T00:00:00.000Z',
+            activa: true,
+            emailInvitado: 'user2@example.com',
+          },
+        ],
+      };
 
       (axiosInstance.get as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockInvitations)
+        createMockAxiosResponse(mockResponse)
       );
 
       const result = await invitationService.getInvitationsByList('list-1');
 
       expect(axiosInstance.get).toHaveBeenCalledWith('/invitations/list-1/list');
       expect(result).toHaveLength(2);
+      expect(result[0]?.email).toBe('user1@example.com');
+      expect(result[0]?.status).toBe('PENDING');
+      expect(result[0]?.permissions).toEqual(['LECTURA']);
+      expect(result[1]?.permissions).toEqual(['ESCRITURA']);
     });
 
     it('debe retornar array vacío para lista sin invitaciones', async () => {
       (axiosInstance.get as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse([])
+        createMockAxiosResponse({ success: true, message: 'ok', data: [] })
       );
 
       const result = await invitationService.getInvitationsByList('list-1');

@@ -49,34 +49,58 @@ export function AIProductForm({
 
   const categorizeMutation = useCategorizeProduct();
 
+  // Resuelve el nombre de categoría sugerido por la IA al ID real de la
+  // tienda (las sugerencias del backend vienen por nombre, sin ID).
+  const resolveCategoryId = useCallback(
+    (nombre: string): string | undefined =>
+      categories.find(
+        (c) => c.nombre.trim().toLowerCase() === nombre.trim().toLowerCase()
+      )?.id,
+    [categories]
+  );
+
   // Función de categorización con useCallback para evitar recreación
   const handleCategorize = useCallback(async () => {
     if (!productName || productName.length < 3) return;
 
     try {
+      // El servicio devuelve CategorizeProductResponseDto:
+      // {success, data: {suggestedCategory, alternativeCategories, ...}}
       const result = await categorizeMutation.mutateAsync({
         nombre: productName,
         descripcion: productDescription,
       });
 
-      // result.data tiene { suggestedCategory, alternativeCategories, source, processingTimeMs }
-      const categorySuggestions: SuggestedCategory[] = [
+      const rawSuggestions: SuggestedCategory[] = [
         result.data.suggestedCategory,
         ...(result.data.alternativeCategories || []),
       ];
+      // El backend sugiere por nombre: resolver cada una al ID real de la
+      // tienda (tiendaId lleva aquí el ID de la categoría, así lo usa el form)
+      const categorySuggestions: SuggestedCategory[] = rawSuggestions
+        .filter((s) => s.nombre && s.nombre.trim().length > 0)
+        .map((s) => ({
+          nombre: s.nombre,
+          tiendaId: resolveCategoryId(s.nombre),
+          confidence: s.confidence,
+        }));
       setSuggestions(categorySuggestions);
 
-      // Auto-seleccionar la categoría recomendada si tiene alta confianza (>80%)
+      // Auto-seleccionar la categoría recomendada si tiene alta confianza (>=80%)
+      // y existe en la tienda, y aún no hay categoría elegida
       const mainSuggestion = result.data.suggestedCategory;
+      const mainCategoryId = mainSuggestion?.nombre
+        ? resolveCategoryId(mainSuggestion.nombre)
+        : undefined;
       if (
         mainSuggestion &&
-        mainSuggestion.confidence > 80 &&
+        mainSuggestion.confidence >= 80 &&
         !selectedCategoryId &&
-        mainSuggestion.tiendaId
+        mainCategoryId
       ) {
-        setSelectedCategoryId(mainSuggestion.tiendaId);
-        onCategorySuggestionSelected?.(mainSuggestion.tiendaId);
-        
+        setSelectedCategoryId(mainCategoryId);
+        onCategorySuggestionSelected?.(mainCategoryId);
+
         toast.success('Categoría sugerida por IA', {
           description: `${mainSuggestion.nombre}`,
           icon: <Sparkles className="h-4 w-4" />,
@@ -88,7 +112,7 @@ export function AIProductForm({
         description: 'Puedes seleccionar la categoría manualmente',
       });
     }
-  }, [productName, productDescription, categorizeMutation, selectedCategoryId, onCategorySuggestionSelected]);
+  }, [productName, productDescription, categorizeMutation, selectedCategoryId, onCategorySuggestionSelected, resolveCategoryId]);
 
   // Efecto para categorizar automáticamente cuando cambia el nombre del producto
   useEffect(() => {
@@ -116,13 +140,18 @@ export function AIProductForm({
   }, [formValues, productName, productDescription]);
 
   const handleSuggestionClick = (suggestion: SuggestedCategory) => {
-    // SuggestedCategory tiene tiendaId opcional, buscar la categoría por nombre
-    setFormValues(prev => ({ ...prev, categoriaId: suggestion.tiendaId || undefined }));
-    if (suggestion.tiendaId) {
-      setSelectedCategoryId(suggestion.tiendaId);
-      onCategorySuggestionSelected?.(suggestion.tiendaId);
+    // tiendaId lleva el ID de la categoría resuelto por nombre; si la
+    // sugerencia no existe en la tienda, no se puede aplicar directamente
+    if (!suggestion.tiendaId) {
+      toast.info('Esa categoría no existe en la tienda', {
+        description: `«${suggestion.nombre}» es una sugerencia de la IA: créala o elige una parecida`,
+      });
+      return;
     }
-    
+    setFormValues(prev => ({ ...prev, categoriaId: suggestion.tiendaId || undefined }));
+    setSelectedCategoryId(suggestion.tiendaId);
+    onCategorySuggestionSelected?.(suggestion.tiendaId);
+
     toast.success('Categoría aplicada', {
       description: suggestion.nombre,
     });

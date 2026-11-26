@@ -198,8 +198,9 @@ export async function requestPasswordReset(
 
 export async function getCurrentUser(): Promise<AuthUser> {
   try {
-    const { data } = await axiosInstance.get('/users/me')
-    return data as AuthUser // Assuming the API returns the user structure directly
+    // 13A: el backend no tiene rutas /users; el perfil vive en /auth/me
+    const { data } = await axiosInstance.get('/auth/me')
+    return data as AuthUser // El backend devuelve el usuario directamente
   } catch (error) {
     throw buildAuthApiError(
       error,
@@ -217,7 +218,7 @@ export async function updateProfile(
       email: normalizeEmail(values.email),
       ...(values.bio && { bio: values.bio.trim() }),
     }
-    const { data } = await axiosInstance.patch('/users/me', payload)
+    const { data } = await axiosInstance.patch('/auth/me', payload)
     return data as AuthUser
   } catch (error) {
     throw buildAuthApiError(
@@ -235,7 +236,7 @@ export async function changePassword(
       currentPassword: values.currentPassword,
       newPassword: values.newPassword,
     }
-    await axiosInstance.patch('/users/me/password', payload)
+    await axiosInstance.patch('/auth/me/password', payload)
   } catch (error) {
     throw buildAuthApiError(
       error,

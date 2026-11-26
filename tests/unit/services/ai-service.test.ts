@@ -39,15 +39,16 @@ describe('aiService (CRÍTICO - 100% coverage)', () => {
         descripcion: 'Leche de vaca',
       };
 
+      // Respuesta real del backend: POST /ai/category-suggestions
       const mockResponse = {
-        success: true,
-        data: {
-          categorias: [
-            { id: 'cat-1', nombre: 'Lácteos', confianza: 0.95 },
-            { id: 'cat-2', nombre: 'Bebidas', confianza: 0.75 },
-          ],
-          categoriaSugerida: { id: 'cat-1', nombre: 'Lácteos', confianza: 0.95 },
-        },
+        suggestions: [
+          { category: 'Lácteos', confidence: 0.95, reasoning: 'Producto lácteo' },
+          { category: 'Bebidas', confidence: 0.75 },
+        ],
+        productName: 'Leche entera',
+        cached: false,
+        requestId: 'req-1',
+        timestamp: '2026-11-26T00:00:00.000Z',
       };
 
       (axiosInstance.post as jest.Mock).mockResolvedValue(
@@ -56,9 +57,14 @@ describe('aiService (CRÍTICO - 100% coverage)', () => {
 
       const result = await categorizeProduct(request);
 
-      expect(axiosInstance.post).toHaveBeenCalledWith('/ai/categorize', request);
-      expect(result.data.categoriaSugerida.nombre).toBe('Lácteos');
-      expect(result.data.categoriaSugerida.confianza).toBe(0.95);
+      expect(axiosInstance.post).toHaveBeenCalledWith('/ai/category-suggestions', {
+        productName: 'Leche entera',
+        language: 'es',
+      });
+      expect(result.data.suggestedCategory.nombre).toBe('Lácteos');
+      expect(result.data.suggestedCategory.confidence).toBe(95);
+      expect(result.data.alternativeCategories).toHaveLength(1);
+      expect(result.data.alternativeCategories?.[0]?.nombre).toBe('Bebidas');
     });
 
     it('debe categorizar producto sin descripción', async () => {
@@ -67,11 +73,11 @@ describe('aiService (CRÍTICO - 100% coverage)', () => {
       };
 
       const mockResponse = {
-        success: true,
-        data: {
-          categorias: [{ id: 'cat-3', nombre: 'Panadería', confianza: 0.88 }],
-          categoriaSugerida: { id: 'cat-3', nombre: 'Panadería', confianza: 0.88 },
-        },
+        suggestions: [{ category: 'Panadería', confidence: 0.88 }],
+        productName: 'Pan',
+        cached: false,
+        requestId: 'req-2',
+        timestamp: '2026-11-26T00:00:00.000Z',
       };
 
       (axiosInstance.post as jest.Mock).mockResolvedValue(
@@ -80,7 +86,9 @@ describe('aiService (CRÍTICO - 100% coverage)', () => {
 
       const result = await categorizeProduct(request);
 
-      expect(result.data.categorias).toHaveLength(1);
+      expect(result.data.suggestedCategory.nombre).toBe('Panadería');
+      expect(result.data.suggestedCategory.confidence).toBe(88);
+      expect(result.data.alternativeCategories).toHaveLength(0);
     });
 
     it('debe manejar producto sin categoría clara', async () => {
@@ -89,11 +97,11 @@ describe('aiService (CRÍTICO - 100% coverage)', () => {
       };
 
       const mockResponse = {
-        success: true,
-        data: {
-          categorias: [],
-          categoriaSugerida: null,
-        },
+        suggestions: [],
+        productName: 'Producto desconocido',
+        cached: false,
+        requestId: 'req-3',
+        timestamp: '2026-11-26T00:00:00.000Z',
       };
 
       (axiosInstance.post as jest.Mock).mockResolvedValue(
@@ -102,8 +110,8 @@ describe('aiService (CRÍTICO - 100% coverage)', () => {
 
       const result = await categorizeProduct(request);
 
-      expect(result.data.categorias).toHaveLength(0);
-      expect(result.data.categoriaSugerida).toBeNull();
+      expect(result.data.alternativeCategories).toHaveLength(0);
+      expect(result.data.suggestedCategory.nombre).toBe('');
     });
 
     it('debe manejar error del servicio de IA', async () => {

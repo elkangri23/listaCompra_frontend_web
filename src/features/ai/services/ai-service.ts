@@ -22,18 +22,51 @@ import type {
 // ==================== Categorización Simple ====================
 
 /**
- * Categoriza un producto usando IA
+ * Respuesta real del backend: POST /ai/category-suggestions
+ * Devuelve nombres de categoría (no IDs) con confianza 0-1.
+ */
+interface BackendCategorySuggestionsResponse {
+  suggestions: Array<{ category: string; confidence: number; reasoning?: string }>;
+  productName: string;
+  cached: boolean;
+  requestId: string;
+  timestamp: string;
+}
+
+/**
+ * Categoriza un producto usando IA (13A).
+ * El backend solo tiene POST /ai/category-suggestions: se le envía el nombre
+ * y se mapea su respuesta ({suggestions: [{category, confidence, reasoning}]})
+ * al DTO del frontend. La resolución nombre -> ID de categoría la hace el
+ * formulario, que ya tiene las categorías de la tienda cargadas.
  * @param data - Datos del producto a categorizar
  * @returns Sugerencias de categorías con niveles de confianza
  */
 export const categorizeProduct = async (
   data: CategorizeProductRequestDto
 ): Promise<CategorizeProductResponseDto> => {
-  const response = await axiosInstance.post<CategorizeProductResponseDto>(
-    '/ai/categorize',
-    data
+  const response = await axiosInstance.post<BackendCategorySuggestionsResponse>(
+    '/ai/category-suggestions',
+    { productName: data.nombre, language: 'es' }
   );
-  return response.data;
+  // El backend devuelve confianza 0-1; el DTO del frontend la usa en 0-100
+  // (el formulario la muestra como % y auto-selecciona si supera 80).
+  // La resolución nombre -> ID de categoría la hace el formulario, que ya
+  // tiene las categorías de la tienda cargadas.
+  const toSuggested = (s: BackendCategorySuggestionsResponse['suggestions'][number]) => ({
+    nombre: s.category,
+    confidence: Math.round(s.confidence * 100),
+  });
+  const [primera, ...resto] = response.data.suggestions;
+  return {
+    success: true,
+    data: {
+      suggestedCategory: primera ? toSuggested(primera) : { nombre: '', confidence: 0 },
+      alternativeCategories: resto.map(toSuggested),
+      source: 'ai',
+      processingTimeMs: 0,
+    },
+  };
 };
 
 // ==================== Categorización Masiva ====================

@@ -382,7 +382,7 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
       const result = await getCurrentUser()
 
       // Assert
-      expect(axiosInstance.get).toHaveBeenCalledWith('/users/me')
+      expect(axiosInstance.get).toHaveBeenCalledWith('/auth/me')
       expect(result.id).toBe('user-1')
       expect(result.email).toBe('test@example.com')
     })
@@ -422,7 +422,7 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
       const result = await updateProfile(profileValues)
 
       // Assert
-      expect(axiosInstance.patch).toHaveBeenCalledWith('/users/me', {
+      expect(axiosInstance.patch).toHaveBeenCalledWith('/auth/me', {
         name: 'John Updated', // sin espacios
         email: 'newemail@example.com', // normalizado
         bio: 'This is my bio', // sin espacios
@@ -445,7 +445,7 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
       await updateProfile(profileValues)
 
       // Assert
-      expect(axiosInstance.patch).toHaveBeenCalledWith('/users/me', {
+      expect(axiosInstance.patch).toHaveBeenCalledWith('/auth/me', {
         name: 'John',
         email: 'john@example.com',
         // bio no incluido
@@ -485,7 +485,7 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
       await changePassword(passwordValues)
 
       // Assert
-      expect(axiosInstance.patch).toHaveBeenCalledWith('/users/me/password', {
+      expect(axiosInstance.patch).toHaveBeenCalledWith('/auth/me/password', {
         currentPassword: 'OldPassword123!',
         newPassword: 'NewPassword123!',
       })

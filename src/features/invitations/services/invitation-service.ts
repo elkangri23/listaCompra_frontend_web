@@ -33,9 +33,30 @@ const getInvitationByHash = async (hash: string): Promise<BackendInvitationAcces
   return response.data;
 };
 
+/**
+ * Respuesta real del backend: GET /invitations/:listaId/list devuelve
+ * {success, message, data: [{id, listaId, hash, tipoPermiso, creadaEn, expiraEn, activa}]}
+ * (13A). Se mapea a ActiveInvitationDto; el email viene de emailInvitado
+ * (vacío en invitaciones creadas antes de que existiera ese campo).
+ */
+interface BackendListInvitation {
+  id: string;
+  emailInvitado?: string | null;
+  tipoPermiso: string;
+  creadaEn: string;
+}
+
 const getInvitationsByList = async (listId: string): Promise<ActiveInvitationDto[]> => {
-  const response = await axiosInstance.get<ActiveInvitationDto[]>(`/invitations/${listId}/list`);
-  return response.data;
+  const response = await axiosInstance.get<{ data: BackendListInvitation[] }>(
+    `/invitations/${listId}/list`
+  );
+  return response.data.data.map((inv) => ({
+    id: inv.id,
+    email: inv.emailInvitado ?? '',
+    status: 'PENDING',
+    permissions: [inv.tipoPermiso],
+    createdAt: inv.creadaEn,
+  }));
 };
 
 const updatePermissions = async (listId: string, userId: string, dto: UpdatePermissionsDto): Promise<void> => {

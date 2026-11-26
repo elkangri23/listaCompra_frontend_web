@@ -4,6 +4,8 @@ export interface InvitationDto {
   listName: string;
   from: string;
   createdAt: string;
+  /** ID de la lista (para que "Aceptar" pueda navegar a ella) */
+  listaId?: string;
 }
 
 export class InviteUserDto {
