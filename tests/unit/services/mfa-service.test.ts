@@ -236,3 +236,31 @@ describe('mfa-service', () => {
     })
   })
 })
+describe('buildMfaError — ramas restantes', () => {
+  it('sobre con data pero error no objeto ni string → mensaje del sobre', async () => {
+    mockedAxios.get.mockRejectedValueOnce({
+      isAxiosError: true,
+      response: {
+        status: 500,
+        data: { success: false, message: 'Algo falló' },
+      },
+    })
+    await expect(getMfaStatus()).rejects.toMatchObject({
+      message: 'Algo falló',
+    })
+  })
+
+  it('Error genérico no-axios → su message', async () => {
+    mockedAxios.post.mockRejectedValueOnce(new Error('boom de red'))
+    await expect(totpSetup('Password1!')).rejects.toMatchObject({
+      message: 'boom de red',
+    })
+  })
+
+  it('throw de valor no-Error → fallback', async () => {
+    mockedAxios.post.mockRejectedValueOnce('falla primitiva')
+    await expect(totpDisable('Password1!')).rejects.toMatchObject({
+      message: 'No se pudo desactivar el TOTP.',
+    })
+  })
+})

@@ -9,6 +9,7 @@
 
 import {
   validateInvitationExpiration,
+  validateTemporaryLink,
   validateInvitationLimits,
   validateTemporaryLink,
   createAuditLog,
@@ -88,6 +89,28 @@ describe('advancedSecurity (CRÍTICO - 100% coverage)', () => {
       expect(result.hoursRemaining).toBe(20)
       expect(result.expirationMessage).toContain('⚠️')
       expect(result.expirationMessage).toContain('20 horas')
+    })
+
+    it('validateTemporaryLink debe mostrar minutos cuando queda menos de 1 hora', () => {
+      const createdAt = new Date('2025-11-24T10:00:00')
+      ;(isPast as jest.Mock).mockReturnValue(false)
+      ;(differenceInHours as jest.Mock).mockReturnValue(0.4)
+
+      const result = validateTemporaryLink(createdAt)
+
+      expect(result.isValid).toBe(true)
+      expect(result.timeRemaining).toContain('minutos')
+    })
+
+    it('validateTemporaryLink debe mostrar días cuando quedan más de 24 horas', () => {
+      const createdAt = new Date('2025-11-20')
+      ;(isPast as jest.Mock).mockReturnValue(false)
+      ;(differenceInHours as jest.Mock).mockReturnValue(48)
+
+      const result = validateTemporaryLink(createdAt)
+
+      expect(result.isValid).toBe(true)
+      expect(result.timeRemaining).toBe('2 días')
     })
 
     it('debe mostrar advertencia cuando quedan 2 días', () => {

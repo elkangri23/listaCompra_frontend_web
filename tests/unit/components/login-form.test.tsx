@@ -9,7 +9,7 @@
 
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { signIn } from 'next-auth/react'
+import { getSession, signIn, signOut } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { LoginForm } from '@/features/auth/components/login-form'
 
@@ -446,5 +446,147 @@ describe('LoginForm: ramas restantes (callbackUrl y errores de signIn)', () => {
     await waitFor(() =>
       expect(screen.getByText(/Red caída/)).toBeInTheDocument(),
     )
+  })
+})
+
+describe('LoginForm: paso 2 MFA (CU-MFA fase 1)', () => {
+  const mockPush = jest.fn()
+  const mockRefresh = jest.fn()
+  const mockGet = jest.fn()
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    ;(useRouter as jest.Mock).mockReturnValue({
+      push: mockPush,
+      refresh: mockRefresh,
+    })
+    ;(useSearchParams as jest.Mock).mockReturnValue({
+      get: mockGet,
+    })
+    mockGet.mockReturnValue(null)
+  })
+
+  async function renderYPaso1(getSessionResult: unknown) {
+    ;(signIn as jest.Mock).mockResolvedValue({ error: null, url: '/dashboard' })
+    ;(getSession as jest.Mock).mockResolvedValue(getSessionResult)
+    const user = userEvent.setup()
+    render(<LoginForm />)
+    await user.type(
+      screen.getByLabelText(/correo electrónico/i),
+      'test@example.com',
+    )
+    await user.type(screen.getByLabelText(/contraseña/i), 'Password123!')
+    await user.click(screen.getByRole('button', { name: /iniciar sesión/i }))
+    // Paso 2 visible: el formulario de MFA sustituye al de credenciales
+    await waitFor(() =>
+      expect(screen.getByText('Verificación en dos pasos')).toBeInTheDocument(),
+    )
+  }
+
+  it('step-1 con mfaRequired muestra el paso 2 y no redirige', async () => {
+    await renderYPaso1({ mfaRequired: true, challengeId: 'ch-1' })
+    expect(mockPush).not.toHaveBeenCalled()
+  })
+
+  it('step-2 con code válido → signIn con challengeId y redirige', async () => {
+    await renderYPaso1({ mfaRequired: true, challengeId: 'ch-1' })
+    ;(signIn as jest.Mock).mockResolvedValue({ error: null, url: '/dashboard' })
+    ;(getSession as jest.Mock).mockResolvedValue({})
+    const user = userEvent.setup()
+    await user.type(screen.getByLabelText('Código de verificación'), '123456')
+    await user.click(screen.getByRole('button', { name: 'Verificar' }))
+    await waitFor(() =>
+      expect(signIn).toHaveBeenCalledWith(
+        'credentials',
+        expect.objectContaining({
+          challengeId: 'ch-1',
+          code: '123456',
+          redirect: false,
+        }),
+      ),
+    )
+    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/dashboard'))
+  })
+
+  it('step-2 con código inválido muestra error y no redirige', async () => {
+    await renderYPaso1({ mfaRequired: true, challengeId: 'ch-1' })
+    ;(signIn as jest.Mock).mockResolvedValue({
+      error: 'CredentialsSignin',
+      url: null,
+    })
+    const user = userEvent.setup()
+    await user.type(screen.getByLabelText('Código de verificación'), '000000')
+    await user.click(screen.getByRole('button', { name: 'Verificar' }))
+    await waitFor(() =>
+      expect(
+        screen.getByText('El código no es válido. Vuelve a intentarlo.'),
+      ).toBeInTheDocument(),
+    )
+    expect(mockPush).not.toHaveBeenCalled()
+  })
+
+  it('step-2 cuando la sesión sigue mfaPending muestra error', async () => {
+    await renderYPaso1({ mfaRequired: true, challengeId: 'ch-1' })
+    ;(signIn as jest.Mock).mockResolvedValue({ error: null, url: '/dashboard' })
+    ;(getSession as jest.Mock).mockResolvedValue({
+      mfaRequired: true,
+      challengeId: 'ch-1',
+    })
+    const user = userEvent.setup()
+    await user.type(screen.getByLabelText('Código de verificación'), '123456')
+    await user.click(screen.getByRole('button', { name: 'Verificar' }))
+    await waitFor(() =>
+      expect(
+        screen.getByText('El código no es válido. Vuelve a intentarlo.'),
+      ).toBeInTheDocument(),
+    )
+    expect(mockPush).not.toHaveBeenCalled()
+  })
+
+  it('step-2 con backupCode → signIn con backupCode', async () => {
+    await renderYPaso1({ mfaRequired: true, challengeId: 'ch-1' })
+    ;(signIn as jest.Mock).mockResolvedValue({ error: null, url: '/dashboard' })
+    ;(getSession as jest.Mock).mockResolvedValue({})
+    const user = userEvent.setup()
+    await user.click(
+      screen.getByRole('button', { name: 'Usar un código de respaldo' }),
+    )
+    await user.type(screen.getByLabelText('Código de respaldo'), 'A3F9-K2M7')
+    await user.click(screen.getByRole('button', { name: 'Verificar' }))
+    await waitFor(() =>
+      expect(signIn).toHaveBeenCalledWith(
+        'credentials',
+        expect.objectContaining({
+          challengeId: 'ch-1',
+          backupCode: 'A3F9-K2M7',
+        }),
+      ),
+    )
+  })
+
+  it('step-2: cancelar hace signOut y vuelve al paso 1', async () => {
+    await renderYPaso1({ mfaRequired: true, challengeId: 'ch-1' })
+    const user = userEvent.setup()
+    await user.click(
+      screen.getByRole('button', { name: 'Volver a iniciar sesión' }),
+    )
+    expect(signOut).toHaveBeenCalledWith({ redirect: false })
+    await waitFor(() =>
+      expect(screen.getByLabelText(/correo electrónico/i)).toBeInTheDocument(),
+    )
+  })
+
+  it('step-1: getSession que lanza muestra error genérico', async () => {
+    ;(signIn as jest.Mock).mockResolvedValue({ error: null, url: '/dashboard' })
+    ;(getSession as jest.Mock).mockRejectedValue(new Error('boom'))
+    const user = userEvent.setup()
+    render(<LoginForm />)
+    await user.type(
+      screen.getByLabelText(/correo electrónico/i),
+      'test@example.com',
+    )
+    await user.type(screen.getByLabelText(/contraseña/i), 'Password123!')
+    await user.click(screen.getByRole('button', { name: /iniciar sesión/i }))
+    await waitFor(() => expect(screen.getByText('boom')).toBeInTheDocument())
   })
 })
