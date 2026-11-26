@@ -49,7 +49,7 @@ export async function logout(page: Page) {
 /**
  * Registrar nuevo usuario
  * RegisterForm real: #nombre, #apellidos, #email, #password, #confirmPassword, #termsAccepted
- * Tras el registro muestra status y redirige a /login a los 2 segundos
+ * Tras el registro muestra status y redirige a /verify-email a los 2 segundos (item 3)
  */
 export async function register(
   page: Page,

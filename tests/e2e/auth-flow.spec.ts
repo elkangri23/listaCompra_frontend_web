@@ -70,9 +70,10 @@ test.describe('Flujo de Autenticación', () => {
 
     await page.click('button[type="submit"]');
 
-    // El registro muestra mensaje de éxito y redirige a /login a los 2 segundos
+    // El registro muestra mensaje de éxito y redirige a /verify-email a los 2 segundos (item 3)
     await expect(page.locator('[role="status"]')).toBeVisible({ timeout: 5000 });
-    await page.waitForURL(/\/login/, { timeout: 10000 });
+    await page.waitForURL(/\/verify-email/, { timeout: 10000 });
+    await expect(page.locator('h1:has-text("Verifica tu correo")')).toBeVisible({ timeout: 5000 });
   });
 
   test('debe validar que las contraseñas coincidan en registro', async ({ page }) => {

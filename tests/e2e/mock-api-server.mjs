@@ -270,7 +270,9 @@ const server = http.createServer(async (req, res) => {
       state.users.push(user);
       sendJson(res, 201, {
         success: true,
-        data: { user: apiUser(user) },
+        // El backend real devuelve verificationEmailSent cuando el correo
+        // con el código se envió (item 3); el mock lo simula como enviado
+        data: { user: { ...apiUser(user), verificationEmailSent: true } },
         message: 'Usuario registrado correctamente',
         timestamp: new Date().toISOString(),
       });
