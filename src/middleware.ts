@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { auth } from '@/lib/auth/next-auth'
 
-const publicRoutes = new Set(['/', '/login', '/register', '/forgot-password'])
+const publicRoutes = new Set(['/', '/login', '/register', '/forgot-password', '/terminos'])
 const authRoutes = new Set(['/login', '/register', '/forgot-password'])
 const apiAuthPrefix = '/api/auth'
 

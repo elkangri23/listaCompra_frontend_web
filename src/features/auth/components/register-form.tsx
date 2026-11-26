@@ -29,6 +29,7 @@ export function RegisterForm() {
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null)
   const [isPending, startTransition] = React.useTransition()
   const [termsAccepted, setTermsAccepted] = React.useState(false)
+  const [termsError, setTermsError] = React.useState<string | null>(null)
 
   const handleChange = React.useCallback((event: ChangeEvent) => {
     const { name, value } = event.target
@@ -42,11 +43,24 @@ export function RegisterForm() {
     })
   }, [])
 
+  const handleTermsChange = React.useCallback((event: ChangeEvent) => {
+    setTermsAccepted(event.target.checked)
+    if (event.target.checked) {
+      setTermsError(null)
+    }
+  }, [])
+
   const handleSubmit = React.useCallback(
     (event: FormEvent) => {
       event.preventDefault()
       setStatusMessage(null)
       setErrorMessage(null)
+
+      if (!termsAccepted) {
+        setTermsError('Debes aceptar los Términos de Servicio para crear tu cuenta.')
+        return
+      }
+      setTermsError(null)
 
       const validation = registerSchema.safeParse(values)
       if (!validation.success) {
@@ -74,6 +88,7 @@ export function RegisterForm() {
             apellidos: formData.apellidos,
             email: formData.email,
             password: formData.password,
+            aceptoTerminos: termsAccepted,
           })
           setStatusMessage('Registro completado. Redirigiendo al inicio de sesión...')
           setValues({ ...initialValues })
@@ -88,7 +103,7 @@ export function RegisterForm() {
         }
       })
     },
-    [values, router],
+    [values, router, termsAccepted],
   )
 
   return (
@@ -225,14 +240,29 @@ export function RegisterForm() {
             id="termsAccepted"
             type="checkbox"
             checked={termsAccepted}
-            onChange={(e: any) => setTermsAccepted(e.target.checked)}
+            onChange={handleTermsChange}
             className="h-5 w-5 rounded border-[#dbdfe6] border-2 bg-transparent text-[#4387f4] checked:bg-[#4387f4] checked:border-[#4387f4] checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-[#dbdfe6] focus:outline-none"
           />
           <span className="text-[#111418] text-base font-normal leading-normal">
-            Acepto los Términos de Servicio
+            Acepto los{' '}
+            <Link
+              href="/terminos"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#4387f4] underline"
+              onClick={(event) => event.stopPropagation()}
+            >
+              Términos de Servicio
+            </Link>
           </span>
         </label>
       </div>
+
+      {termsError ? (
+        <p id="terms-error" role="alert" className="text-sm text-red-600 px-4">
+          {termsError}
+        </p>
+      ) : null}
 
       {errorMessage ? (
         <p role="alert" className="text-sm text-red-600 px-4 py-2">

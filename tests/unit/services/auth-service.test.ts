@@ -281,6 +281,7 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
         apellidos: '  Doe  ',
         email: '  JOHN@EXAMPLE.COM  ',
         password: 'SecurePass123!',
+        aceptoTerminos: true,
       }
 
       ;(axiosInstance.post as jest.Mock).mockResolvedValue({
@@ -296,6 +297,7 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
         apellidos: 'Doe', // sin espacios
         email: 'john@example.com', // normalizado
         password: 'SecurePass123!',
+        aceptoTerminos: true,
       })
     })
 
@@ -306,6 +308,7 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
         apellidos: 'Doe',
         email: 'existing@example.com',
         password: 'Password123!',
+        aceptoTerminos: true,
       }
 
       ;(axiosInstance.post as jest.Mock).mockRejectedValue(
@@ -323,6 +326,7 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
         apellidos: 'Doe',
         email: 'john@example.com',
         password: '123', // contraseña muy débil
+        aceptoTerminos: true,
       }
 
       ;(axiosInstance.post as jest.Mock).mockRejectedValue(

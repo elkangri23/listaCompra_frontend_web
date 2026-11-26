@@ -7,7 +7,7 @@
  * Mock: auth-service, next/navigation router
  */
 
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/navigation';
 import { RegisterForm } from '@/features/auth/components/register-form';
@@ -62,6 +62,14 @@ describe('RegisterForm (CRÍTICO - 100% coverage)', () => {
 
       const submitButton = screen.getByRole('button', { name: /crear cuenta/i });
       expect(submitButton).toBeDisabled();
+    });
+
+    it('debe enlazar a la página de Términos de Servicio', () => {
+      render(<RegisterForm />);
+
+      const termsLink = screen.getByRole('link', { name: /términos de servicio/i });
+      expect(termsLink).toHaveAttribute('href', '/terminos');
+      expect(termsLink).toHaveAttribute('target', '_blank');
     });
 
     it('debe mostrar hint de contraseña', () => {
@@ -209,8 +217,25 @@ describe('RegisterForm (CRÍTICO - 100% coverage)', () => {
           apellidos: 'García',
           email: 'juan@example.com',
           password: 'password123',
+          aceptoTerminos: true,
         });
       });
+    });
+
+    it('debe mostrar error si se envía sin aceptar los términos', async () => {
+      const user = userEvent.setup({ delay: null });
+      const { container } = render(<RegisterForm />);
+
+      await user.type(screen.getByLabelText(/nombre/i), 'Juan');
+      await user.type(screen.getByLabelText(/apellidos/i), 'García');
+      await user.type(screen.getByLabelText(/correo electrónico/i), 'juan@example.com');
+      await user.type(screen.getByLabelText(/^contraseña$/i), 'password123');
+      await user.type(screen.getByLabelText(/confirmar contraseña/i), 'password123');
+
+      fireEvent.submit(container.querySelector('form') as HTMLFormElement);
+
+      expect(await screen.findByText(/debes aceptar los términos de servicio/i)).toBeInTheDocument();
+      expect(registerUser).not.toHaveBeenCalled();
     });
 
     it('debe mostrar mensaje de éxito después de registro', async () => {

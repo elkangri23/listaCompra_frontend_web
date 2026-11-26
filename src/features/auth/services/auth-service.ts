@@ -172,6 +172,7 @@ export async function registerUser(request: RegisterRequest): Promise<void> {
       apellidos: request.apellidos.trim(),
       email: normalizeEmail(request.email),
       password: request.password,
+      aceptoTerminos: request.aceptoTerminos,
     }
     await axiosInstance.post('/auth/register', payload)
   } catch (error) {

@@ -96,6 +96,7 @@ export interface RegisterRequest {
   apellidos: string
   email: string
   password: string
+  aceptoTerminos: boolean
 }
 
 export interface ForgotPasswordRequest {
