@@ -7,7 +7,60 @@ import type {
   CreateListFromBlueprintResponseDto,
   BlueprintFiltersDto,
   PaginatedBlueprintsDto,
+  BlueprintSearchResponseDto,
 } from '@/types/dtos/blueprint';
+
+/**
+ * Buscar plantillas por nombre o descripción (GET /blueprints/buscar).
+ * A diferencia del filtro `search` de la lista, busca en nombre Y
+ * descripción, en las plantillas propias Y en las públicas a la vez.
+ * El backend responde con campos en español (`blueprints`, `pagina`...):
+ * se mapean al DTO del frontend.
+ */
+interface BackendBlueprintSearchResponse {
+  blueprints: {
+    id: string;
+    nombre: string;
+    descripcion?: string;
+    publico: boolean;
+    productosCount: number;
+    fechaCreacion: string;
+    fechaActualizacion: string;
+    creadoPorId: string;
+  }[];
+  termino: string;
+  pagina: number;
+  limite: number;
+  total: number;
+  totalPages: number;
+}
+
+const searchBlueprints = async (
+  termino: string,
+  page = 1,
+  limit = 20,
+): Promise<BlueprintSearchResponseDto> => {
+  const response = await axiosInstance.get<BackendBlueprintSearchResponse>(
+    `/blueprints/buscar?q=${encodeURIComponent(termino)}&pagina=${page}&limite=${limit}`,
+  );
+  const data = response.data;
+  return {
+    results: data.blueprints.map(b => ({
+      id: b.id,
+      nombre: b.nombre,
+      descripcion: b.descripcion,
+      esPublico: b.publico,
+      productosCount: b.productosCount,
+      fechaCreacion: b.fechaCreacion,
+      creadoPorId: b.creadoPorId,
+    })),
+    termino: data.termino,
+    total: data.total,
+    page: data.pagina,
+    limit: data.limite,
+    totalPages: data.totalPages,
+  };
+};
 
 /**
  * Obtener todos los blueprints del usuario (con filtros opcionales)
@@ -126,4 +179,5 @@ export const blueprintService = {
   deleteBlueprint,
   createListFromBlueprint,
   createBlueprintFromList,
+  searchBlueprints,
 };

@@ -7,6 +7,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AISettingsForm } from '@/features/settings/components/ai-settings-form';
+import { CacheAnalyticsSection } from '@/features/settings/components/cache-analytics-section';
 
 export default function SettingsPage() {
   return (
@@ -23,6 +24,19 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent>
           <AISettingsForm />
+        </CardContent>
+      </Card>
+
+      <Card className="max-w-2xl mt-6">
+        <CardHeader>
+          <CardTitle>Caché de IA</CardTitle>
+          <CardDescription>
+            Analítica de la caché de Redis en los últimos 5 minutos: aciertos,
+            operaciones y llamadas a la API evitadas (solo administradores).
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <CacheAnalyticsSection />
         </CardContent>
       </Card>
     </main>

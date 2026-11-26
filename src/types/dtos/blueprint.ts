@@ -68,3 +68,26 @@ export interface PaginatedBlueprintsDto {
   limit: number;
   totalPages: number;
 }
+
+/**
+ * Resultado de la búsqueda del backend (GET /blueprints/buscar):
+ * resumen plano con campos en español, distinto del BlueprintDto.
+ */
+export interface BlueprintSearchResultDto {
+  id: string;
+  nombre: string;
+  descripcion?: string;
+  esPublico: boolean;
+  productosCount: number;
+  fechaCreacion: string;
+  creadoPorId: string;
+}
+
+export interface BlueprintSearchResponseDto {
+  results: BlueprintSearchResultDto[];
+  termino: string;
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}

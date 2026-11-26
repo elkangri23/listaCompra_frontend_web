@@ -141,6 +141,68 @@ describe('blueprintService (CRÍTICO)', () => {
     });
   });
 
+  describe('searchBlueprints', () => {
+    it('mapea la respuesta del backend (campos en español) al DTO del frontend', async () => {
+      (axiosInstance.get as jest.Mock).mockResolvedValue({
+        data: {
+          blueprints: [
+            {
+              id: 'bp-9',
+              nombre: 'Compra semanal',
+              descripcion: 'La de cada semana',
+              publico: true,
+              productosCount: 12,
+              fechaCreacion: '2026-11-01T10:00:00.000Z',
+              fechaActualizacion: '2026-11-02T10:00:00.000Z',
+              creadoPorId: 'u-2',
+            },
+          ],
+          termino: 'semanal',
+          pagina: 1,
+          limite: 20,
+          total: 1,
+          totalPages: 1,
+        },
+      });
+
+      const result = await blueprintService.searchBlueprints('semanal');
+
+      expect(axiosInstance.get).toHaveBeenCalledWith(
+        '/blueprints/buscar?q=semanal&pagina=1&limite=20',
+      );
+      expect(result).toEqual({
+        results: [
+          {
+            id: 'bp-9',
+            nombre: 'Compra semanal',
+            descripcion: 'La de cada semana',
+            esPublico: true,
+            productosCount: 12,
+            fechaCreacion: '2026-11-01T10:00:00.000Z',
+            creadoPorId: 'u-2',
+          },
+        ],
+        termino: 'semanal',
+        total: 1,
+        page: 1,
+        limit: 20,
+        totalPages: 1,
+      });
+    });
+
+    it('codifica el término y respeta la página pedida', async () => {
+      (axiosInstance.get as jest.Mock).mockResolvedValue({
+        data: { blueprints: [], termino: 'a b', pagina: 2, limite: 20, total: 0, totalPages: 0 },
+      });
+
+      await blueprintService.searchBlueprints('a b', 2);
+
+      expect(axiosInstance.get).toHaveBeenCalledWith(
+        '/blueprints/buscar?q=a%20b&pagina=2&limite=20',
+      );
+    });
+  });
+
   describe('createBlueprintFromList', () => {
     it('debe obtener los productos, transformarlos y crear el blueprint', async () => {
       (axiosInstance.get as jest.Mock).mockResolvedValue({

@@ -32,6 +32,19 @@ export const useBlueprintById = (id: string) => {
 };
 
 /**
+ * Hook para buscar plantillas por nombre o descripción (propias + públicas).
+ * Solo se ejecuta con 2 o más caracteres.
+ */
+export const useSearchBlueprints = (termino: string, page = 1) => {
+  return useQuery({
+    queryKey: ['blueprints', 'buscar', termino, page],
+    queryFn: () => blueprintService.searchBlueprints(termino, page),
+    enabled: termino.trim().length >= 2,
+    staleTime: 60 * 1000,
+  });
+};
+
+/**
  * Hook para crear un blueprint
  */
 export const useCreateBlueprint = () => {

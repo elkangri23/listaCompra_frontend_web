@@ -1,13 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { FileText, Search, Filter, Plus, Loader2 } from 'lucide-react';
+import { FileText, Search, Filter, Plus, Loader2, X } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useBlueprints } from '@/features/blueprints/hooks/use-blueprints';
+import { useDebounce } from '@/hooks/use-debounce';
+import { useBlueprints, useSearchBlueprints } from '@/features/blueprints/hooks/use-blueprints';
 import { BlueprintCard } from '@/features/blueprints/components/blueprint-card';
+import { BlueprintSearchResultCard } from '@/features/blueprints/components/blueprint-search-result-card';
 import type { BlueprintDto } from '@/types/dtos/blueprint';
 import styles from './templates.module.css';
 
@@ -15,6 +18,14 @@ export default function TemplatesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'mis-plantillas' | 'publicas'>('mis-plantillas');
   const [selectedEtiqueta, setSelectedEtiqueta] = useState<string | undefined>();
+  const { data: session } = useSession();
+
+  // Con 2 o más caracteres, la búsqueda usa el endpoint /blueprints/buscar:
+  // busca en nombre Y descripción, en las plantillas propias Y públicas.
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const isSearching = debouncedSearchTerm.trim().length >= 2;
+  const { data: searchResults, isLoading: isLoadingSearch } =
+    useSearchBlueprints(debouncedSearchTerm);
 
   const { data: misPlantillas, isLoading: isLoadingMias } = useBlueprints({
     search: searchTerm,
@@ -117,6 +128,49 @@ export default function TemplatesPage() {
           </TabsTrigger>
         </TabsList>
 
+        {isSearching ? (
+          <div className="mt-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-medium text-gray-900">
+                Resultados para «{debouncedSearchTerm.trim()}»
+                {searchResults && (
+                  <span className="text-gray-500 font-normal"> ({searchResults.total})</span>
+                )}
+              </h3>
+              <Button variant="ghost" size="sm" onClick={() => setSearchTerm('')}>
+                <X className="h-4 w-4 mr-1" />
+                Limpiar búsqueda
+              </Button>
+            </div>
+            {isLoadingSearch ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                <span className="ml-3 text-gray-600">Buscando plantillas...</span>
+              </div>
+            ) : searchResults && searchResults.results.length > 0 ? (
+              <div className="space-y-3">
+                {searchResults.results.map((result) => (
+                  <BlueprintSearchResultCard
+                    key={result.id}
+                    result={result}
+                    isMine={session?.user?.id === result.creadoPorId}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Sin resultados para «{debouncedSearchTerm.trim()}»
+                </h3>
+                <p className="text-gray-600">
+                  Prueba con otro término o revisa las pestañas de plantillas
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
         <TabsContent value="mis-plantillas" className="mt-6">
           {isLoadingMias ? (
             <div className="flex items-center justify-center py-12">
@@ -170,6 +224,8 @@ export default function TemplatesPage() {
             </div>
           )}
         </TabsContent>
+          </>
+        )}
       </Tabs>
     </div>
   );

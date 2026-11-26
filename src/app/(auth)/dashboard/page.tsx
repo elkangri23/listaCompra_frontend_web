@@ -7,6 +7,7 @@ import { useLists, useDeleteList } from '@/features/lists/hooks/use-lists'
 import { useProducts } from '@/features/products/hooks/use-products'
 import { OccasionListDialog } from '@/features/ai/components/occasion-list-dialog'
 import { PurchaseHabitsSection } from '@/features/ai/components/purchase-habits-section'
+import { SystemStatusSection } from '@/features/system-status/components/system-status-section'
 import { Button } from '@/components/ui/button'
 import styles from './dashboard.module.css'
 
@@ -163,6 +164,8 @@ export default function DashboardPage() {
       )}
 
       <PurchaseHabitsSection />
+
+      <SystemStatusSection />
 
       <OccasionListDialog
         open={occasionDialogOpen}
