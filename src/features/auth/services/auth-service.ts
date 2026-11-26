@@ -8,6 +8,7 @@ import type {
   AuthUser,
   ApiUser,
   ApiLoginResponse,
+  ApiLoginMfaRequiredResponse,
 } from '@/features/auth/types'
 import type { ProfileFormValues } from '@/features/auth/validators/profile-schema'
 import type { ChangePasswordFormValues } from '@/features/auth/validators/password-schema'
@@ -20,10 +21,16 @@ export class AuthApiError extends Error {
   }
 }
 
-function buildAuthApiError(error: unknown, fallbackMessage: string): AuthApiError {
+function buildAuthApiError(
+  error: unknown,
+  fallbackMessage: string,
+): AuthApiError {
   if (isAxiosError(error)) {
-    const data = error.response?.data as { message?: string; error?: string } | undefined
-    const message = data?.message ?? data?.error ?? error.message ?? fallbackMessage
+    const data = error.response?.data as
+      | { message?: string; error?: string }
+      | undefined
+    const message =
+      data?.message ?? data?.error ?? error.message ?? fallbackMessage
     return new AuthApiError(message || fallbackMessage)
   }
   if (error instanceof Error) {
@@ -37,56 +44,87 @@ function normalizeEmail(email: string): string {
 }
 
 /**
- * Performs user login and returns the authentication token.
+ * Resultado del paso 1 del login: con tokens (usuario sin TOTP) o
+ * mfaRequired (usuario con TOTP — el login continúa en /auth/login/mfa).
  */
-export async function login(request: LoginRequest): Promise<{ token: string; user: ApiUser }> {
+export type LoginStep1Result =
+  | { token: string; user: ApiUser }
+  | { mfaRequired: true; challengeId: string }
+
+/**
+ * Performs user login (paso 1) and discrimina entre sesión completa
+ * y challenge MFA pendiente.
+ */
+export async function login(request: LoginRequest): Promise<LoginStep1Result> {
   try {
     const payload = {
       email: normalizeEmail(request.email),
       password: request.password,
     }
-    
+
     console.log('🔵 [auth-service] Login attempt:', {
       email: payload.email,
       passwordLength: payload.password.length,
       baseURL: axiosInstance.defaults.baseURL,
-      endpoint: '/auth/login'
+      endpoint: '/auth/login',
     })
-    
-    const { data: response, status } = await axiosInstance.post<ApiLoginResponse>('/auth/login', payload)
-    
+
+    const { data: response, status } =
+      await axiosInstance.post<ApiLoginResponse>('/auth/login', payload)
+
     console.log('🟢 [auth-service] Login response:', {
       status,
       success: response.success,
       hasTokens: !!response.data?.tokens,
       hasAccessToken: !!response.data?.tokens?.accessToken,
       hasUser: !!response.data?.user,
-      responseKeys: Object.keys(response)
+      responseKeys: Object.keys(response),
     })
-    
-    if (!response.success || !response.data?.tokens?.accessToken) {
+
+    if (!response.success) {
       console.error('🔴 [auth-service] Invalid response structure:', response)
       throw new Error('La respuesta de la API no contiene un token válido.')
     }
-    
+
+    // Usuario con TOTP activo: el paso 1 NO entrega tokens, devuelve challengeId
+    const data = response.data as unknown as ApiLoginResponse['data'] &
+      ApiLoginMfaRequiredResponse['data']
+    if (data.mfaRequired === true && data.mfa) {
+      console.log('✅ [auth-service] Login requiere MFA (paso 2)')
+      return {
+        mfaRequired: true,
+        challengeId: data.mfa.challengeId,
+      }
+    }
+
+    if (!response.data?.tokens?.accessToken) {
+      console.error('🔴 [auth-service] Invalid response structure:', response)
+      throw new Error('La respuesta de la API no contiene un token válido.')
+    }
+
     console.log('✅ [auth-service] Login successful')
-    
+
     // Return the expected format for NextAuth
     return {
       token: response.data.tokens.accessToken,
-      user: response.data.user
+      user: response.data.user,
     }
   } catch (error) {
     console.error('🔴 [auth-service] Login error:', {
       error,
       isAxiosError: isAxiosError(error),
-      response: isAxiosError(error) ? {
-        status: error.response?.status,
-        data: error.response?.data,
-        headers: error.response?.headers
-      } : undefined
+      response: isAxiosError(error)
+        ? {
+            status: error.response?.status,
+            data: error.response?.data,
+            headers: error.response?.headers,
+          }
+        : undefined,
     })
-    throw buildAuthApiError(error, 'No se pudo iniciar sesión. Verifica tus credenciales.')
+    throw buildAuthApiError(
+      error,
+      'No se pudo iniciar sesión. Verifica tus credenciales.',
+    )
   }
 }
 
@@ -95,21 +133,31 @@ export async function login(request: LoginRequest): Promise<{ token: string; use
  * NOTE: The API is contradictory. /auth/login returns a 'token', but /auth/refresh-token
  * expects a 'refreshToken'. We are assuming the token from login should be used here.
  */
-export async function refreshToken(request: RefreshTokenRequest): Promise<{ token: string }> {
+export async function refreshToken(
+  request: RefreshTokenRequest,
+): Promise<{ token: string }> {
   if (!request.refreshToken) {
     throw new AuthApiError('No se encontró el token para renovar la sesión.')
   }
 
   try {
-    const { data } = await axiosInstance.post<{ token: string }>('/auth/refresh-token', {
-      refreshToken: request.refreshToken,
-    })
+    const { data } = await axiosInstance.post<{ token: string }>(
+      '/auth/refresh-token',
+      {
+        refreshToken: request.refreshToken,
+      },
+    )
     if (typeof data.token !== 'string') {
-      throw new Error('La respuesta de la API no contiene un token de refresco válido.')
+      throw new Error(
+        'La respuesta de la API no contiene un token de refresco válido.',
+      )
     }
     return data
   } catch (error) {
-    throw buildAuthApiError(error, 'No se pudo renovar la sesión. Inicia sesión nuevamente.')
+    throw buildAuthApiError(
+      error,
+      'No se pudo renovar la sesión. Inicia sesión nuevamente.',
+    )
   }
 }
 
@@ -125,18 +173,26 @@ export async function registerUser(request: RegisterRequest): Promise<void> {
     }
     await axiosInstance.post('/auth/register', payload)
   } catch (error) {
-    throw buildAuthApiError(error, 'No se pudo completar el registro. Inténtalo nuevamente.')
+    throw buildAuthApiError(
+      error,
+      'No se pudo completar el registro. Inténtalo nuevamente.',
+    )
   }
 }
 
-export async function requestPasswordReset(request: ForgotPasswordRequest): Promise<void> {
+export async function requestPasswordReset(
+  request: ForgotPasswordRequest,
+): Promise<void> {
   try {
     const payload = {
       email: normalizeEmail(request.email),
     }
     await axiosInstance.post('/auth/forgot-password', payload)
   } catch (error) {
-    throw buildAuthApiError(error, 'No se pudo enviar el enlace de recuperación.')
+    throw buildAuthApiError(
+      error,
+      'No se pudo enviar el enlace de recuperación.',
+    )
   }
 }
 
@@ -145,11 +201,16 @@ export async function getCurrentUser(): Promise<AuthUser> {
     const { data } = await axiosInstance.get('/users/me')
     return data as AuthUser // Assuming the API returns the user structure directly
   } catch (error) {
-    throw buildAuthApiError(error, 'No se pudo obtener la información del usuario.')
+    throw buildAuthApiError(
+      error,
+      'No se pudo obtener la información del usuario.',
+    )
   }
 }
 
-export async function updateProfile(values: ProfileFormValues): Promise<AuthUser> {
+export async function updateProfile(
+  values: ProfileFormValues,
+): Promise<AuthUser> {
   try {
     const payload = {
       name: values.nombre.trim(),
@@ -159,11 +220,16 @@ export async function updateProfile(values: ProfileFormValues): Promise<AuthUser
     const { data } = await axiosInstance.patch('/users/me', payload)
     return data as AuthUser
   } catch (error) {
-    throw buildAuthApiError(error, 'No se pudo actualizar el perfil. Inténtalo nuevamente.')
+    throw buildAuthApiError(
+      error,
+      'No se pudo actualizar el perfil. Inténtalo nuevamente.',
+    )
   }
 }
 
-export async function changePassword(values: ChangePasswordFormValues): Promise<void> {
+export async function changePassword(
+  values: ChangePasswordFormValues,
+): Promise<void> {
   try {
     const payload = {
       currentPassword: values.currentPassword,
@@ -171,6 +237,9 @@ export async function changePassword(values: ChangePasswordFormValues): Promise<
     }
     await axiosInstance.patch('/users/me/password', payload)
   } catch (error) {
-    throw buildAuthApiError(error, 'No se pudo cambiar la contraseña. Verifica tu contraseña actual.')
+    throw buildAuthApiError(
+      error,
+      'No se pudo cambiar la contraseña. Verifica tu contraseña actual.',
+    )
   }
 }

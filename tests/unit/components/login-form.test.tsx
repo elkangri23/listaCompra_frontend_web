@@ -15,6 +15,9 @@ import { LoginForm } from '@/features/auth/components/login-form'
 
 jest.mock('next-auth/react', () => ({
   signIn: jest.fn(),
+  // Por defecto sin MFA pendiente (usuarios sin TOTP)
+  getSession: jest.fn().mockResolvedValue({}),
+  signOut: jest.fn().mockResolvedValue(undefined),
 }))
 
 jest.mock('next/navigation', () => ({

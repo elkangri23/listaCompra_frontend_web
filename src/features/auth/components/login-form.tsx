@@ -1,11 +1,15 @@
 'use client'
 
-import { signIn } from 'next-auth/react'
+import { getSession, signIn, signOut } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 import Link from 'next/link'
 
-import { loginSchema, type LoginSchema } from '@/features/auth/validators/schemas'
+import {
+  loginSchema,
+  type LoginSchema,
+} from '@/features/auth/validators/schemas'
+import { MfaChallengeForm } from '@/features/auth/components/mfa-challenge-form'
 
 type LoginFieldErrors = Partial<Record<keyof LoginSchema, string>>
 
@@ -14,10 +18,17 @@ type FormEvent = React.FormEvent<HTMLFormElement>
 type ChangeEvent = React.ChangeEvent<HTMLInputElement>
 
 export function LoginForm() {
-  const [values, setValues] = React.useState<LoginSchema>({ email: '', password: '' })
+  const [values, setValues] = React.useState<LoginSchema>({
+    email: '',
+    password: '',
+  })
   const [fieldErrors, setFieldErrors] = React.useState<LoginFieldErrors>({})
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null)
   const [isPending, startTransition] = React.useTransition()
+  // Login dos pasos: challengeId ≠ null → mostrar el paso 2 (MFA)
+  const [mfaChallengeId, setMfaChallengeId] = React.useState<string | null>(
+    null,
+  )
 
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -28,9 +39,15 @@ export function LoginForm() {
     }
 
     try {
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://localhost'
+      const origin =
+        typeof window !== 'undefined'
+          ? window.location.origin
+          : 'https://localhost'
       const parsed = new URL(rawCallbackUrl, origin)
-      if (typeof window !== 'undefined' && parsed.origin !== window.location.origin) {
+      if (
+        typeof window !== 'undefined' &&
+        parsed.origin !== window.location.origin
+      ) {
         return '/dashboard'
       }
 
@@ -42,7 +59,7 @@ export function LoginForm() {
 
   const handleChange = React.useCallback((event: ChangeEvent) => {
     const { name, value } = event.target
-    setValues((previous) => ({ ...previous, [name]: value } as LoginSchema))
+    setValues((previous) => ({ ...previous, [name]: value }) as LoginSchema)
 
     setFieldErrors((previous) => {
       if (!previous[name as keyof LoginSchema]) {
@@ -94,10 +111,22 @@ export function LoginForm() {
             return
           }
 
+          // El signIn no devuelve la sesión: pedirla y detectar el estado intermedio
+          const session = await getSession()
+          if (session?.mfaRequired) {
+            setMfaChallengeId(
+              (session as { challengeId?: string }).challengeId ?? null,
+            )
+            return
+          }
+
           router.push(result.url ?? callbackUrl)
           router.refresh()
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'No se pudo iniciar sesión. Inténtalo nuevamente.'
+          const message =
+            error instanceof Error
+              ? error.message
+              : 'No se pudo iniciar sesión. Inténtalo nuevamente.'
           setErrorMessage(message)
         }
       })
@@ -105,14 +134,75 @@ export function LoginForm() {
     [callbackUrl, router, values],
   )
 
+  const handleMfaSubmit = React.useCallback(
+    (mfaCredentials: { code?: string; backupCode?: string }) => {
+      setErrorMessage(null)
+      startTransition(async () => {
+        try {
+          const result = await signIn('credentials', {
+            challengeId: mfaChallengeId ?? '',
+            ...(mfaCredentials.code ? { code: mfaCredentials.code } : {}),
+            ...(mfaCredentials.backupCode
+              ? { backupCode: mfaCredentials.backupCode }
+              : {}),
+            redirect: false,
+            callbackUrl,
+          })
+
+          if (!result || result.error) {
+            setErrorMessage('El código no es válido. Vuelve a intentarlo.')
+            return
+          }
+
+          const session = await getSession()
+          if (session?.mfaRequired) {
+            setErrorMessage('El código no es válido. Vuelve a intentarlo.')
+            return
+          }
+
+          router.push(result.url ?? callbackUrl)
+          router.refresh()
+        } catch {
+          setErrorMessage(
+            'No se pudo verificar el código. Inténtalo nuevamente.',
+          )
+        }
+      })
+    },
+    [callbackUrl, mfaChallengeId, router],
+  )
+
+  const handleMfaCancel = React.useCallback(async () => {
+    setMfaChallengeId(null)
+    setErrorMessage(null)
+    // Aborta la sesión intermedio mfaPending para evitar un "zombie"
+    await signOut({ redirect: false })
+  }, [])
+
+  // Render condicional: paso 2 cuando hay challenge pendiente
+  if (mfaChallengeId !== null) {
+    return (
+      <MfaChallengeForm
+        onSubmit={handleMfaSubmit}
+        onCancel={handleMfaCancel}
+        isPending={isPending}
+        errorMessage={errorMessage}
+      />
+    )
+  }
+
   return (
     <form noValidate onSubmit={handleSubmit}>
       <div className="mt-8 px-4">
-        <h2 className="text-[#111418] text-lg font-bold leading-normal mb-4">Seguridad</h2>
+        <h2 className="text-[#111418] text-lg font-bold leading-normal mb-4">
+          Seguridad
+        </h2>
 
         <div className="flex w-full max-w-[480px] flex-wrap items-end gap-4 py-3">
           <label htmlFor="email" className="flex flex-col min-w-40 flex-1">
-            <span className="text-sm font-medium text-[#111418] mb-2">Correo electrónico</span>
+            <span className="text-sm font-medium text-[#111418] mb-2">
+              Correo electrónico
+            </span>
             <input
               id="email"
               className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
@@ -128,13 +218,19 @@ export function LoginForm() {
           </label>
         </div>
         {fieldErrors.email ? (
-          <p id="email-error" role="alert" className="text-sm text-red-600 px-4">
+          <p
+            id="email-error"
+            role="alert"
+            className="text-sm text-red-600 px-4"
+          >
             {fieldErrors.email}
           </p>
         ) : null}
         <div className="flex w-full max-w-[480px] flex-wrap items-end gap-4 py-3">
           <label htmlFor="password" className="flex flex-col min-w-40 flex-1">
-            <span className="text-sm font-medium text-[#111418] mb-2">Contraseña</span>
+            <span className="text-sm font-medium text-[#111418] mb-2">
+              Contraseña
+            </span>
             <input
               id="password"
               className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
@@ -145,12 +241,18 @@ export function LoginForm() {
               type="password"
               autoComplete="current-password"
               aria-invalid={fieldErrors.password ? 'true' : 'false'}
-              aria-describedby={fieldErrors.password ? 'password-error' : undefined}
+              aria-describedby={
+                fieldErrors.password ? 'password-error' : undefined
+              }
             />
           </label>
         </div>
         {fieldErrors.password ? (
-          <p id="password-error" role="alert" className="text-sm text-red-600 px-4">
+          <p
+            id="password-error"
+            role="alert"
+            className="text-sm text-red-600 px-4"
+          >
             {fieldErrors.password}
           </p>
         ) : null}
@@ -168,12 +270,30 @@ export function LoginForm() {
           className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
         >
           {isPending && (
-            <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <svg
+              className="animate-spin h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
           )}
-          <span className="truncate">{isPending ? 'Iniciando sesión…' : 'Iniciar Sesión'}</span>
+          <span className="truncate">
+            {isPending ? 'Iniciando sesión…' : 'Iniciar Sesión'}
+          </span>
         </button>
       </div>
       <p className="text-[#60708a] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center w-full max-w-[480px]">

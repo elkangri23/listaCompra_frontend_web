@@ -9,6 +9,8 @@ declare module 'next-auth' {
   interface Session {
     accessToken?: string
     error?: string
+    /** true en el estado intermedio: el login necesita el paso MFA */
+    mfaRequired?: boolean
     user: DefaultSession['user'] & {
       id: string
       roles: string[]
@@ -21,6 +23,9 @@ declare module 'next-auth' {
   interface User {
     token?: string
     user?: ApiLoginResponse['data']['user']
+    /** Token intermedio del paso 1 cuando el usuario tiene TOTP activo */
+    mfaPending?: boolean
+    challengeId?: string
   }
 }
 

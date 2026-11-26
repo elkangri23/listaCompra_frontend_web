@@ -44,3 +44,24 @@ export const forgotPasswordSchema = z.object({
 export type LoginSchema = z.infer<typeof loginSchema>
 export type RegisterSchema = z.infer<typeof registerSchema>
 export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>
+
+/** Paso 2 del login dos fases: challengeId + código TOTP XOR código de respaldo */
+export const mfaStepSchema = z
+  .object({
+    challengeId: z.string().uuid('Challenge inválido'),
+    code: z
+      .string()
+      .regex(/^\d{6}$/, 'El código debe tener 6 dígitos')
+      .optional(),
+    backupCode: z
+      .string()
+      .min(6, 'El código de respaldo debe tener al menos 6 caracteres')
+      .max(12)
+      .optional(),
+  })
+  .refine((data) => !!data.code !== !!data.backupCode, {
+    message: 'Introduce un código TOTP o de respaldo, pero no ambos',
+    path: ['code'],
+  })
+
+export type MfaStepSchema = z.infer<typeof mfaStepSchema>
