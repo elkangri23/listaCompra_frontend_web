@@ -33,6 +33,25 @@ const callbacks: NextAuthConfig['callbacks'] = {
       }
     }
 
+    // Paso 1 con correo sin verificar (item 3): token intermedio — NO contiene accessToken
+    if (user && 'emailNotVerified' in user) {
+      return {
+        ...token,
+        emailNotVerified: true,
+        email: user.email,
+        emailNotVerifiedExp: Date.now() + 15 * 60 * 1000,
+      }
+    }
+
+    // El paso intermedio de verificación expiró (15 min): Auth.js v5 — devolver token vacío INVALIDA la sesión
+    if (
+      token.emailNotVerified &&
+      (!token.emailNotVerifiedExp ||
+        Date.now() > (token.emailNotVerifiedExp as number))
+    ) {
+      return {}
+    }
+
     // El paso 2 expiró (5 min): Auth.js v5 — devolver token vacío INVALIDA la sesión
     if (
       token.mfaPending &&
@@ -120,6 +139,10 @@ const callbacks: NextAuthConfig['callbacks'] = {
     if (token.mfaPending && !token.accessToken) {
       session.mfaRequired = true
     }
+    // Estado intermedio de verificación de correo (sin accessToken, item 3)
+    if (token.emailNotVerified && !token.accessToken) {
+      session.emailNotVerified = true
+    }
     if (token.error) {
       session.error = token.error as string
     }
@@ -204,6 +227,18 @@ export const authConfig: NextAuthConfig = {
           if ('mfaRequired' in authResponse && authResponse.mfaRequired) {
             console.log('Login requires MFA — returning intermediate token.')
             return { mfaPending: true, challengeId: authResponse.challengeId }
+          }
+
+          // Cuenta sin verificar (item 3): devolver token INTERMEDIO (emailNotVerified).
+          // El jwt callback lo persiste con TTL de 15 min y session.emailNotVerified lo expone.
+          if (
+            'emailNotVerified' in authResponse &&
+            authResponse.emailNotVerified
+          ) {
+            console.log(
+              'Login requires email verification — returning intermediate token.',
+            )
+            return { emailNotVerified: true, email: authResponse.email }
           }
 
           if (

@@ -269,9 +269,9 @@ describe('RegisterForm (CRÍTICO - 100% coverage)', () => {
       });
     });
 
-    it('debe redirigir al login después de registro exitoso', async () => {
+    it('debe redirigir a /verify-email después de registro exitoso', async () => {
       const user = userEvent.setup({ delay: null });
-      (registerUser as jest.Mock).mockResolvedValue({ success: true });
+      (registerUser as jest.Mock).mockResolvedValue({ verificationEmailSent: true });
 
       render(<RegisterForm />);
 
@@ -295,7 +295,40 @@ describe('RegisterForm (CRÍTICO - 100% coverage)', () => {
       jest.advanceTimersByTime(2000);
 
       await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith('/login');
+        expect(mockPush).toHaveBeenCalledWith(
+          '/verify-email?email=juan%40example.com&sent=1',
+        );
+      });
+    });
+
+    it('debe redirigir a /verify-email con sent=0 cuando el correo no se envió', async () => {
+      const user = userEvent.setup({ delay: null });
+      (registerUser as jest.Mock).mockResolvedValue({ verificationEmailSent: false });
+
+      render(<RegisterForm />);
+
+      await user.type(screen.getByLabelText(/nombre/i), 'Juan');
+      await user.type(screen.getByLabelText(/apellidos/i), 'García');
+      await user.type(screen.getByLabelText(/correo electrónico/i), 'juan@example.com');
+      await user.type(screen.getByLabelText(/^contraseña$/i), 'password123');
+      await user.type(screen.getByLabelText(/confirmar contraseña/i), 'password123');
+
+      const termsCheckbox = screen.getByRole('checkbox', { name: /acepto los términos/i });
+      await user.click(termsCheckbox);
+
+      const submitButton = screen.getByRole('button', { name: /crear cuenta/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByRole('status')).toBeInTheDocument();
+      });
+
+      jest.advanceTimersByTime(2000);
+
+      await waitFor(() => {
+        expect(mockPush).toHaveBeenCalledWith(
+          '/verify-email?email=juan%40example.com&sent=0',
+        );
       });
     });
 

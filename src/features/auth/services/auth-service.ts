@@ -9,6 +9,11 @@ import type {
   ApiUser,
   ApiLoginResponse,
   ApiLoginMfaRequiredResponse,
+  ApiLoginEmailNotVerifiedResponse,
+  ApiRegisterResponse,
+  VerifyEmailRequest,
+  VerifyEmailResponse,
+  ResendVerificationCodeResponse,
 } from '@/features/auth/types'
 import type { ProfileFormValues } from '@/features/auth/validators/profile-schema'
 import type { ChangePasswordFormValues } from '@/features/auth/validators/password-schema'
@@ -44,12 +49,14 @@ function normalizeEmail(email: string): string {
 }
 
 /**
- * Resultado del paso 1 del login: con tokens (usuario sin TOTP) o
- * mfaRequired (usuario con TOTP — el login continúa en /auth/login/mfa).
+ * Resultado del paso 1 del login: con tokens (usuario sin TOTP),
+ * mfaRequired (usuario con TOTP — el login continúa en /auth/login/mfa) o
+ * emailNotVerified (cuenta sin verificar — el login continúa en /verify-email).
  */
 export type LoginStep1Result =
   | { token: string; refreshToken: string; user: ApiUser }
   | { mfaRequired: true; challengeId: string }
+  | { emailNotVerified: true; email: string }
 
 /**
  * Performs user login (paso 1) and discrimina entre sesión completa
@@ -88,12 +95,23 @@ export async function login(request: LoginRequest): Promise<LoginStep1Result> {
 
     // Usuario con TOTP activo: el paso 1 NO entrega tokens, devuelve challengeId
     const data = response.data as unknown as ApiLoginResponse['data'] &
-      ApiLoginMfaRequiredResponse['data']
+      ApiLoginMfaRequiredResponse['data'] &
+      ApiLoginEmailNotVerifiedResponse['data']
     if (data.mfaRequired === true && data.mfa) {
       console.log('✅ [auth-service] Login requiere MFA (paso 2)')
       return {
         mfaRequired: true,
         challengeId: data.mfa.challengeId,
+      }
+    }
+
+    // Cuenta sin verificar (item 3): el paso 1 NO entrega tokens, el
+    // frontend lleva a /verify-email con el correo
+    if (data.emailNotVerified === true) {
+      console.log('✅ [auth-service] Login requiere verificar el correo')
+      return {
+        emailNotVerified: true,
+        email: data.email,
       }
     }
 
@@ -165,7 +183,9 @@ export async function refreshToken(
 
 // --- Other functions remain mostly unchanged ---
 
-export async function registerUser(request: RegisterRequest): Promise<void> {
+export async function registerUser(
+  request: RegisterRequest,
+): Promise<{ verificationEmailSent: boolean }> {
   try {
     const payload = {
       nombre: request.nombre.trim(),
@@ -175,11 +195,70 @@ export async function registerUser(request: RegisterRequest): Promise<void> {
       aceptoTerminos: request.aceptoTerminos,
       ...(request.turnstileToken ? { turnstileToken: request.turnstileToken } : {}),
     }
-    await axiosInstance.post('/auth/register', payload)
+    const { data: response } = await axiosInstance.post<ApiRegisterResponse>(
+      '/auth/register',
+      payload,
+    )
+    return {
+      verificationEmailSent:
+        response.data?.user?.verificationEmailSent ?? false,
+    }
   } catch (error) {
     throw buildAuthApiError(
       error,
       'No se pudo completar el registro. Inténtalo nuevamente.',
+    )
+  }
+}
+
+/**
+ * Verifica el correo con el código de 6 dígitos (POST /auth/verify-email).
+ */
+export async function verifyEmail(
+  request: VerifyEmailRequest,
+): Promise<{ emailVerificado: boolean; mensaje: string }> {
+  try {
+    const { data: response } = await axiosInstance.post<VerifyEmailResponse>(
+      '/auth/verify-email',
+      {
+        email: normalizeEmail(request.email),
+        codigo: request.codigo.trim(),
+      },
+    )
+    if (!response.success) {
+      throw new Error(response.message || 'No se pudo verificar el correo.')
+    }
+    return response.data
+  } catch (error) {
+    throw buildAuthApiError(
+      error,
+      'No se pudo verificar el correo. Inténtalo nuevamente.',
+    )
+  }
+}
+
+/**
+ * Reenvía el código de verificación (POST /auth/resend-verification-code).
+ */
+export async function resendVerificationCode(
+  email: string,
+): Promise<{ emailSent: boolean; mensaje: string }> {
+  try {
+    const { data: response } =
+      await axiosInstance.post<ResendVerificationCodeResponse>(
+        '/auth/resend-verification-code',
+        {
+          email: normalizeEmail(email),
+        },
+      )
+    if (!response.success) {
+      throw new Error(response.message || 'No se pudo reenviar el código.')
+    }
+    return response.data
+  } catch (error) {
+    throw buildAuthApiError(
+      error,
+      'No se pudo reenviar el código. Inténtalo nuevamente.',
     )
   }
 }

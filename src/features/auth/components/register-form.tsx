@@ -106,7 +106,7 @@ export function RegisterForm() {
 
       startTransition(async () => {
         try {
-          await registerUser({
+          const result = await registerUser({
             nombre: formData.nombre,
             apellidos: formData.apellidos,
             email: formData.email,
@@ -114,12 +114,17 @@ export function RegisterForm() {
             aceptoTerminos: termsAccepted,
             ...(turnstileToken ? { turnstileToken } : {}),
           })
-          setStatusMessage('Registro completado. Redirigiendo al inicio de sesión...')
+          setStatusMessage(
+            'Registro completado. Te hemos enviado un código de verificación.',
+          )
           setValues({ ...initialValues })
-          
-          // Redirigir al login después de 2 segundos
+
+          // La cuenta nace sin verificar (item 3): ir a /verify-email con
+          // el correo. sent=0 avisa de que el correo no pudo enviarse.
           setTimeout(() => {
-            router.push('/login')
+            router.push(
+              `/verify-email?email=${encodeURIComponent(formData.email)}&sent=${result.verificationEmailSent ? '1' : '0'}`,
+            )
           }, 2000)
         } catch (error) {
           const message = error instanceof Error ? error.message : 'No se pudo completar el registro.'

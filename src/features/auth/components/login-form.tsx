@@ -125,6 +125,15 @@ export function LoginForm() {
             return
           }
 
+          // Cuenta sin verificar (item 3): el login de dos fases devuelve
+          // una sesión intermedia sin tokens — llevar a /verify-email
+          if (session?.emailNotVerified) {
+            router.push(
+              `/verify-email?email=${encodeURIComponent(formData.email)}`,
+            )
+            return
+          }
+
           router.push(result.url ?? callbackUrl)
           router.refresh()
         } catch (error) {

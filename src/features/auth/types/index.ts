@@ -51,10 +51,58 @@ export interface ApiLoginMfaRequiredResponse {
   timestamp: string
 }
 
-/** Unión del paso 1: con tokens (sin TOTP) o mfaRequired (con TOTP) */
+/** Unión del paso 1: con tokens (sin TOTP), mfaRequired (con TOTP) o emailNotVerified (sin verificar) */
 export type LoginStep1Data =
   | ApiLoginResponse['data']
   | ApiLoginMfaRequiredResponse['data']
+  | ApiLoginEmailNotVerifiedResponse['data']
+
+/** Respuesta del paso 1 cuando la cuenta no tiene el correo verificado (item 3): NO contiene tokens */
+export interface ApiLoginEmailNotVerifiedResponse {
+  success: boolean
+  data: {
+    emailNotVerified: true
+    email: string
+  }
+  message: string
+  timestamp: string
+}
+
+/** POST /auth/register — la respuesta incluye si el correo con el código se envió (item 3) */
+export interface ApiRegisterResponse {
+  success: boolean
+  data: {
+    user: ApiUser & { verificationEmailSent?: boolean }
+  }
+  message: string
+  timestamp: string
+}
+
+/** POST /auth/verify-email y POST /auth/resend-verification-code (item 3) */
+export interface VerifyEmailRequest {
+  email: string
+  codigo: string
+}
+
+export interface VerifyEmailResponse {
+  success: boolean
+  data: {
+    emailVerificado: boolean
+    mensaje: string
+  }
+  message: string
+  timestamp: string
+}
+
+export interface ResendVerificationCodeResponse {
+  success: boolean
+  data: {
+    emailSent: boolean
+    mensaje: string
+  }
+  message: string
+  timestamp: string
+}
 
 /** Resultado del paso 2 (POST /auth/login/mfa) */
 export interface ApiMfaLoginResponse {

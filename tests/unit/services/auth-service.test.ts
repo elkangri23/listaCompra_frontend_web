@@ -15,6 +15,8 @@ import {
   getCurrentUser,
   updateProfile,
   changePassword,
+  verifyEmail,
+  resendVerificationCode,
   AuthApiError,
 } from '@/features/auth/services/auth-service'
 import { axiosInstance } from '@/lib/api/axios-instance'
@@ -93,6 +95,30 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
       expect(result.refreshToken).toBe('mock-refresh-token')
       expect(result.user.id).toBe('user-1')
       expect(result.user.email).toBe('test@example.com')
+    })
+
+    it('debe devolver emailNotVerified cuando la cuenta no está verificada', async () => {
+      // Arrange
+      ;(axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: {
+          success: true,
+          data: { emailNotVerified: true, email: 'test@example.com' },
+          message: 'Debes verificar tu correo electrónico antes de entrar',
+        },
+        status: 200,
+      })
+
+      // Act
+      const result = await login({
+        email: 'test@example.com',
+        password: 'Password123!',
+      })
+
+      // Assert
+      expect(result).toEqual({
+        emailNotVerified: true,
+        email: 'test@example.com',
+      })
     })
 
     it('debe normalizar email a minúsculas', async () => {
@@ -301,6 +327,51 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
       })
     })
 
+    it('debe devolver verificationEmailSent cuando el correo se envió', async () => {
+      // Arrange
+      const registerRequest = {
+        nombre: 'John',
+        apellidos: 'Doe',
+        email: 'john@example.com',
+        password: 'SecurePass123!',
+        aceptoTerminos: true,
+      }
+
+      ;(axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: {
+          success: true,
+          data: { user: { verificationEmailSent: true } },
+        },
+      })
+
+      // Act
+      const result = await registerUser(registerRequest)
+
+      // Assert
+      expect(result).toEqual({ verificationEmailSent: true })
+    })
+
+    it('debe devolver verificationEmailSent false cuando el correo no se envió', async () => {
+      // Arrange
+      const registerRequest = {
+        nombre: 'John',
+        apellidos: 'Doe',
+        email: 'john@example.com',
+        password: 'SecurePass123!',
+        aceptoTerminos: true,
+      }
+
+      ;(axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: { success: true },
+      })
+
+      // Act
+      const result = await registerUser(registerRequest)
+
+      // Assert
+      expect(result).toEqual({ verificationEmailSent: false })
+    })
+
     it('debe enviar el token de Turnstile cuando está presente', async () => {
       // Arrange
       const registerRequest = {
@@ -364,6 +435,122 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
 
       // Act & Assert
       await expect(registerUser(registerRequest)).rejects.toThrow(AuthApiError)
+    })
+  })
+
+  describe('verifyEmail', () => {
+    it('debe verificar el correo con el código', async () => {
+      // Arrange
+      ;(axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: {
+          success: true,
+          data: {
+            emailVerificado: true,
+            mensaje: 'Tu correo ha sido verificado. Ya puedes entrar.',
+          },
+        },
+      })
+
+      // Act
+      const result = await verifyEmail({
+        email: '  TEST@EXAMPLE.COM  ',
+        codigo: '482913',
+      })
+
+      // Assert
+      expect(axiosInstance.post).toHaveBeenCalledWith('/auth/verify-email', {
+        email: 'test@example.com', // normalizado
+        codigo: '482913',
+      })
+      expect(result.emailVerificado).toBe(true)
+      expect(result.mensaje).toContain('verificado')
+    })
+
+    it('debe rechazar un código incorrecto', async () => {
+      ;(axiosInstance.post as jest.Mock).mockRejectedValue({
+        isAxiosError: true,
+        response: { data: { message: 'El código no es válido o ha caducado.' } },
+      })
+
+      await expect(
+        verifyEmail({ email: 'test@example.com', codigo: '111111' }),
+      ).rejects.toThrow('El código no es válido o ha caducado.')
+    })
+
+    it('debe rechazar una respuesta sin success del backend', async () => {
+      ;(axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: { success: false, message: 'No se pudo verificar el correo.' },
+      })
+
+      await expect(
+        verifyEmail({ email: 'test@example.com', codigo: '111111' }),
+      ).rejects.toThrow('No se pudo verificar el correo.')
+    })
+
+    it('debe usar el mensaje genérico cuando la respuesta sin success no trae mensaje', async () => {
+      ;(axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: { success: false },
+      })
+
+      await expect(
+        verifyEmail({ email: 'test@example.com', codigo: '111111' }),
+      ).rejects.toThrow('No se pudo verificar el correo.')
+    })
+  })
+
+  describe('resendVerificationCode', () => {
+    it('debe reenviar el código de verificación', async () => {
+      // Arrange
+      ;(axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: {
+          success: true,
+          data: {
+            emailSent: true,
+            mensaje: 'Te hemos enviado un código de 6 dígitos a tu correo.',
+          },
+        },
+      })
+
+      // Act
+      const result = await resendVerificationCode('  TEST@EXAMPLE.COM  ')
+
+      // Assert
+      expect(axiosInstance.post).toHaveBeenCalledWith(
+        '/auth/resend-verification-code',
+        { email: 'test@example.com' }, // normalizado
+      )
+      expect(result.emailSent).toBe(true)
+    })
+
+    it('debe propagar el mensaje del backend cuando no se envía', async () => {
+      ;(axiosInstance.post as jest.Mock).mockRejectedValue({
+        isAxiosError: true,
+        response: { data: { message: 'Espera un minuto antes de pedir otro código.' } },
+      })
+
+      await expect(
+        resendVerificationCode('test@example.com'),
+      ).rejects.toThrow('Espera un minuto antes de pedir otro código.')
+    })
+
+    it('debe rechazar una respuesta sin success del backend', async () => {
+      ;(axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: { success: false, message: 'No se pudo reenviar el código.' },
+      })
+
+      await expect(
+        resendVerificationCode('test@example.com'),
+      ).rejects.toThrow('No se pudo reenviar el código.')
+    })
+
+    it('debe usar el mensaje genérico cuando la respuesta sin success no trae mensaje', async () => {
+      ;(axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: { success: false },
+      })
+
+      await expect(
+        resendVerificationCode('test@example.com'),
+      ).rejects.toThrow('No se pudo reenviar el código.')
     })
   })
 

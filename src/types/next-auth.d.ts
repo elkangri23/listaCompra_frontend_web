@@ -11,6 +11,8 @@ declare module 'next-auth' {
     error?: string
     /** true en el estado intermedio: el login necesita el paso MFA */
     mfaRequired?: boolean
+    /** true en el estado intermedio: la cuenta necesita verificar el correo (item 3) */
+    emailNotVerified?: boolean
     user: DefaultSession['user'] & {
       id: string
       roles: string[]
@@ -27,6 +29,9 @@ declare module 'next-auth' {
     /** Token intermedio del paso 1 cuando el usuario tiene TOTP activo */
     mfaPending?: boolean
     challengeId?: string
+    /** Token intermedio del paso 1 cuando la cuenta no tiene el correo verificado (item 3) */
+    emailNotVerified?: boolean
+    email?: string
   }
 }
 
@@ -39,6 +44,14 @@ declare module 'next-auth/jwt' {
     refreshToken?: string
     expiresAt?: number
     error?: string
+    /** Estado intermedio: el login necesita el paso MFA */
+    mfaPending?: boolean
+    mfaExp?: number
+    challengeId?: string
+    /** Estado intermedio: la cuenta necesita verificar el correo (item 3) */
+    emailNotVerified?: boolean
+    emailNotVerifiedExp?: number
+    email?: string
     user?: {
       id: string
       email: string

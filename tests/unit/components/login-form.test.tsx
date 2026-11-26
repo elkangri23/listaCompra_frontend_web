@@ -601,3 +601,41 @@ describe('LoginForm: paso 2 MFA (CU-MFA fase 1)', () => {
     await waitFor(() => expect(screen.getByText('boom')).toBeInTheDocument())
   })
 })
+
+describe('LoginForm: correo sin verificar (item 3)', () => {
+  const mockPush = jest.fn()
+  const mockRefresh = jest.fn()
+  const mockGet = jest.fn()
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    ;(useRouter as jest.Mock).mockReturnValue({
+      push: mockPush,
+      refresh: mockRefresh,
+    })
+    ;(useSearchParams as jest.Mock).mockReturnValue({
+      get: mockGet,
+    })
+    mockGet.mockReturnValue(null)
+  })
+
+  it('step-1 con emailNotVerified redirige a /verify-email con el correo', async () => {
+    ;(signIn as jest.Mock).mockResolvedValue({ error: null, url: '/dashboard' })
+    ;(getSession as jest.Mock).mockResolvedValue({ emailNotVerified: true })
+    const user = userEvent.setup()
+    render(<LoginForm />)
+    await user.type(
+      screen.getByLabelText(/correo electrónico/i),
+      'test@example.com',
+    )
+    await user.type(screen.getByLabelText(/contraseña/i), 'Password123!')
+    await user.click(screen.getByRole('button', { name: /iniciar sesión/i }))
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith(
+        '/verify-email?email=test%40example.com',
+      )
+    })
+    expect(mockRefresh).not.toHaveBeenCalled()
+  })
+})
