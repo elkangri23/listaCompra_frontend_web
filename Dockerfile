@@ -15,7 +15,7 @@ ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
 # Evita que Next intente telemetría / descargas en build
 ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json .npmrc ./
 RUN npm ci
 
 COPY . .
