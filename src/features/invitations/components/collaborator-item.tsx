@@ -1,71 +1,84 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { ActiveInvitationDto } from '@/types/dtos/invitations';
-import { Avatar } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { MoreVertical, Trash2, Shield } from 'lucide-react';
+import React from 'react'
+import { ActiveInvitationDto } from '@/types/dtos/invitations'
+import { Avatar } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { MoreVertical, Trash2, Shield } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu'
 
-import { useUpdatePermissions } from '../hooks/use-update-permissions';
-import { useRevokeAccess } from '../hooks/use-revoke-access';
+import { useUpdatePermissions } from '../hooks/use-update-permissions'
+import { useRevokeAccess } from '../hooks/use-revoke-access'
 
 interface CollaboratorItemProps {
-  listId: string;
-  collaborator: ActiveInvitationDto;
-  isOwner: boolean;
-  currentUserId: string;
+  listId: string
+  collaborator: ActiveInvitationDto
+  isOwner: boolean
+  currentUserId: string
 }
 
 const roleMapping = {
   OWNER: 'Propietario',
   EDITOR: 'Editor',
   VIEWER: 'Lector',
-};
+}
 
 const badgeVariantMapping = {
   OWNER: 'default',
   EDITOR: 'secondary',
   VIEWER: 'outline',
-};
+} as const
 
-export const CollaboratorItem: React.FC<CollaboratorItemProps> = ({ listId, collaborator, isOwner, currentUserId }) => {
-  const isCurrentUser = collaborator.id === currentUserId;
+type BadgeVariant = keyof typeof badgeVariantMapping
 
-  const getRoleFromPermissions = (permissions: string[]): 'OWNER' | 'EDITOR' | 'VIEWER' => {
-    if (permissions.includes('OWNER')) return 'OWNER';
-    if (permissions.includes('EDITOR')) return 'EDITOR';
-    return 'VIEWER';
-  };
+export const CollaboratorItem: React.FC<CollaboratorItemProps> = ({
+  listId,
+  collaborator,
+  isOwner,
+  currentUserId,
+}) => {
+  const isCurrentUser = collaborator.id === currentUserId
 
-  const role = getRoleFromPermissions(collaborator.permissions);
-  const canManage = isOwner && !isCurrentUser && role !== 'OWNER';
+  const getRoleFromPermissions = (
+    permissions: string[],
+  ): 'OWNER' | 'EDITOR' | 'VIEWER' => {
+    if (permissions.includes('OWNER')) return 'OWNER'
+    if (permissions.includes('EDITOR')) return 'EDITOR'
+    return 'VIEWER'
+  }
 
-  const updatePermissionsMutation = useUpdatePermissions();
-  const revokeAccessMutation = useRevokeAccess();
+  const role = getRoleFromPermissions(collaborator.permissions)
+  const canManage = isOwner && !isCurrentUser && role !== 'OWNER'
+
+  const updatePermissionsMutation = useUpdatePermissions()
+  const revokeAccessMutation = useRevokeAccess()
 
   const handleUpdatePermissions = (newPermissions: string[]) => {
     updatePermissionsMutation.mutate({
       listId,
       userId: collaborator.id,
       permissions: newPermissions,
-    });
-  };
+    })
+  }
 
   const handleRevokeAccess = () => {
-    if (window.confirm(`¿Estás seguro de que quieres revocar el acceso a ${collaborator.email}?`)) {
+    if (
+      window.confirm(
+        `¿Estás seguro de que quieres revocar el acceso a ${collaborator.email}?`,
+      )
+    ) {
       revokeAccessMutation.mutate({
         listId,
         userId: collaborator.id,
-      });
+      })
     }
-  };
+  }
 
   return (
     <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
@@ -79,7 +92,14 @@ export const CollaboratorItem: React.FC<CollaboratorItemProps> = ({ listId, coll
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <Badge variant={badgeVariantMapping[role] || 'outline'}>
+        <Badge
+          variant={
+            (badgeVariantMapping[role as BadgeVariant] || 'outline') as
+              | 'default'
+              | 'secondary'
+              | 'outline'
+          }
+        >
           {roleMapping[role] || role}
         </Badge>
         {canManage && (
@@ -94,7 +114,7 @@ export const CollaboratorItem: React.FC<CollaboratorItemProps> = ({ listId, coll
               <DropdownMenuItem
                 onClick={() =>
                   handleUpdatePermissions(
-                    role === 'EDITOR' ? ['VIEWER'] : ['EDITOR']
+                    role === 'EDITOR' ? ['VIEWER'] : ['EDITOR'],
                   )
                 }
               >
@@ -115,5 +135,5 @@ export const CollaboratorItem: React.FC<CollaboratorItemProps> = ({ listId, coll
         )}
       </div>
     </div>
-  );
-};
+  )
+}
