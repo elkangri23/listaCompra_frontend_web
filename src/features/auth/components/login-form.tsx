@@ -10,6 +10,11 @@ import {
   type LoginSchema,
 } from '@/features/auth/validators/schemas'
 import { MfaChallengeForm } from '@/features/auth/components/mfa-challenge-form'
+import {
+  passkeyLoginOptions,
+  browserSupportsWebAuthn,
+} from '@/features/auth/services/passkey-service'
+import { startAuthentication } from '@simplewebauthn/browser'
 
 type LoginFieldErrors = Partial<Record<keyof LoginSchema, string>>
 
@@ -179,6 +184,47 @@ export function LoginForm() {
     await signOut({ redirect: false })
   }, [])
 
+  // Login con passkey (CU-MFA fase 2): options → assertion → provider 'passkey'
+  const handlePasskeyLogin = React.useCallback(async () => {
+    setErrorMessage(null)
+    try {
+      const { challengeId, options } = await passkeyLoginOptions()
+      const assertion = await startAuthentication({
+        optionsJSON: options as never,
+      })
+      // El tipo de signIn solo conoce los providers builtin: cast para 'passkey'
+      const customSignIn = signIn as unknown as (
+        provider: string,
+        data: Record<string, unknown>,
+        opts?: Record<string, unknown>,
+      ) => Promise<{ error?: string; url?: string } | null>
+      const result = await customSignIn(
+        'passkey',
+        {
+          challengeId,
+          credential: JSON.stringify(assertion),
+        },
+        { redirect: false, callbackUrl },
+      )
+
+      if (!result || result.error) {
+        setErrorMessage('No se pudo completar el acceso con passkey.')
+        return
+      }
+      const session = await getSession()
+      if (session?.mfaRequired) {
+        setErrorMessage('No se pudo completar el acceso con passkey.')
+        return
+      }
+      router.push(result.url ?? callbackUrl)
+      router.refresh()
+    } catch {
+      setErrorMessage(
+        'Acceso con passkey cancelado o fallido. Usa tu contraseña.',
+      )
+    }
+  }, [callbackUrl, router])
+
   // Render condicional: paso 2 cuando hay challenge pendiente
   if (mfaChallengeId !== null) {
     return (
@@ -295,6 +341,20 @@ export function LoginForm() {
             {isPending ? 'Iniciando sesión…' : 'Iniciar Sesión'}
           </span>
         </button>
+
+        {browserSupportsWebAuthn() && (
+          <button
+            type="button"
+            onClick={handlePasskeyLogin}
+            disabled={isPending}
+            aria-label="Iniciar sesión con passkey (huella, Face ID o PIN)"
+            title="Iniciar sesión con passkey: huella, Face ID o PIN de tu dispositivo"
+            className="flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-12 px-4 border border-[#dbdfe6] bg-white text-[#111418] text-sm font-bold hover:bg-[#f0f2f5] disabled:opacity-60"
+          >
+            <span aria-hidden="true">🔑</span>
+            <span>Entrar con passkey</span>
+          </button>
+        )}
       </div>
       <p className="text-[#60708a] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center w-full max-w-[480px]">
         <Link href="/register" className="underline">

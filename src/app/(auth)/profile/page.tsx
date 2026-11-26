@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import styles from './profile.module.css'
 import { TotpSecuritySection } from '@/features/settings/components/totp-security-section'
+import { PasskeyList } from '@/features/settings/components/passkey-list'
 
 type Tab = 'perfil' | 'seguridad' | 'preferencias'
 
@@ -117,6 +118,20 @@ export default function ProfilePage() {
             </div>
             <div className="p-4 pt-0">
               <TotpSecuritySection />
+            </div>
+          </div>
+          <div className={styles.actionCard}>
+            <div className={styles.actionCardInner}>
+              <div className={styles.actionCardText}>
+                <p className={styles.actionCardTitle}>Passkeys</p>
+                <p className={styles.actionCardDescription}>
+                  Entra sin contraseña con tu huella, Face ID o PIN del
+                  dispositivo.
+                </p>
+              </div>
+            </div>
+            <div className="p-4 pt-0">
+              <PasskeyList />
             </div>
           </div>
           <div className={styles.actionCard}>

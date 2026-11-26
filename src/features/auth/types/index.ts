@@ -105,3 +105,30 @@ export interface ForgotPasswordRequest {
 export interface RefreshTokenRequest {
   refreshToken?: string
 }
+
+// ============================================================================
+// Passkeys (CU-MFA fase 2)
+// ============================================================================
+
+/** GET /auth/passkeys — una credencial del usuario */
+export interface PasskeyItem {
+  id: string
+  nombre: string
+  deviceType: string // 'singleDevice' | 'multiDevice'
+  transports: string[]
+  createdAt: string
+  ultimoUso: string | null
+  activo: boolean
+}
+
+/** POST /auth/passkeys/register-options */
+export interface PasskeyRegisterOptionsResponse {
+  challengeId: string
+  options: Record<string, unknown> // PublicKeyCredentialCreationOptionsJSON
+}
+
+/** POST /auth/passkeys/login-options */
+export interface PasskeyLoginOptionsResponse {
+  challengeId: string
+  options: Record<string, unknown> // PublicKeyCredentialRequestOptionsJSON
+}

@@ -1,7 +1,9 @@
 import NextAuth, { type NextAuthConfig } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
+import Passkey from 'next-auth/providers/credentials' // reutiliza Credentials para el provider 'passkey'
 
 import { login, refreshToken } from '@/features/auth/services/auth-service'
+import { passkeyLoginVerify } from '@/features/auth/services/passkey-service'
 import { mfaLogin } from '@/features/auth/services/mfa-service'
 import { loginSchema, mfaStepSchema } from '@/features/auth/validators/schemas'
 
@@ -230,6 +232,44 @@ export const authConfig: NextAuthConfig = {
           )
           console.log('--- Authorize Function End (Error) ---')
           return null // Returning null triggers a failed login
+        }
+      },
+    }),
+
+    // Login con passkey (CU-MFA fase 2): authorize recibe { challengeId,
+    // credential } (JSON stringificado: los credentials son form-data).
+    Passkey({
+      id: 'passkey',
+      name: 'Passkey',
+      credentials: {
+        challengeId: { label: 'challengeId', type: 'text' },
+        credential: { label: 'credential', type: 'text' },
+      },
+      async authorize(passkeyCredentials) {
+        if (
+          !passkeyCredentials?.challengeId ||
+          !passkeyCredentials?.credential
+        ) {
+          return null
+        }
+        try {
+          const credential =
+            typeof passkeyCredentials.credential === 'string'
+              ? JSON.parse(passkeyCredentials.credential)
+              : passkeyCredentials.credential
+          const result = await passkeyLoginVerify({
+            challengeId: String(passkeyCredentials.challengeId),
+            credential,
+          })
+          if (!result.token) return null
+          // Sesión normal (mismo contrato que credentials/mfaLogin)
+          return { token: result.token, user: result.user as never }
+        } catch (error) {
+          console.error(
+            'Passkey login failed:',
+            error instanceof Error ? error.message : error,
+          )
+          return null
         }
       },
     }),

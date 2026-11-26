@@ -16,7 +16,11 @@ export class MfaApiError extends Error {
   }
 }
 
-function buildMfaError(error: unknown, fallbackMessage: string): MfaApiError {
+/** Exportado para que passkey-service comparta la discriminación de sobres */
+export function buildMfaError(
+  error: unknown,
+  fallbackMessage: string,
+): MfaApiError {
   if (isAxiosError(error)) {
     const data = error.response?.data as
       | {
