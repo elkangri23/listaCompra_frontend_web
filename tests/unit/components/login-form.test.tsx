@@ -576,6 +576,17 @@ describe('LoginForm: paso 2 MFA (CU-MFA fase 1)', () => {
     )
   })
 
+  it('step-2: excepción de signIn muestra mensaje genérico de verificación', async () => {
+    await renderYPaso1({ mfaRequired: true, challengeId: 'ch-1' })
+    ;(signIn as jest.Mock).mockRejectedValue(new Error('red caída'))
+    const user = userEvent.setup()
+    await user.type(screen.getByLabelText('Código de verificación'), '123456')
+    await user.click(screen.getByRole('button', { name: 'Verificar' }))
+    await waitFor(() =>
+      expect(screen.getByText('No se pudo verificar el código. Inténtalo nuevamente.')).toBeInTheDocument(),
+    )
+  })
+
   it('step-1: getSession que lanza muestra error genérico', async () => {
     ;(signIn as jest.Mock).mockResolvedValue({ error: null, url: '/dashboard' })
     ;(getSession as jest.Mock).mockRejectedValue(new Error('boom'))

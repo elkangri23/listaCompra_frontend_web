@@ -18,6 +18,7 @@ import {
   useDeleteBlueprint,
   useCreateListFromBlueprint,
   useCreateBlueprintFromList,
+  useSearchBlueprints,
 } from '@/features/blueprints/hooks/use-blueprints';
 import { createTestQueryClient } from '../../utils/test-utils';
 import { ReactNode } from 'react';
@@ -431,6 +432,25 @@ describe('useBlueprints hooks (CRÍTICO - 100% coverage)', () => {
       await waitFor(() => expect(result.current.isError).toBe(true));
 
       expect(toast.error).toHaveBeenCalledWith('Error al crear plantilla desde lista');
+    });
+  });
+
+  describe('useSearchBlueprints', () => {
+    it('no consulta el servicio con menos de 2 caracteres (enabled: false)', () => {
+      (blueprintService.searchBlueprints as jest.Mock).mockResolvedValue([]);
+
+      renderHook(() => useSearchBlueprints('a'), { wrapper });
+
+      expect(blueprintService.searchBlueprints).not.toHaveBeenCalled();
+    });
+
+    it('consulta con 2 o más caracteres', async () => {
+      (blueprintService.searchBlueprints as jest.Mock).mockResolvedValue([]);
+
+      const { result } = renderHook(() => useSearchBlueprints('ab'), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(blueprintService.searchBlueprints).toHaveBeenCalledWith('ab', 1);
     });
   });
 });

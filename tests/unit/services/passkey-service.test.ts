@@ -177,3 +177,32 @@ describe('passkey-service', () => {
     })
   })
 })
+  describe('ramas de error de cada endpoint', () => {
+    const reject = (data: unknown) => ({ isAxiosError: true, response: { status: 500, data } });
+
+    it('passkeyRegisterVerify error → MfaApiError', async () => {
+      mockedAxios.post.mockRejectedValueOnce(reject({ success: false, error: { type: 'MFA_ERROR', code: 'CHALLENGE_EXPIRED', message: 'Expiró' } }));
+      await expect(passkeyRegisterVerify({ password: 'p', challengeId: 'c', credential: {} })).rejects.toMatchObject({ code: 'CHALLENGE_EXPIRED' });
+    });
+
+    it('listPasskeys error → MfaApiError', async () => {
+      mockedAxios.get.mockRejectedValueOnce(reject({ success: false, message: 'fallo listado' }));
+      await expect(listPasskeys()).rejects.toMatchObject({ message: 'fallo listado' });
+    });
+
+    it('renamePasskey error → MfaApiError', async () => {
+      mockedAxios.patch.mockRejectedValueOnce(reject({ success: false, error: { type: 'MFA_ERROR', code: 'PASSKEY_NOT_FOUND', message: 'No existe' } }));
+      await expect(renamePasskey('pk-1', 'n')).rejects.toMatchObject({ code: 'PASSKEY_NOT_FOUND' });
+    });
+
+    it('deletePasskey error → MfaApiError', async () => {
+      mockedAxios.delete.mockRejectedValueOnce(reject({ success: false, message: 'contraseña incorrecta' }));
+      await expect(deletePasskey('pk-1', 'mal')).rejects.toMatchObject({ message: 'contraseña incorrecta' });
+    });
+
+    it('passkeyLoginOptions error → MfaApiError', async () => {
+      mockedAxios.post.mockRejectedValueOnce(reject({ success: false, error: 'RATE_LIMIT_EXCEEDED', message: 'Demasiadas peticiones' }));
+      await expect(passkeyLoginOptions()).rejects.toMatchObject({ code: 'RATE_LIMIT_EXCEEDED' });
+    });
+  });
+

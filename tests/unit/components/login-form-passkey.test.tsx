@@ -154,4 +154,21 @@ describe('LoginForm — botón passkey', () => {
       ).toBeInTheDocument(),
     )
   })
-})
+
+  it('sesión sigue mfaRequired tras signIn passkey → error sin redirect', async () => {
+    giveWebAuthnSupport();
+    passkeyLoginOptions.mockResolvedValueOnce({ challengeId: 'ch-1', options: {} });
+    startAuthentication.mockResolvedValueOnce({ id: 'cred' });
+    (signIn as jest.Mock).mockResolvedValueOnce({ error: null, url: '/dashboard' });
+    (getSession as jest.Mock).mockResolvedValueOnce({ mfaRequired: true });
+
+    const user = userEvent.setup();
+    render(<LoginForm />);
+    await user.click(screen.getByRole('button', { name: /iniciar sesión con passkey/i }));
+
+    await waitFor(() =>
+      expect(screen.getByText('No se pudo completar el acceso con passkey.')).toBeInTheDocument(),
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+});
