@@ -68,7 +68,7 @@ export default function ListsPage() {
             >
               Crear
             </button>
-            <Link href="/lists/new" className={styles.ghostLink}>
+            <Link href="/templates" className={styles.ghostLink}>
               Crear con plantilla
             </Link>
           </div>

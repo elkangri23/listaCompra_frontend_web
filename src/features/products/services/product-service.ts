@@ -78,7 +78,7 @@ const togglePurchased = async (
   data: MarkAsPurchasedDto
 ): Promise<MarkAsPurchasedResponseDto> => {
   const response = await axiosInstance.patch<MarkAsPurchasedResponseDto>(
-    `/lists/${listaId}/products/${productoId}/purchase`,
+    `/lists/${listaId}/products/${productoId}/purchased`,
     data
   );
 

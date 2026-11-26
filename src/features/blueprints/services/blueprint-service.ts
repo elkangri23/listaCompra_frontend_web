@@ -61,15 +61,33 @@ const deleteBlueprint = async (id: string): Promise<void> => {
 /**
  * Crear una lista desde un blueprint
  */
+/**
+ * Respuesta real del backend (POST /blueprints/:id/crear-lista):
+ * { lista: { id, nombre }, productos, blueprint, resumen: { productosCreados } }
+ * Se mapea al DTO del frontend { listaId, nombre, productosCreados }.
+ */
+interface BackendCreateListResponse {
+  lista: { id: string; nombre: string };
+  resumen: { productosCreados: number };
+}
+
 const createListFromBlueprint = async (
   blueprintId: string,
   data?: CreateListFromBlueprintDto
 ): Promise<CreateListFromBlueprintResponseDto> => {
-  const response = await axiosInstance.post<CreateListFromBlueprintResponseDto>(
-    `/blueprints/${blueprintId}/create-list`,
-    data || {}
+  // El backend exige nombreLista (y acepta descripcionLista)
+  const body: Record<string, unknown> = {};
+  if (data?.nombre) body.nombreLista = data.nombre;
+  if (data?.descripcion) body.descripcionLista = data.descripcion;
+  const response = await axiosInstance.post<BackendCreateListResponse>(
+    `/blueprints/${blueprintId}/crear-lista`,
+    body
   );
-  return response.data;
+  return {
+    listaId: response.data.lista.id,
+    nombre: response.data.lista.nombre,
+    productosCreados: response.data.resumen.productosCreados,
+  };
 };
 
 /**

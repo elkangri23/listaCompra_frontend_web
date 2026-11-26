@@ -113,22 +113,31 @@ describe('blueprintService (CRÍTICO)', () => {
 
   describe('createListFromBlueprint', () => {
     it('debe crear una lista enviando el body vacío si no hay datos', async () => {
-      const listResponse = { listId: 'list-1', nombre: 'Nueva lista' };
-      (axiosInstance.post as jest.Mock).mockResolvedValue({ data: listResponse });
+      const backendResponse = {
+        lista: { id: 'list-1', nombre: 'Nueva lista' },
+        resumen: { productosCreados: 3 },
+      };
+      (axiosInstance.post as jest.Mock).mockResolvedValue({ data: backendResponse });
 
       const result = await blueprintService.createListFromBlueprint('bp-1');
 
-      expect(axiosInstance.post).toHaveBeenCalledWith('/blueprints/bp-1/create-list', {});
-      expect(result).toEqual(listResponse);
+      expect(axiosInstance.post).toHaveBeenCalledWith('/blueprints/bp-1/crear-lista', {});
+      expect(result).toEqual({ listaId: 'list-1', nombre: 'Nueva lista', productosCreados: 3 });
     });
 
-    it('debe enviar los datos proporcionados', async () => {
-      (axiosInstance.post as jest.Mock).mockResolvedValue({ data: { listId: 'list-1' } });
+    it('debe enviar los datos proporcionados mapeados a nombreLista/descripcionLista', async () => {
+      (axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: { lista: { id: 'list-1', nombre: 'Mi versión' }, resumen: { productosCreados: 2 } },
+      });
 
-      const dto = { nombre: 'Mi versión' } as never;
-      await blueprintService.createListFromBlueprint('bp-1', dto);
+      const dto = { nombre: 'Mi versión', descripcion: 'Para la semana' } as never;
+      const result = await blueprintService.createListFromBlueprint('bp-1', dto);
 
-      expect(axiosInstance.post).toHaveBeenCalledWith('/blueprints/bp-1/create-list', dto);
+      expect(axiosInstance.post).toHaveBeenCalledWith('/blueprints/bp-1/crear-lista', {
+        nombreLista: 'Mi versión',
+        descripcionLista: 'Para la semana',
+      });
+      expect(result).toEqual({ listaId: 'list-1', nombre: 'Mi versión', productosCreados: 2 });
     });
   });
 

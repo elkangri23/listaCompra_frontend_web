@@ -312,7 +312,7 @@ describe('productService (CRÍTICO - 100% coverage)', () => {
       });
 
       expect(axiosInstance.patch).toHaveBeenCalledWith(
-        '/lists/list-1/products/prod-1/purchase',
+        '/lists/list-1/products/prod-1/purchased',
         { comprado: true }
       );
       expect(result.data.comprado).toBe(true);
