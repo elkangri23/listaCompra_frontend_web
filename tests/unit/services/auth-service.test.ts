@@ -90,6 +90,7 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
         password: 'Password123!',
       })
       expect(result.token).toBe('mock-access-token')
+      expect(result.refreshToken).toBe('mock-refresh-token')
       expect(result.user.id).toBe('user-1')
       expect(result.user.email).toBe('test@example.com')
     })
@@ -205,7 +206,13 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
       }
 
       const mockResponse = {
-        token: 'new-access-token',
+        success: true,
+        data: {
+          tokens: {
+            accessToken: 'new-access-token',
+            refreshToken: 'new-refresh-token',
+          },
+        },
       }
 
       ;(axiosInstance.post as jest.Mock).mockResolvedValue({
@@ -216,10 +223,11 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
       const result = await refreshToken(refreshRequest)
 
       // Assert
-      expect(axiosInstance.post).toHaveBeenCalledWith('/auth/refresh-token', {
+      expect(axiosInstance.post).toHaveBeenCalledWith('/auth/refresh', {
         refreshToken: 'old-refresh-token',
       })
       expect(result.token).toBe('new-access-token')
+      expect(result.refreshToken).toBe('new-refresh-token')
     })
 
     it('debe rechazar token vacío', async () => {

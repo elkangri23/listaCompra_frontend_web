@@ -50,7 +50,7 @@ describe('auth-service.login — dos fases', () => {
       },
     })
     const result = await login({ email: 'ana@test.es', password: 'Password1!' })
-    expect(result).toEqual({ token: 'at', user: apiUser })
+    expect(result).toEqual({ token: 'at', refreshToken: 'rt', user: apiUser })
     expect('mfaRequired' in result).toBe(false)
   })
 

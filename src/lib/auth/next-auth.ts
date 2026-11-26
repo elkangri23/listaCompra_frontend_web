@@ -46,6 +46,10 @@ const callbacks: NextAuthConfig['callbacks'] = {
 
       token.accessToken = user.token
       token.expiresAt = decoded.exp * 1000 // exp is in seconds
+      // Sin el refresh token guardado, la sesión muere al caducar el access token
+      if (user.refreshToken) {
+        token.refreshToken = user.refreshToken
+      }
 
       // Use data from the API response if available
       if (user.user) {
@@ -69,36 +73,37 @@ const callbacks: NextAuthConfig['callbacks'] = {
       return token
     }
 
-    // Return previous token if it has not expired yet
-    // if (Date.now() < (token.expiresAt as number)) {
-    //   return token
-    // }
+    // El token de acceso caducó (o caduca en menos de 60 s): renovarlo
+    // con el refresh token (7 días). Sin esto, pasada 1h cada llamada a
+    // la API fallaba con "Token de acceso expirado" y había que volver a
+    // iniciar sesión. Si la renovación falla, token.error hace que el
+    // middleware redirija a /login.
+    if (
+      token.accessToken &&
+      token.expiresAt &&
+      Date.now() >= (token.expiresAt as number) - 60 * 1000
+    ) {
+      if (!token.refreshToken) {
+        return { ...token, error: 'RefreshAccessTokenError' }
+      }
+      try {
+        const refreshed = await refreshToken({
+          refreshToken: token.refreshToken as string,
+        })
 
-    // // Expired token, try to refresh it
-    // try {
-    //   const refreshed = await refreshToken({
-    //     refreshToken: token.accessToken as string, // Using the expired token as the refresh token
-    //   })
+        const decoded = decodeJwt(refreshed.token)
+        if (!decoded) return { ...token, error: 'InvalidTokenError' }
 
-    //   const decoded = decodeJwt(refreshed.token)
-    //   if (!decoded) return { ...token, error: 'InvalidTokenError' }
-
-    //   token.accessToken = refreshed.token
-    //   token.expiresAt = decoded.exp * 1000
-    //   // User info should persist from the original token, but we can re-set it
-    //   token.user = {
-    //     id: decoded.sub,
-    //     email: decoded.email,
-    //     name: decoded.name,
-    //     roles: decoded.roles ?? [],
-    //   }
-    //   // Clear any previous error
-    //   delete token.error
-
-    // } catch (error) {
-    //   console.error('RefreshAccessTokenError', error)
-    //   token.error = 'RefreshAccessTokenError'
-    // }
+        token.accessToken = refreshed.token
+        token.refreshToken = refreshed.refreshToken
+        token.expiresAt = decoded.exp * 1000
+        // Clear any previous error
+        delete token.error
+      } catch (error) {
+        console.error('RefreshAccessTokenError', error)
+        token.error = 'RefreshAccessTokenError'
+      }
+    }
 
     return token
   },
@@ -163,7 +168,11 @@ export const authConfig: NextAuthConfig = {
             })
             if (!result.token) return null
             // Sesión normal: el jwt callback entra por la rama user.token
-            return { token: result.token, user: result.user as never }
+            return {
+              token: result.token,
+              refreshToken: result.refreshToken,
+              user: result.user as never,
+            }
           } catch (error) {
             console.error(
               'MFA step 2 failed:',
@@ -211,6 +220,7 @@ export const authConfig: NextAuthConfig = {
           // The user object passed to the jwt callback
           return {
             token: authResponse.token,
+            refreshToken: authResponse.refreshToken,
             user: authResponse.user,
           }
         } catch (error) {

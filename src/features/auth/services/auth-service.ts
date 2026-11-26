@@ -48,7 +48,7 @@ function normalizeEmail(email: string): string {
  * mfaRequired (usuario con TOTP — el login continúa en /auth/login/mfa).
  */
 export type LoginStep1Result =
-  | { token: string; user: ApiUser }
+  | { token: string; refreshToken: string; user: ApiUser }
   | { mfaRequired: true; challengeId: string }
 
 /**
@@ -104,9 +104,11 @@ export async function login(request: LoginRequest): Promise<LoginStep1Result> {
 
     console.log('✅ [auth-service] Login successful')
 
-    // Return the expected format for NextAuth
+    // Return the expected format for NextAuth (con el refresh token:
+    // sin él la sesión muere al caducar el access token, 1h)
     return {
       token: response.data.tokens.accessToken,
+      refreshToken: response.data.tokens.refreshToken,
       user: response.data.user,
     }
   } catch (error) {
@@ -129,30 +131,30 @@ export async function login(request: LoginRequest): Promise<LoginStep1Result> {
 }
 
 /**
- * Refreshes the authentication token.
- * NOTE: The API is contradictory. /auth/login returns a 'token', but /auth/refresh-token
- * expects a 'refreshToken'. We are assuming the token from login should be used here.
+ * Renueva el par de tokens con el refresh token (POST /auth/refresh).
+ * El backend rota el par: devuelve accessToken y refreshToken nuevos.
  */
 export async function refreshToken(
   request: RefreshTokenRequest,
-): Promise<{ token: string }> {
+): Promise<{ token: string; refreshToken: string }> {
   if (!request.refreshToken) {
     throw new AuthApiError('No se encontró el token para renovar la sesión.')
   }
 
   try {
-    const { data } = await axiosInstance.post<{ token: string }>(
-      '/auth/refresh-token',
-      {
-        refreshToken: request.refreshToken,
-      },
-    )
-    if (typeof data.token !== 'string') {
+    const { data } = await axiosInstance.post<{
+      success: boolean
+      data: { tokens: { accessToken: string; refreshToken: string } }
+    }>('/auth/refresh', {
+      refreshToken: request.refreshToken,
+    })
+    const tokens = data?.data?.tokens
+    if (typeof tokens?.accessToken !== 'string' || typeof tokens?.refreshToken !== 'string') {
       throw new Error(
         'La respuesta de la API no contiene un token de refresco válido.',
       )
     }
-    return data
+    return { token: tokens.accessToken, refreshToken: tokens.refreshToken }
   } catch (error) {
     throw buildAuthApiError(
       error,

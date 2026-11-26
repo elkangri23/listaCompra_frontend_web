@@ -22,6 +22,7 @@ declare module 'next-auth' {
    */
   interface User {
     token?: string
+    refreshToken?: string
     user?: ApiLoginResponse['data']['user']
     /** Token intermedio del paso 1 cuando el usuario tiene TOTP activo */
     mfaPending?: boolean
@@ -35,6 +36,7 @@ declare module 'next-auth/jwt' {
    */
   interface JWT {
     accessToken?: string
+    refreshToken?: string
     expiresAt?: number
     error?: string
     user?: {

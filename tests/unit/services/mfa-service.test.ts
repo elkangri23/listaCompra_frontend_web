@@ -191,6 +191,7 @@ describe('mfa-service', () => {
       })
       const result = await mfaLogin('ch-id', { code: '123456' })
       expect(result.token).toBe('at')
+      expect(result.refreshToken).toBe('rt')
       expect(mockedAxios.post).toHaveBeenCalledWith('/auth/login/mfa', {
         challengeId: 'ch-id',
         code: '123456',

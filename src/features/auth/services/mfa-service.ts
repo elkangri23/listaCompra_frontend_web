@@ -98,7 +98,7 @@ export async function totpDisable(
 export async function mfaLogin(
   challengeId: string,
   credentials: { code?: string; backupCode?: string },
-): Promise<{ token: string; user: unknown }> {
+): Promise<{ token: string; refreshToken: string; user: unknown }> {
   try {
     const { data } = await axiosInstance.post('/auth/login/mfa', {
       challengeId,
@@ -107,9 +107,13 @@ export async function mfaLogin(
     })
     const payload = data.data as {
       user: unknown
-      tokens: { accessToken: string }
+      tokens: { accessToken: string; refreshToken: string }
     }
-    return { token: payload.tokens.accessToken, user: payload.user }
+    return {
+      token: payload.tokens.accessToken,
+      refreshToken: payload.tokens.refreshToken,
+      user: payload.user,
+    }
   } catch (error) {
     throw buildMfaError(error, 'El código no es válido.')
   }
