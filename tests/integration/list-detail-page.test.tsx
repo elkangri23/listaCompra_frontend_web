@@ -47,6 +47,7 @@ jest.mock('@/features/categories/hooks/use-categories', () => ({
     },
     isLoading: false,
   }),
+  useCreateCategory: () => ({ mutateAsync: jest.fn() }),
 }));
 
 jest.mock('next/navigation', () => ({

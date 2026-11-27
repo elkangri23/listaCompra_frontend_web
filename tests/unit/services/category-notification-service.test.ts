@@ -23,10 +23,13 @@ describe('categoryService', () => {
     jest.clearAllMocks();
   });
 
+  // El backend envuelve las respuestas en { success, message, data }.
+  const envelope = <T>(data: T) => ({ data: { success: true, data } });
+
   describe('getCategories', () => {
     it('debe obtener categorías sin filtros', async () => {
       const list = { categorias: [], total: 0 };
-      (axiosInstance.get as jest.Mock).mockResolvedValue({ data: list });
+      (axiosInstance.get as jest.Mock).mockResolvedValue(envelope(list));
 
       const result = await categoryService.getCategories();
 
@@ -36,7 +39,7 @@ describe('categoryService', () => {
 
     it('debe obtener categorías con filtros', async () => {
       const list = { categorias: [], total: 0 };
-      (axiosInstance.get as jest.Mock).mockResolvedValue({ data: list });
+      (axiosInstance.get as jest.Mock).mockResolvedValue(envelope(list));
 
       await categoryService.getCategories({ storeId: 'store-1', search: 'pan' });
 
@@ -49,7 +52,7 @@ describe('categoryService', () => {
   describe('getCategoryById', () => {
     it('debe obtener una categoría por id', async () => {
       const category = { id: 'cat-1', nombre: 'Lácteos' };
-      (axiosInstance.get as jest.Mock).mockResolvedValue({ data: category });
+      (axiosInstance.get as jest.Mock).mockResolvedValue(envelope(category));
 
       const result = await categoryService.getCategoryById('cat-1');
 
@@ -61,7 +64,7 @@ describe('categoryService', () => {
   describe('createCategory', () => {
     it('debe crear una categoría', async () => {
       const created = { id: 'cat-2', nombre: 'Panadería' };
-      (axiosInstance.post as jest.Mock).mockResolvedValue({ data: created });
+      (axiosInstance.post as jest.Mock).mockResolvedValue(envelope(created));
 
       const dto = { nombre: 'Panadería', storeId: 'store-1' };
       const result = await categoryService.createCategory(dto);
@@ -74,7 +77,7 @@ describe('categoryService', () => {
   describe('updateCategory', () => {
     it('debe actualizar separando el id del body', async () => {
       const updated = { id: 'cat-1', nombre: 'Nuevo nombre' };
-      (axiosInstance.put as jest.Mock).mockResolvedValue({ data: updated });
+      (axiosInstance.put as jest.Mock).mockResolvedValue(envelope(updated));
 
       const result = await categoryService.updateCategory({
         id: 'cat-1',
@@ -101,7 +104,7 @@ describe('categoryService', () => {
   describe('toggleCategoryStatus', () => {
     it('debe alternar el estado enviando el body sin el id', async () => {
       const toggled = { id: 'cat-1', activa: false };
-      (axiosInstance.patch as jest.Mock).mockResolvedValue({ data: toggled });
+      (axiosInstance.patch as jest.Mock).mockResolvedValue(envelope(toggled));
 
       const result = await categoryService.toggleCategoryStatus({
         id: 'cat-1',
@@ -118,7 +121,7 @@ describe('categoryService', () => {
   describe('moveCategoryToStore', () => {
     it('debe mover la categoría a otra tienda', async () => {
       const moved = { id: 'cat-1', storeId: 'store-2' };
-      (axiosInstance.put as jest.Mock).mockResolvedValue({ data: moved });
+      (axiosInstance.put as jest.Mock).mockResolvedValue(envelope(moved));
 
       const result = await categoryService.moveCategoryToStore({
         id: 'cat-1',

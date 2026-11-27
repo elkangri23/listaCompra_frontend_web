@@ -8,7 +8,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sparkles, Loader2, CheckCircle2, AlertCircle, Info } from 'lucide-react';
 import { useBulkCategorize } from '@/features/ai/hooks/use-ai';
-import { useCategories } from '@/features/categories/hooks/use-categories';
+import { useCategories, useCreateCategory } from '@/features/categories/hooks/use-categories';
+import { resolveCategorizations } from '@/features/ai/services/resolve-categorizations';
 import { toast } from 'sonner';
 import type { ProductoListDto } from '@/types/dtos/products';
 import type { CategorizedProduct } from '@/types/dtos/ai';
@@ -38,6 +39,7 @@ export function BulkCategorizationDialog({
 
   const bulkCategorize = useBulkCategorize();
   const { data: categoriesData } = useCategories();
+  const createCategory = useCreateCategory();
 
   // Filtrar productos sin categoría o con categoría incierta
   const uncategorizedProducts = products.filter(p => !p.categoriaId);
@@ -96,39 +98,37 @@ export function BulkCategorizationDialog({
   };
 
   const handleApplyCategories = async () => {
-    const categorizations = new Map<string, string>();
-
-    categorizedResults.forEach((result, index) => {
-      const product = products.find(p => p.nombre === result.nombre);
-      if (product) {
-        const overrideCategory = categoryOverrides.get(product.id);
-        const categoryName = overrideCategory || result.suggestedCategory.nombre;
-        
-        // Buscar ID de categoría por nombre exacto
-        let category = categoriesData?.categorias?.find(c => c.nombre === categoryName);
-        
-        // Si no existe, buscar por nombre similar (case insensitive)
-        if (!category && categoriesData?.categorias) {
-          category = categoriesData.categorias.find(c => 
-            c.nombre.toLowerCase() === categoryName.toLowerCase()
-          );
-        }
-        
-        // Si aún no existe, usar la primera categoría disponible como fallback
-        if (!category && categoriesData?.categorias && categoriesData.categorias.length > 0) {
-          category = categoriesData.categorias[0];
-          console.warn(`Categoría "${categoryName}" no encontrada, usando "${category.nombre}" como fallback`);
-        }
-        
-        if (category) {
-          categorizations.set(product.id, category.id);
-        }
-      }
-    });
-
     try {
+      const { categorizations, createdCategories, skippedProducts } =
+        await resolveCategorizations(
+          categorizedResults,
+          products,
+          categoriesData?.categorias ?? [],
+          categoryOverrides,
+          (nombre: string) =>
+            createCategory.mutateAsync({
+              nombre,
+              descripcion: 'Categoría creada automáticamente por IA',
+            })
+        );
+
+      if (categorizations.size === 0) {
+        toast.error('No se pudo aplicar ninguna categoría.');
+        return;
+      }
+
       await onApply(categorizations);
-      toast.success(`${categorizations.size} productos categorizados.`);
+      const createdMessage =
+        createdCategories.length > 0
+          ? ` Se creó la categoría «${createdCategories.join('», «')}».`
+          : '';
+      const skippedMessage =
+        skippedProducts.length > 0
+          ? ` ${skippedProducts.length} ${skippedProducts.length === 1 ? 'producto' : 'productos'} sin aplicar.`
+          : '';
+      toast.success(
+        `${categorizations.size} ${categorizations.size === 1 ? 'producto categorizado' : 'productos categorizados'}.${createdMessage}${skippedMessage}`
+      );
       setOpen(false);
       resetState();
     } catch (error: any) {

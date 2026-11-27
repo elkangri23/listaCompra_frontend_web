@@ -25,9 +25,12 @@ const mockStore: StoreResponseDto = {
 } as unknown as StoreResponseDto;
 
 const mockStoresList = {
-  stores: [mockStore],
+  tiendas: [mockStore],
   total: 1,
 } as unknown as StoresListResponseDto;
+
+// El backend envuelve las respuestas en { success, message, data }.
+const envelope = <T>(data: T) => ({ data: { success: true, data } });
 
 describe('storeService (CRÍTICO)', () => {
   beforeEach(() => {
@@ -36,7 +39,7 @@ describe('storeService (CRÍTICO)', () => {
 
   describe('createStore', () => {
     it('debe crear una tienda', async () => {
-      (axiosInstance.post as jest.Mock).mockResolvedValue({ data: mockStore });
+      (axiosInstance.post as jest.Mock).mockResolvedValue(envelope(mockStore));
 
       const dto = { nombre: 'Supermercado', direccion: 'Calle Falsa 123' };
       const result = await storeService.createStore(dto);
@@ -54,7 +57,7 @@ describe('storeService (CRÍTICO)', () => {
 
   describe('getStores', () => {
     it('debe obtener tiendas sin filtros', async () => {
-      (axiosInstance.get as jest.Mock).mockResolvedValue({ data: mockStoresList });
+      (axiosInstance.get as jest.Mock).mockResolvedValue(envelope(mockStoresList));
 
       const result = await storeService.getStores();
 
@@ -63,7 +66,7 @@ describe('storeService (CRÍTICO)', () => {
     });
 
     it('debe obtener tiendas con filtros', async () => {
-      (axiosInstance.get as jest.Mock).mockResolvedValue({ data: mockStoresList });
+      (axiosInstance.get as jest.Mock).mockResolvedValue(envelope(mockStoresList));
 
       await storeService.getStores({ activas: true, search: 'super' });
 
@@ -75,7 +78,7 @@ describe('storeService (CRÍTICO)', () => {
 
   describe('getStoreById', () => {
     it('debe obtener una tienda por id', async () => {
-      (axiosInstance.get as jest.Mock).mockResolvedValue({ data: mockStore });
+      (axiosInstance.get as jest.Mock).mockResolvedValue(envelope(mockStore));
 
       const result = await storeService.getStoreById('store-1');
 
@@ -86,7 +89,7 @@ describe('storeService (CRÍTICO)', () => {
 
   describe('updateStore', () => {
     it('debe actualizar la tienda separando el id del body', async () => {
-      (axiosInstance.put as jest.Mock).mockResolvedValue({ data: mockStore });
+      (axiosInstance.put as jest.Mock).mockResolvedValue(envelope(mockStore));
 
       const result = await storeService.updateStore({ id: 'store-1', nombre: 'Nuevo nombre' });
 
@@ -110,7 +113,7 @@ describe('storeService (CRÍTICO)', () => {
   describe('toggleStoreStatus', () => {
     it('debe alternar el estado enviando el body sin el id', async () => {
       const toggled = { ...mockStore, activa: false };
-      (axiosInstance.patch as jest.Mock).mockResolvedValue({ data: toggled });
+      (axiosInstance.patch as jest.Mock).mockResolvedValue(envelope(toggled));
 
       const result = await storeService.toggleStoreStatus({ id: 'store-1', activa: false });
 
@@ -124,7 +127,7 @@ describe('storeService (CRÍTICO)', () => {
   describe('getStoreCategories', () => {
     it('debe obtener las categorías de la tienda', async () => {
       const categories = { categorias: [], total: 0 };
-      (axiosInstance.get as jest.Mock).mockResolvedValue({ data: categories });
+      (axiosInstance.get as jest.Mock).mockResolvedValue(envelope(categories));
 
       const result = await storeService.getStoreCategories('store-1');
 
