@@ -11,6 +11,8 @@
   display:flex;
   align-items:center;
   justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
   padding:14px 28px;
   border-bottom:1px solid #f0f2f5;
 }
@@ -81,4 +83,12 @@
 @media (min-width:720px){
   .heroTitle{font-size:2.5rem}
   .hero{min-height:520px}
+}
+
+/* Móvil: la cabecera no cabe en una fila; los enlaces de navegación
+   se ocultan (las secciones se alcanzan bajando) y se reduce el padding */
+@media (max-width:719px){
+  .header{padding:12px 16px}
+  .links{display:none}
+  .nav{gap:10px}
 }

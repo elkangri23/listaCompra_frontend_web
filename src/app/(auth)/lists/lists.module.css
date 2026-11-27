@@ -18,6 +18,34 @@
   color: #111418;
   font-size: 2rem;
   font-weight: 700;
+
+/* Crear lista rápida (antes estas clases no existían: la fila se veía
+   con estilos de navegador y en móvil se rompía) */
+.createContainer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.createInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #dbdfe6;
+  border-radius: 8px;
+  background: #f0f2f5;
+  color: #111418;
+  font-size: 0.95rem;
+}
+
+.ghostLink {
+  color: #4387f4;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
   margin: 0;
   min-width: 288px;
 }

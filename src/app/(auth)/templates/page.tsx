@@ -58,7 +58,7 @@ export default function TemplatesPage() {
   return (
     <div className={styles.root}>
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
           <div>
             <h1 className={styles.title}>Plantillas de Listas</h1>
             <p className={styles.description}>
@@ -130,7 +130,7 @@ export default function TemplatesPage() {
 
         {isSearching ? (
           <div className="mt-6">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
               <h3 className="text-base font-medium text-gray-900">
                 Resultados para «{debouncedSearchTerm.trim()}»
                 {searchResults && (
