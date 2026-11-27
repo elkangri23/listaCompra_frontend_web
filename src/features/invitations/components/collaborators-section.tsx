@@ -1,4 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
 import { CollaboratorItem } from './collaborator-item';
 import { useCollaborators } from '../hooks/use-collaborators';
@@ -8,11 +9,12 @@ import { SkeletonRow } from '@/components/ui/skeleton'
 interface CollaboratorsSectionProps {
   listId: string;
   ownerId: string;
+  onInvite?: () => void;
 }
 
 const MAX_COLLABORATORS = 10;
 
-export const CollaboratorsSection: React.FC<CollaboratorsSectionProps> = ({ listId, ownerId }) => {
+export const CollaboratorsSection: React.FC<CollaboratorsSectionProps> = ({ listId, ownerId, onInvite }) => {
   const { data: collaborators, isLoading, error } = useCollaborators(listId);
   const { data: session } = useSession();
   const currentUserId = session?.user?.id;
@@ -45,6 +47,10 @@ export const CollaboratorsSection: React.FC<CollaboratorsSectionProps> = ({ list
           Personas que tienen acceso a esta lista.
         </p>
       </div>
+
+      {isOwner && collaboratorCount < MAX_COLLABORATORS && onInvite && (
+        <Button onClick={onInvite}>Añadir colaborador</Button>
+      )}
 
       {collaboratorCount >= MAX_COLLABORATORS && (
         <Alert variant="warning">

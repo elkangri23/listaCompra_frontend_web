@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { CollaboratorsSection } from '@/features/invitations/components/collaborators-section';
@@ -235,6 +235,105 @@ describe('CollaboratorsSection (SECUNDARIO - 80% coverage)', () => {
 
       expect(screen.queryByText('Límite de Colaboradores Alcanzado')).not.toBeInTheDocument();
       expect(screen.queryByTestId('triangle-alert-icon')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Botón Añadir colaborador', () => {
+    it('debe mostrar el botón al propietario cuando hay hueco y hay onInvite', () => {
+      mockUseSession.mockReturnValue({
+        data: { user: { id: 'owner-1', email: 'owner@test.com' } },
+        status: 'authenticated',
+        update: jest.fn(),
+      } as any);
+      mockUseCollaborators.mockReturnValue({
+        data: mockCollaborators,
+        isLoading: false,
+        error: null,
+      } as any);
+
+      renderComponent({ onInvite: jest.fn() });
+
+      expect(screen.getByRole('button', { name: 'Añadir colaborador' })).toBeInTheDocument();
+    });
+
+    it('debe llamar a onInvite al pulsar el botón', () => {
+      mockUseSession.mockReturnValue({
+        data: { user: { id: 'owner-1', email: 'owner@test.com' } },
+        status: 'authenticated',
+        update: jest.fn(),
+      } as any);
+      mockUseCollaborators.mockReturnValue({
+        data: mockCollaborators,
+        isLoading: false,
+        error: null,
+      } as any);
+      const onInvite = jest.fn();
+
+      renderComponent({ onInvite });
+
+      fireEvent.click(screen.getByRole('button', { name: 'Añadir colaborador' }));
+      expect(onInvite).toHaveBeenCalledTimes(1);
+    });
+
+    it('NO debe mostrar el botón a un no-propietario', () => {
+      mockUseSession.mockReturnValue({
+        data: { user: { id: 'other-user', email: 'other@test.com' } },
+        status: 'authenticated',
+        update: jest.fn(),
+      } as any);
+      mockUseCollaborators.mockReturnValue({
+        data: mockCollaborators,
+        isLoading: false,
+        error: null,
+      } as any);
+
+      renderComponent({ onInvite: jest.fn() });
+
+      expect(screen.queryByRole('button', { name: 'Añadir colaborador' })).not.toBeInTheDocument();
+    });
+
+    it('NO debe mostrar el botón al llegar al máximo de colaboradores', () => {
+      mockUseSession.mockReturnValue({
+        data: { user: { id: 'owner-1', email: 'owner@test.com' } },
+        status: 'authenticated',
+        update: jest.fn(),
+      } as any);
+      const tenCollaborators = Array.from({ length: 10 }, (_, i) => ({
+        id: `collab-${i}`,
+        email: `usuario${i}@test.com`,
+        nombreCompleto: `Usuario ${i}`,
+        permisos: 'LECTURA' as const,
+        invitacionId: `inv-${i}`,
+        aceptada: true,
+        esOwner: false,
+        createdAt: new Date().toISOString(),
+      }));
+      mockUseCollaborators.mockReturnValue({
+        data: tenCollaborators,
+        isLoading: false,
+        error: null,
+      } as any);
+
+      renderComponent({ onInvite: jest.fn() });
+
+      expect(screen.queryByRole('button', { name: 'Añadir colaborador' })).not.toBeInTheDocument();
+    });
+
+    it('NO debe mostrar el botón sin onInvite', () => {
+      mockUseSession.mockReturnValue({
+        data: { user: { id: 'owner-1', email: 'owner@test.com' } },
+        status: 'authenticated',
+        update: jest.fn(),
+      } as any);
+      mockUseCollaborators.mockReturnValue({
+        data: mockCollaborators,
+        isLoading: false,
+        error: null,
+      } as any);
+
+      renderComponent();
+
+      expect(screen.queryByRole('button', { name: 'Añadir colaborador' })).not.toBeInTheDocument();
     });
   });
 

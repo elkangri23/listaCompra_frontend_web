@@ -1,12 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Sparkles } from 'lucide-react';
+import { GripVertical, Sparkles } from 'lucide-react';
 import styles from './list-detail.module.css';
 import { useList, useUpdateList, useDeleteList } from '@/features/lists/hooks/use-lists';
-import { useProducts, useCreateProduct, useDeleteProduct, useToggleProductPurchased, useUpdateProduct } from '@/features/products/hooks/use-products';
+import { useProducts, useCreateProduct, useDeleteProduct, useToggleProductPurchased, useUpdateProduct, useReorderProducts } from '@/features/products/hooks/use-products';
+import { DndContext, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent, type DragOverEvent, type DragStartEvent } from '@dnd-kit/core';
+import { computeProductReorder, resolveOverGroupKey } from '@/features/products/lib/compute-product-reorder';
+import { DroppableProductGroup, SortableProductRow } from '@/features/products/components/sortable-product-list';
 import { useListSync } from '@/features/lists/hooks/use-list-sync';
 import { useCategories } from '@/features/categories/hooks/use-categories';
 import { ShareListDialog } from '@/features/invitations/components/share-list-dialog';
@@ -34,6 +37,7 @@ export default function ListDetailPage() {
   const [editingNombre, setEditingNombre] = useState('');
   const [editingCantidad, setEditingCantidad] = useState(1);
   const [editingUrgente, setEditingUrgente] = useState(false);
+  const [editingCategoria, setEditingCategoria] = useState('');
   
   // Estado para el diálogo de categorización masiva
   const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
@@ -187,6 +191,7 @@ export default function ListDetailPage() {
     setEditingNombre(product.nombre);
     setEditingCantidad(product.cantidad);
     setEditingUrgente(product.urgente || false);
+    setEditingCategoria(product.categoriaId || '');
   };
 
   const handleCancelEdit = () => {
@@ -194,14 +199,18 @@ export default function ListDetailPage() {
     setEditingNombre('');
     setEditingCantidad(1);
     setEditingUrgente(false);
+    setEditingCategoria('');
   };
 
-  const handleSaveEdit = (productId: string) => {
+  const handleSaveEdit = (product: any) => {
     if (!editingNombre.trim()) return;
-    
+
+    const categoriaActual = product.categoriaId || '';
+    const categoriaCambiada = editingCategoria !== categoriaActual;
+
     updateProductMutation.mutate(
       {
-        productId,
+        productId: product.id,
         data: {
           nombre: editingNombre.trim(),
           cantidad: editingCantidad,
@@ -209,7 +218,7 @@ export default function ListDetailPage() {
           descripcion: undefined,
           unidad: undefined,
           precio: undefined,
-          categoriaId: undefined,
+          categoriaId: categoriaCambiada ? (editingCategoria || null) : undefined,
         },
       },
       {
@@ -218,6 +227,80 @@ export default function ListDetailPage() {
         },
       }
     );
+  };
+
+  const reorderProductsMutation = useReorderProducts(listId);
+
+  const handleMoveProductOrder = (productId: string, direction: -1 | 1) => {
+    const product = products.find((p: any) => p.id === productId);
+    if (!product) return;
+    const key = (product.categoriaId && categoriesMap.has(product.categoriaId))
+      ? product.categoriaId
+      : '__nocat__';
+    const group = grouped[key] || [];
+    const index = group.findIndex((p: any) => p.id === productId);
+    const target = index + direction;
+    if (index < 0 || target < 0 || target >= group.length) return;
+    const ids = products.map((p: any) => p.id);
+    const a = ids.indexOf(productId);
+    const b = ids.indexOf(group[target].id);
+    [ids[a], ids[b]] = [ids[b], ids[a]];
+    reorderProductsMutation.mutate(ids);
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const [overGroupKey, setOverGroupKey] = useState<string | null>(null);
+
+  const groupKeyOfProduct = useCallback(
+    (p: any) => (p.categoriaId && categoriesMap.has(p.categoriaId)) ? p.categoriaId : '__nocat__',
+    [categoriesMap]
+  );
+
+  const productsForReorder = useMemo(
+    () => products.map((p: any) => ({ id: p.id as string, categoriaId: (p.categoriaId ?? null) as string | null })),
+    [products]
+  );
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDragId(event.active.id as string);
+  };
+
+  const handleDragOver = (event: DragOverEvent) => {
+    const overId = event.over ? (event.over.id as string) : null;
+    setOverGroupKey(resolveOverGroupKey(overId, productsForReorder, groupKeyOfProduct));
+  };
+
+  const handleDragCancel = () => {
+    setActiveDragId(null);
+    setOverGroupKey(null);
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveDragId(null);
+    setOverGroupKey(null);
+    const overId = over ? (over.id as string) : null;
+    const result = computeProductReorder(
+      productsForReorder,
+      active.id as string,
+      overId,
+      groupKeyOfProduct
+    );
+    if (!result) return;
+    try {
+      if (result.newCategoriaId !== undefined) {
+        await updateProductMutation.mutateAsync({
+          productId: active.id as string,
+          data: { categoriaId: result.newCategoriaId },
+        });
+      }
+      reorderProductsMutation.mutate(result.orderedIds);
+    } catch (error) {
+      console.error('Error al reordenar el producto:', error);
+    }
   };
 
   const handleStartEditListName = () => {
@@ -547,17 +630,47 @@ export default function ListDetailPage() {
                 <p className={styles.emptyStateText}>Esta lista está vacía… por ahora. Escribe el primer producto arriba y pulsa Enter.</p>
               </div>
             ) : (
-              Object.entries(grouped).map(([catId, productos]) => (
-                <div key={catId}>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
+                onDragEnd={handleDragEnd}
+                onDragCancel={handleDragCancel}
+              >
+              {Object.entries(grouped).map(([catId, productos]) => (
+                <DroppableProductGroup
+                  key={catId}
+                  groupKey={catId}
+                  itemIds={productos.map((p: any) => p.id)}
+                  highlighted={activeDragId !== null && overGroupKey === catId}
+                  highlightClassName={styles.groupDragOver}
+                >
                   <h2 className={styles.categoryTitle}>
                     {catId === '__nocat__' ? 'Sin categoría' : categoriesMap.get(catId)}
                   </h2>
-                  {productos.map((product: any) => (
-                  <div 
-                    key={product.id} 
-                    id={`product-${product.id}`}
+                  {productos.map((product: any, productIndex: number) => (
+                  <SortableProductRow
+                    key={product.id}
+                    sortableId={product.id}
+                    domId={`product-${product.id}`}
+                    disabled={editingProductId === product.id}
                     className={`${styles.productItem} ${product.urgente ? styles.urgent : ''} ${product.comprado ? styles.purchased : ''}`}
                   >
+                    {({ attributes, listeners }) => (
+                      <>
+                        {editingProductId !== product.id && (
+                          <button
+                            type="button"
+                            className={styles.dragHandle}
+                            {...attributes}
+                            {...listeners}
+                            aria-label={`Arrastrar ${product.nombre}`}
+                            title="Arrastra para reordenar"
+                          >
+                            <GripVertical className="h-5 w-5" />
+                          </button>
+                        )}
                     <div className={styles.productLeft}>
                       <div className={styles.checkboxWrapper}>
                         <input
@@ -584,13 +697,24 @@ export default function ListDetailPage() {
                             onChange={(e) => setEditingNombre(e.target.value)}
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') {
-                                handleSaveEdit(product.id);
+                                handleSaveEdit(product);
                               } else if (e.key === 'Escape') {
                                 handleCancelEdit();
                               }
                             }}
                             aria-label="Editar nombre del producto"
                           />
+                          <select
+                            className={styles.editCategoriaSelect}
+                            value={editingCategoria}
+                            onChange={(e) => setEditingCategoria(e.target.value)}
+                            aria-label="Categoría"
+                          >
+                            <option value="">Sin categoría</option>
+                            {(categoriesResp?.categorias || []).map((c: any) => (
+                              <option key={c.id} value={c.id}>{c.nombre}</option>
+                            ))}
+                          </select>
                           <label className={styles.editUrgenteLabel}>
                             <input
                               type="checkbox"
@@ -602,8 +726,26 @@ export default function ListDetailPage() {
                           </label>
                           <div className={styles.editActions}>
                             <button
+                              className={styles.moveButton}
+                              onClick={() => handleMoveProductOrder(product.id, -1)}
+                              disabled={productIndex === 0 || reorderProductsMutation.isPending}
+                              aria-label="Subir producto"
+                              title="Subir producto"
+                            >
+                              ↑
+                            </button>
+                            <button
+                              className={styles.moveButton}
+                              onClick={() => handleMoveProductOrder(product.id, 1)}
+                              disabled={productIndex === productos.length - 1 || reorderProductsMutation.isPending}
+                              aria-label="Bajar producto"
+                              title="Bajar producto"
+                            >
+                              ↓
+                            </button>
+                            <button
                               className={styles.saveButton}
-                              onClick={() => handleSaveEdit(product.id)}
+                              onClick={() => handleSaveEdit(product)}
                               disabled={updateProductMutation.isPending}
                             >
                               ✓
@@ -643,10 +785,26 @@ export default function ListDetailPage() {
                         <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path>
                       </svg>
                     </button>
-                  </div>
+                      </>
+                    )}
+                  </SortableProductRow>
                 ))}
-              </div>
-              ))
+              </DroppableProductGroup>
+              ))}
+              {activeDragId && !grouped['__nocat__'] && (
+                <DroppableProductGroup
+                  groupKey="__nocat__"
+                  itemIds={[]}
+                  highlighted={overGroupKey === '__nocat__'}
+                  highlightClassName={styles.groupDragOver}
+                >
+                  <h2 className={styles.categoryTitle}>Sin categoría</h2>
+                  <div className={styles.emptyGroupDropHint}>
+                    Suelta aquí para quitar la categoría
+                  </div>
+                </DroppableProductGroup>
+              )}
+              </DndContext>
             )}
           </div>
 
@@ -760,7 +918,7 @@ export default function ListDetailPage() {
                   </div>
                 </div>
               ) : activeTab === 'collaborators' ? (
-                <CollaboratorsSection listId={listId} ownerId={list?.propietarioId} />
+                <CollaboratorsSection listId={listId} ownerId={list?.propietarioId} onInvite={() => setShareDialogOpen(true)} />
               ) : activeTab === 'audit' ? (
                 <AuditHistorySection listId={listId} />
               ) : (

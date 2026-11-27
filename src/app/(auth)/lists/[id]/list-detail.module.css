@@ -471,6 +471,50 @@
   color: #dc2626;
 }
 
+/* Tirador para arrastrar la fila (dnd-kit, PointerSensor). Solo el
+   tirador activa el arrastre; touch-action: none evita que el navegador
+   interprete el gesto como scroll mientras se arrastra. */
+.dragHandle {
+  touch-action: none;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  color: #5b6b82;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+}
+
+.dragHandle:hover {
+  color: #111418;
+  background-color: #f0f2f5;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+/* Anillo del grupo de destino mientras se arrastra sobre él. */
+.groupDragOver {
+  box-shadow: 0 0 0 2px #2563eb;
+  border-radius: 8px;
+}
+
+/* Zona de soltar para quitar la categoría (aparece solo mientras se
+   arrastra, cuando ningún producto está sin categoría). */
+.emptyGroupDropHint {
+  border: 2px dashed #dbdfe6;
+  border-radius: 8px;
+  padding: 16px;
+  color: #5b6b82;
+  font-size: 14px;
+  text-align: center;
+}
+
 /* Sidebar Styles */
 .sidebar {
   display: flex;
@@ -808,6 +852,24 @@
   border-color: #2e6fd9;
 }
 
+.editCategoriaSelect {
+  min-width: 0;
+  max-width: 170px;
+  height: 40px;
+  padding: 8px 12px;
+  border: 2px solid #2563eb;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #111418;
+  background-color: white;
+}
+
+.editCategoriaSelect:focus {
+  outline: none;
+  border-color: #2e6fd9;
+}
+
 .editUrgenteLabel {
   display: flex;
   align-items: center;
@@ -868,6 +930,32 @@
 .cancelButton:hover {
   background-color: #e4e7eb;
   color: #111418;
+}
+
+.moveButton {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #f0f2f5;
+  color: #5b6b82;
+  transition: all 0.2s;
+}
+
+.moveButton:hover:not(:disabled) {
+  background-color: #e4e7eb;
+  color: #111418;
+}
+
+.moveButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* Responsive */

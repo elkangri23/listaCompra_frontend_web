@@ -73,7 +73,9 @@ const mapToUpdateDto = (
   }
 
   if (data.categoriaId !== undefined) {
-    dto.categoriaId = sanitizeString(data.categoriaId);
+    // null significa quitar la categoría: no pasar por sanitizeString,
+    // que convertiría null en undefined y el backend no lo recibiría.
+    dto.categoriaId = data.categoriaId === null ? null : sanitizeString(data.categoriaId);
   }
 
   return dto;

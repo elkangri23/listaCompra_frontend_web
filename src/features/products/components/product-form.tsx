@@ -41,7 +41,7 @@ const productFormSchema = z.object({
     .max(999_999.99, 'El precio máximo es 999999.99.')
     .optional(),
   urgente: z.boolean().default(false),
-  categoriaId: z.string().optional(),
+  categoriaId: z.string().nullable().optional(),
 });
 
 type ProductFormSchema = typeof productFormSchema;

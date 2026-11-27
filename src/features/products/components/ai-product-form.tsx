@@ -43,7 +43,7 @@ export function AIProductForm({
   const [productDescription, setProductDescription] = useState('');
   const [suggestions, setSuggestions] = useState<SuggestedCategory[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(
-    defaultValues?.categoriaId
+    defaultValues?.categoriaId ?? undefined
   );
   const [formValues, setFormValues] = useState<Partial<ProductFormValues>>(defaultValues || {});
 
