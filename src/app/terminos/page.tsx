@@ -9,18 +9,18 @@ export const metadata: Metadata = {
 
 export default function TerminosPage() {
   return (
-    <div
+    <div id="contenido" tabIndex={-1}
       className="relative flex h-auto min-h-screen w-full flex-col bg-[#f0f2f5] group/design-root overflow-x-hidden"
       style={{ fontFamily: 'Inter, "Noto Sans", sans-serif' }}
     >
       <div className="layout-container flex h-full grow flex-col items-center p-5">
         <div className="layout-content-container flex flex-col w-[720px] max-w-full py-5">
           <div className="bg-white rounded-lg px-6 py-8 sm:px-10">
-            <p className="text-[#4387f4] text-lg font-bold leading-normal mb-1">🛒 ListaCompra</p>
+            <p className="text-[#2563eb] text-lg font-bold leading-normal mb-1">🛒 ListaCompra</p>
             <h1 className="text-[#111418] text-3xl font-bold leading-tight mb-2">
               Términos de Servicio
             </h1>
-            <p className="text-[#60708a] text-sm font-normal leading-normal mb-6">
+            <p className="text-[#5b6b82] text-sm font-normal leading-normal mb-6">
               Última actualización: 26 de noviembre de 2026
             </p>
 
@@ -53,7 +53,7 @@ export default function TerminosPage() {
                 datos, escríbenos a{' '}
                 <a
                   href="mailto:anthonymoles89@gmail.com"
-                  className="text-[#4387f4] underline"
+                  className="text-[#2563eb] underline"
                 >
                   anthonymoles89@gmail.com
                 </a>
@@ -155,7 +155,7 @@ export default function TerminosPage() {
                 tu cuenta, escribe a{' '}
                 <a
                   href="mailto:anthonymoles89@gmail.com"
-                  className="text-[#4387f4] underline"
+                  className="text-[#2563eb] underline"
                 >
                   anthonymoles89@gmail.com
                 </a>
@@ -197,10 +197,10 @@ export default function TerminosPage() {
             </section>
 
             <div className="border-t border-[#dbdfe6] mt-8 pt-6 flex flex-col sm:flex-row gap-4 justify-between">
-              <Link href="/register" className="text-[#4387f4] font-bold underline">
+              <Link href="/register" className="text-[#2563eb] font-bold underline">
                 Crear una cuenta
               </Link>
-              <Link href="/login" className="text-[#4387f4] font-bold underline">
+              <Link href="/login" className="text-[#2563eb] font-bold underline">
                 ¿Ya tienes cuenta? Inicia sesión
               </Link>
             </div>

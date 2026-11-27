@@ -94,7 +94,7 @@ export const PublicListAccess: React.FC<PublicListAccessProps> = ({ token }) => 
       message = 'Este enlace de invitación ya no está disponible. Solicita a quien te invitó que genere un nuevo enlace.';
     } else if (status === 403) {
       Icon = Shield;
-      iconColor = 'text-yellow-600';
+      iconColor = 'text-[#a16207]';
       bgColor = 'bg-yellow-50';
       borderColor = 'border-yellow-200';
       title = 'Acceso denegado';

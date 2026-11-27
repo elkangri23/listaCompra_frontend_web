@@ -123,7 +123,7 @@ export const AuditHistorySection: React.FC<AuditHistorySectionProps> = ({ listId
   }
 
   if (error) {
-    return <p className="text-red-500">Error al cargar el historial de cambios.</p>;
+    return <p className="text-red-600">Error al cargar el historial de cambios.</p>;
   }
 
   const entries = data?.entries || [];

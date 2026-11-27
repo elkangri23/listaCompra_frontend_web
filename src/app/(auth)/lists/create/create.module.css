@@ -27,7 +27,7 @@
 
 .subtitle {
   font-size: 1rem;
-  color: var(--foreground-secondary, #60708a);
+  color: var(--foreground-secondary, #5b6b82);
   margin: 0;
   line-height: 1.5;
 }

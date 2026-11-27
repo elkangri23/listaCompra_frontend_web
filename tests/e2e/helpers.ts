@@ -194,10 +194,10 @@ export async function goToList(page: Page, listId: string) {
 
 /**
  * Esperar carga de datos en el dashboard (lista de listas)
- * El h2 "Mis Listas" se renderiza antes de que lleguen los datos;
+ * El h1 "Mis Listas" se renderiza antes de que lleguen los datos;
  * hay que esperar a que desaparezca el texto de carga.
  */
 export async function waitForDashboard(page: Page) {
-  await expect(page.locator('h2:has-text("Mis Listas")')).toBeVisible({ timeout: 15000 });
+  await expect(page.locator('h1:has-text("Mis Listas")')).toBeVisible({ timeout: 15000 });
   await expect(page.locator('text=Cargando tus listas')).toBeHidden({ timeout: 20000 });
 }

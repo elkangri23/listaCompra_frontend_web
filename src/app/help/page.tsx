@@ -9,18 +9,18 @@ export const metadata: Metadata = {
 
 export default function HelpPage() {
   return (
-    <div
+    <div id="contenido" tabIndex={-1}
       className="relative flex h-auto min-h-screen w-full flex-col bg-[#f0f2f5] group/design-root overflow-x-hidden"
       style={{ fontFamily: 'Inter, "Noto Sans", sans-serif' }}
     >
       <div className="layout-container flex h-full grow flex-col items-center p-5">
         <div className="layout-content-container flex flex-col w-[720px] max-w-full py-5">
           <div className="bg-white rounded-lg px-6 py-8 sm:px-10">
-            <p className="text-[#4387f4] text-lg font-bold leading-normal mb-1">🛒 ListaCompra</p>
+            <p className="text-[#2563eb] text-lg font-bold leading-normal mb-1">🛒 ListaCompra</p>
             <h1 className="text-[#111418] text-3xl font-bold leading-tight mb-2">
               Ayuda
             </h1>
-            <p className="text-[#60708a] text-sm font-normal leading-normal mb-6">
+            <p className="text-[#5b6b82] text-sm font-normal leading-normal mb-6">
               Última actualización: 27 de noviembre de 2026
             </p>
 
@@ -99,7 +99,7 @@ export default function HelpPage() {
               <p className="text-[#111418] text-base font-normal leading-relaxed">
                 Para cualquier duda, problema o sugerencia, escríbenos a{' '}
                 <a
-                  className="text-[#4387f4] underline"
+                  className="text-[#2563eb] underline"
                   href="mailto:anthonymoles89@gmail.com"
                 >
                   anthonymoles89@gmail.com
@@ -111,7 +111,7 @@ export default function HelpPage() {
             <div className="flex flex-wrap gap-3 mt-8">
               <Link
                 href="/register"
-                className="bg-[#4387f4] text-white font-bold px-4 py-2 rounded-lg no-underline"
+                className="bg-[#2563eb] text-white font-bold px-4 py-2 rounded-lg no-underline"
               >
                 Crear una cuenta
               </Link>

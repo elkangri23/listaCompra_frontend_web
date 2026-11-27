@@ -170,14 +170,14 @@ export function ForgotPasswordForm() {
           Contraseña cambiada
         </h2>
         {statusMessage ? (
-          <p role="status" className="text-sm text-emerald-600 py-2">
+          <p role="status" className="text-sm text-[#047857] py-2">
             {statusMessage}
           </p>
         ) : null}
         <div className="flex py-3 mt-6">
           <Link
             href="/login"
-            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 w-full bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 w-full bg-[#2563eb] text-white text-sm font-bold leading-normal tracking-[0.015em]"
           >
             Ir a iniciar sesión
           </Link>
@@ -210,7 +210,7 @@ export function ForgotPasswordForm() {
               onChange={handleCodeChange}
               aria-invalid={fieldErrors.codigo ? 'true' : 'false'}
               aria-describedby={fieldErrors.codigo ? 'codigo-error' : undefined}
-              className="flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal tracking-[0.5em]"
+              className="flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#5b6b82] p-4 text-base font-normal leading-normal tracking-[0.5em]"
             />
           </label>
           {fieldErrors.codigo ? (
@@ -240,7 +240,7 @@ export function ForgotPasswordForm() {
               aria-describedby={
                 fieldErrors.nuevaPassword ? 'nuevaPassword-error' : undefined
               }
-              className="flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
+              className="flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#5b6b82] p-4 text-base font-normal leading-normal"
             />
           </label>
           {fieldErrors.nuevaPassword ? (
@@ -270,7 +270,7 @@ export function ForgotPasswordForm() {
               aria-describedby={
                 fieldErrors.confirmPassword ? 'confirmPassword-error' : undefined
               }
-              className="flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
+              className="flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#5b6b82] p-4 text-base font-normal leading-normal"
             />
           </label>
           {fieldErrors.confirmPassword ? (
@@ -287,7 +287,7 @@ export function ForgotPasswordForm() {
         ) : null}
 
         {statusMessage ? (
-          <p role="status" className="text-sm text-emerald-600 py-2">
+          <p role="status" className="text-sm text-[#047857] py-2">
             {statusMessage}
           </p>
         ) : null}
@@ -296,7 +296,7 @@ export function ForgotPasswordForm() {
           <button
             type="submit"
             disabled={isPending}
-            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 w-full bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
+            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 w-full bg-[#2563eb] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
           >
             {isPending ? 'Cambiando la contraseña…' : 'Cambiar la contraseña'}
           </button>
@@ -310,7 +310,7 @@ export function ForgotPasswordForm() {
           </button>
         </div>
 
-        <p className="text-[#60708a] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center w-full max-w-[480px]">
+        <p className="text-[#5b6b82] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center w-full max-w-[480px]">
           <button
             type="button"
             onClick={() => {
@@ -332,7 +332,7 @@ export function ForgotPasswordForm() {
       <h2 className="text-[#111418] text-lg font-bold leading-normal mb-4">
         Recuperar la contraseña
       </h2>
-      <p className="text-[#60708a] text-sm font-normal leading-normal mb-2 max-w-[480px]">
+      <p className="text-[#5b6b82] text-sm font-normal leading-normal mb-2 max-w-[480px]">
         Te enviaremos un código de 6 dígitos para poner una contraseña nueva.
       </p>
 
@@ -352,7 +352,7 @@ export function ForgotPasswordForm() {
             }}
             aria-invalid={fieldErrors.email ? 'true' : 'false'}
             aria-describedby={fieldErrors.email ? 'email-error' : undefined}
-            className="flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
+            className="flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#5b6b82] p-4 text-base font-normal leading-normal"
           />
         </label>
         {fieldErrors.email ? (
@@ -369,7 +369,7 @@ export function ForgotPasswordForm() {
       ) : null}
 
       {statusMessage ? (
-        <p role="status" className="text-sm text-emerald-600 py-2">
+        <p role="status" className="text-sm text-[#047857] py-2">
           {statusMessage}
         </p>
       ) : null}
@@ -378,7 +378,7 @@ export function ForgotPasswordForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 w-full bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
+          className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 w-full bg-[#2563eb] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
         >
           {isPending && (
             <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24" aria-hidden="true">

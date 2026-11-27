@@ -155,8 +155,9 @@ export default function NotificationsPage() {
 
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6b7280]" />
             <Input
+              aria-label="Buscar notificaciones"
               placeholder="Buscar notificaciones..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -234,7 +235,7 @@ export default function NotificationsPage() {
         </div>
       ) : filteredNotifications.length === 0 ? (
         <div className="text-center py-12">
-          <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <Bell className="h-12 w-12 text-[#6b7280] mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             {notifications && notifications.length === 0
               ? 'No tienes notificaciones'
@@ -295,7 +296,8 @@ export default function NotificationsPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => deleteNotification(notification.id)}
-                    className="h-8 w-8 text-gray-400 hover:text-red-600"
+                    aria-label="Borrar notificación"
+                    className="h-8 w-8 text-[#6b7280] hover:text-red-600"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

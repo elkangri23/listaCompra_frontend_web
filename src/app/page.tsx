@@ -29,7 +29,7 @@ export default function Home() {
         </nav>
       </header>
 
-      <main className={styles.container}>
+      <main id="contenido" tabIndex={-1} className={styles.container}>
         <section className={styles.hero} style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.12), rgba(0,0,0,0.45)), url(${heroImage})` }}>
           <div className={styles.heroContent}>
             <h1 className={styles.heroTitle}>La lista de la compra, por fin en común.</h1>

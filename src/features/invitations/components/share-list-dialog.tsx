@@ -136,7 +136,7 @@ export function ShareListDialog({
                       </SelectItem>
                       <SelectItem value="ESCRITURA" className="flex items-start gap-3 p-3">
                         <div className="flex items-center gap-2 w-full">
-                          <Edit className="h-4 w-4 text-green-600 mt-0.5" />
+                          <Edit className="h-4 w-4 text-[#15803d] mt-0.5" />
                           <div className="flex-1">
                             <div className="font-medium">Lectura y escritura</div>
                             <div className="text-sm text-gray-600">Puede ver y modificar productos de la lista</div>

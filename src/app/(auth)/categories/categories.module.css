@@ -18,7 +18,7 @@
 
 .subtitle {
   font-size: 1rem;
-  color: #60708a;
+  color: #5b6b82;
   margin: 0;
 }
 
@@ -63,7 +63,7 @@
 }
 
 .required {
-  color: #ef4444;
+  color: #dc2626;
 }
 
 .input {
@@ -76,7 +76,7 @@
 }
 
 .input:focus {
-  border-color: #4387f4;
+  border-color: #2563eb;
 }
 
 .button {
@@ -86,7 +86,7 @@
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   border: none;
-  background-color: #4387f4;
+  background-color: #2563eb;
   color: white;
   border-radius: 8px;
   cursor: pointer;
@@ -96,9 +96,9 @@
 }
 
 .button:hover:not(:disabled) {
-  background-color: #357ae8;
+  background-color: #1d4ed8;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(67, 135, 244, 0.3);
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
 }
 
 .button:disabled {
@@ -146,8 +146,8 @@
 }
 
 .categoryItem:hover {
-  border-color: #4387f4;
-  box-shadow: 0 2px 8px rgba(67, 135, 244, 0.15);
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
 }
 
 .categoryInfo {
@@ -172,7 +172,7 @@
 
 .categoryDesc {
   font-size: 0.875rem;
-  color: #60708a;
+  color: #5b6b82;
   margin: 0;
 }
 
@@ -283,7 +283,7 @@
 .buttonSave {
   padding: 0.5rem 1rem;
   border: none;
-  background-color: #22c55e;
+  background-color: #15803d;
   color: white;
   border-radius: 6px;
   cursor: pointer;
@@ -293,7 +293,7 @@
 }
 
 .buttonSave:hover:not(:disabled) {
-  background-color: #16a34a;
+  background-color: #166534;
 }
 
 .buttonSave:disabled {
@@ -347,7 +347,7 @@
 
 .emptyDescription {
   font-size: 0.875rem;
-  color: #60708a;
+  color: #5b6b82;
   margin: 0;
 }
 

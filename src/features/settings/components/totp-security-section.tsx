@@ -128,7 +128,7 @@ export function TotpSecuritySection() {
   return (
     <div className="w-full max-w-[480px]">
       {/* Estado actual */}
-      <div aria-live="polite" className="mb-4 text-sm text-[#60708a]">
+      <div aria-live="polite" className="mb-4 text-sm text-[#5b6b82]">
         {enabled
           ? 'Autenticación en dos pasos: ACTIVA'
           : pending
@@ -148,7 +148,7 @@ export function TotpSecuritySection() {
                 id="totp-password"
                 type="password"
                 autoComplete="current-password"
-                className="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-12 p-4 text-base"
+                className="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-12 p-4 text-base"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 required
@@ -156,14 +156,14 @@ export function TotpSecuritySection() {
               />
             </label>
             {errorMessage ? (
-              <p role="alert" className="text-sm text-[#ef4444]">
+              <p role="alert" className="text-sm text-[#dc2626]">
                 {errorMessage}
               </p>
             ) : null}
             <button
               type="submit"
               disabled={isPending || password.length === 0}
-              className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-[#4387f4] text-white text-sm font-bold hover:bg-[#3a75d8] disabled:opacity-60"
+              className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-[#2563eb] text-white text-sm font-bold hover:bg-[#1d4ed8] disabled:opacity-60"
             >
               {isPending
                 ? 'Preparando…'
@@ -186,7 +186,7 @@ export function TotpSecuritySection() {
                 id="totp-disable-password"
                 type="password"
                 autoComplete="current-password"
-                className="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-12 p-4 text-base"
+                className="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-12 p-4 text-base"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 required
@@ -199,7 +199,7 @@ export function TotpSecuritySection() {
               </span>
               <input
                 id="totp-disable-code"
-                className="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-12 p-4 text-base"
+                className="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-12 p-4 text-base"
                 value={code}
                 onChange={(event) => setCode(event.target.value)}
                 required
@@ -207,18 +207,18 @@ export function TotpSecuritySection() {
               />
             </label>
             {errorMessage ? (
-              <p role="alert" className="text-sm text-[#ef4444]">
+              <p role="alert" className="text-sm text-[#dc2626]">
                 {errorMessage}
               </p>
             ) : null}
             <button
               type="submit"
               disabled={isPending}
-              className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-[#ef4444] text-white text-sm font-bold hover:bg-[#dc2626] disabled:opacity-60"
+              className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-[#dc2626] text-white text-sm font-bold hover:bg-[#b91c1c] disabled:opacity-60"
             >
               {isPending ? 'Desactivando…' : 'Desactivar TOTP'}
             </button>
-            <p className="text-xs text-[#60708a]">
+            <p className="text-xs text-[#5b6b82]">
               Si pierdes tu teléfono y no tienes códigos de respaldo, contacta a
               soporte para recuperar tu cuenta.
             </p>
@@ -256,7 +256,7 @@ export function TotpSecuritySection() {
                 id="totp-confirm-code"
                 inputMode="numeric"
                 autoComplete="one-time-code"
-                className="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-12 p-4 text-base tracking-[0.3em]"
+                className="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-12 p-4 text-base tracking-[0.3em]"
                 value={code}
                 onChange={(event) =>
                   setCode(event.target.value.replace(/[^\d]/g, '').slice(0, 6))
@@ -270,7 +270,7 @@ export function TotpSecuritySection() {
               <p
                 role="alert"
                 aria-live="polite"
-                className="text-sm text-[#ef4444] mb-2"
+                className="text-sm text-[#dc2626] mb-2"
               >
                 {errorMessage}
               </p>
@@ -278,7 +278,7 @@ export function TotpSecuritySection() {
             <button
               type="submit"
               disabled={isPending || code.length !== 6}
-              className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-[#4387f4] text-white text-sm font-bold hover:bg-[#3a75d8] disabled:opacity-60"
+              className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-[#2563eb] text-white text-sm font-bold hover:bg-[#1d4ed8] disabled:opacity-60"
             >
               {isPending ? 'Verificando…' : 'Confirmar y activar'}
             </button>
@@ -311,7 +311,7 @@ export function TotpSecuritySection() {
           <button
             type="button"
             onClick={reset}
-            className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-[#4387f4] text-white text-sm font-bold hover:bg-[#3a75d8]"
+            className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-[#2563eb] text-white text-sm font-bold hover:bg-[#1d4ed8]"
           >
             Hecho
           </button>

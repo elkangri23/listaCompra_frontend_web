@@ -28,7 +28,7 @@
 .logo {
   font-size: var(--font-size-xl, 1.5rem);
   font-weight: 700;
-  color: var(--color-primary, #4387f4);
+  color: var(--color-primary, #2563eb);
   text-decoration: none;
   transition: opacity 0.2s ease;
 }
@@ -61,17 +61,17 @@
 
 .navLink:hover {
   background: var(--color-hover, #f0f7ff);
-  color: var(--color-primary, #4387f4);
+  color: var(--color-primary, #2563eb);
 }
 
 .navLink:focus-visible {
-  outline: 2px solid var(--color-primary, #4387f4);
+  outline: 2px solid var(--color-primary, #2563eb);
   outline-offset: 2px;
 }
 
 .navLinkActive {
   background: var(--color-primary-light, #e3f2fd);
-  color: var(--color-primary, #4387f4);
+  color: var(--color-primary, #2563eb);
   font-weight: 600;
 }
 
@@ -107,7 +107,7 @@
 }
 
 .signOutButton:focus-visible {
-  outline: 2px solid var(--color-primary, #4387f4);
+  outline: 2px solid var(--color-primary, #2563eb);
   outline-offset: 2px;
 }
 

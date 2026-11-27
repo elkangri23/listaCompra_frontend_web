@@ -353,10 +353,10 @@ export default function ListDetailPage() {
       <div className={styles.root}>
         <div className={styles.container}>
           <div className={styles.inactiveListContainer}>
-            <svg className={styles.inactiveIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{color: '#f59e0b'}}>
+            <svg className={styles.inactiveIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{color: '#b45309'}}>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            <h2 className={styles.inactiveTitle} style={{color: '#f59e0b'}}>Bug del Backend Detectado</h2>
+            <h2 className={styles.inactiveTitle} style={{color: '#b45309'}}>Bug del Backend Detectado</h2>
             <p className={styles.inactiveMessage}>
               Eres colaborador de esta lista, pero el backend actualmente no permite que los colaboradores vean productos.
             </p>
@@ -420,21 +420,23 @@ export default function ListDetailPage() {
                   </button>
                 </div>
               ) : (
-                <button 
-                  className={styles.title} 
-                  onClick={handleStartEditListName}
-                  onFocus={(e) => {
-                    // Check if the focus is coming from a keyboard interaction
-                    if (e.target.matches(':focus-visible')) {
-                      handleStartEditListName();
-                    }
-                  }}
-                  type="button"
-                  title="Presiona Enter para editar"
-                  aria-label="Nombre de la lista, presiona Enter para editar"
-                >
-                  {list?.nombre || 'Cargando...'}
-                </button>
+                <h1>
+                  <button
+                    className={styles.title}
+                    onClick={handleStartEditListName}
+                    onFocus={(e) => {
+                      // Check if the focus is coming from a keyboard interaction
+                      if (e.target.matches(':focus-visible')) {
+                        handleStartEditListName();
+                      }
+                    }}
+                    type="button"
+                    title="Presiona Enter para editar"
+                    aria-label="Nombre de la lista, presiona Enter para editar"
+                  >
+                    {list?.nombre || 'Cargando...'}
+                  </button>
+                </h1>
               )}
               
               {/* Sprint 4: Indicador de colaboración en tiempo real */}

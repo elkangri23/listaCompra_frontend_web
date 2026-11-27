@@ -94,7 +94,7 @@ export function ProfileForm() {
                     {...field}
                     disabled={updateProfileMutation.isPending}
                     autoComplete="name"
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbdfe6] bg-white focus:border-[#dbdfe6] h-14 placeholder:text-[#60708a] p-[15px] text-base font-normal leading-normal"
+                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border border-[#dbdfe6] bg-white focus:border-[#dbdfe6] h-14 placeholder:text-[#5b6b82] p-[15px] text-base font-normal leading-normal"
                   />
                 </FormControl>
                 <FormMessage />
@@ -120,7 +120,7 @@ export function ProfileForm() {
                     {...field}
                     disabled={updateProfileMutation.isPending}
                     autoComplete="email"
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbdfe6] bg-white focus:border-[#dbdfe6] h-14 placeholder:text-[#60708a] p-[15px] text-base font-normal leading-normal"
+                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border border-[#dbdfe6] bg-white focus:border-[#dbdfe6] h-14 placeholder:text-[#5b6b82] p-[15px] text-base font-normal leading-normal"
                   />
                 </FormControl>
                 <FormMessage />
@@ -142,13 +142,13 @@ export function ProfileForm() {
                 <FormControl>
                   <Textarea
                     placeholder="Cuéntanos algo sobre ti"
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbdfe6] bg-white focus:border-[#dbdfe6] placeholder:text-[#60708a] p-[15px] text-base font-normal leading-normal"
+                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border border-[#dbdfe6] bg-white focus:border-[#dbdfe6] placeholder:text-[#5b6b82] p-[15px] text-base font-normal leading-normal"
                     rows={4}
                     {...field}
                     disabled={updateProfileMutation.isPending}
                   />
                 </FormControl>
-                <FormDescription className="text-[#60708a] text-sm">
+                <FormDescription className="text-[#5b6b82] text-sm">
                   Máximo 500 caracteres
                 </FormDescription>
                 <FormMessage />
@@ -171,7 +171,7 @@ export function ProfileForm() {
           <Button
             type="submit"
             disabled={updateProfileMutation.isPending || !form.formState.isDirty}
-            className="min-w-[84px] h-10 px-4 rounded-lg bg-[#4387f4] text-white hover:bg-[#3275e3]"
+            className="min-w-[84px] h-10 px-4 rounded-lg bg-[#2563eb] text-white hover:bg-[#1d4ed8]"
           >
             {updateProfileMutation.isPending && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

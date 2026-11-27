@@ -9,7 +9,7 @@ export default function AuthLayout({
   return (
     <div className={styles.root}>
       <AppHeader />
-      <main className={styles.main}>{children}</main>
+      <main id="contenido" tabIndex={-1} className={styles.main}>{children}</main>
     </div>
   );
 }

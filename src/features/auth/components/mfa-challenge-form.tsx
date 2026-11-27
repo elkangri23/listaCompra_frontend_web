@@ -61,7 +61,7 @@ export function MfaChallengeForm({
         >
           Verificación en dos pasos
         </h2>
-        <p className="text-sm text-[#60708a] mb-4">
+        <p className="text-sm text-[#5b6b82] mb-4">
           {mode === 'totp'
             ? 'Introduce el código de 6 dígitos de tu app autenticadora.'
             : 'Introduce uno de tus códigos de respaldo.'}
@@ -80,7 +80,7 @@ export function MfaChallengeForm({
                   name="code"
                   inputMode="numeric"
                   autoComplete="one-time-code"
-                  className="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 p-4 text-base font-normal leading-normal tracking-[0.3em]"
+                  className="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 p-4 text-base font-normal leading-normal tracking-[0.3em]"
                   placeholder="000000"
                   value={code}
                   onChange={(event) =>
@@ -106,7 +106,7 @@ export function MfaChallengeForm({
                   id="mfa-backup"
                   name="backupCode"
                   autoComplete="off"
-                  className="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 p-4 text-base font-normal leading-normal"
+                  className="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 p-4 text-base font-normal leading-normal"
                   placeholder="XXXX-YYYY"
                   value={backupCode}
                   onChange={(event) => setBackupCode(event.target.value)}
@@ -120,7 +120,7 @@ export function MfaChallengeForm({
 
           <div aria-live="polite">
             {displayError ? (
-              <p id="mfa-error" role="alert" className="text-sm text-[#ef4444]">
+              <p id="mfa-error" role="alert" className="text-sm text-[#dc2626]">
                 {displayError}
               </p>
             ) : null}
@@ -129,7 +129,7 @@ export function MfaChallengeForm({
           <button
             type="submit"
             disabled={isPending}
-            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#3a75d8] disabled:opacity-60"
+            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-[#2563eb] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#1d4ed8] disabled:opacity-60"
           >
             {isPending ? 'Verificando…' : 'Verificar'}
           </button>
@@ -142,7 +142,7 @@ export function MfaChallengeForm({
               setBackupCode('')
               setLocalError(null)
             }}
-            className="text-sm text-[#4387f4] hover:underline text-left"
+            className="text-sm text-[#2563eb] hover:underline text-left"
             disabled={isPending}
           >
             {mode === 'totp'
@@ -153,7 +153,7 @@ export function MfaChallengeForm({
           <button
             type="button"
             onClick={onCancel}
-            className="text-sm text-[#60708a] hover:underline text-left"
+            className="text-sm text-[#5b6b82] hover:underline text-left"
             disabled={isPending}
           >
             Volver a iniciar sesión

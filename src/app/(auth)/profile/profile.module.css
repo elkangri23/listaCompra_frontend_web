@@ -65,17 +65,17 @@
 }
 
 .tabInactive:hover {
-  color: var(--color-primary, #4387f4);
+  color: var(--color-primary, #2563eb);
 }
 
 .tabActive {
-  color: var(--color-primary, #4387f4);
-  border-bottom-color: var(--color-primary, #4387f4);
+  color: var(--color-primary, #2563eb);
+  border-bottom-color: var(--color-primary, #2563eb);
   font-weight: 600;
 }
 
 .tab:focus-visible {
-  outline: 2px solid var(--color-primary, #4387f4);
+  outline: 2px solid var(--color-primary, #2563eb);
   outline-offset: 2px;
 }
 
@@ -126,13 +126,13 @@
 }
 
 .input:hover {
-  border-color: var(--color-primary, #4387f4);
+  border-color: var(--color-primary, #2563eb);
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--color-primary, #4387f4);
-  box-shadow: 0 0 0 3px rgba(67, 135, 244, 0.1);
+  border-color: var(--color-primary, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .input::placeholder {
@@ -183,7 +183,7 @@
   font-size: var(--font-size-sm, 0.875rem);
   font-weight: 600;
   color: #fff;
-  background: var(--color-primary, #4387f4);
+  background: var(--color-primary, #2563eb);
   border: none;
   border-radius: var(--radius-md, 8px);
   cursor: pointer;
@@ -196,7 +196,7 @@
 }
 
 .actionButton:focus-visible {
-  outline: 2px solid var(--color-primary, #4387f4);
+  outline: 2px solid var(--color-primary, #2563eb);
   outline-offset: 2px;
 }
 
@@ -258,7 +258,7 @@
 
 .toggle.checked {
   justify-content: flex-end;
-  background: var(--color-primary, #4387f4);
+  background: var(--color-primary, #2563eb);
 }
 
 .toggle.checked:hover {
@@ -266,7 +266,7 @@
 }
 
 .toggle:focus-visible {
-  outline: 2px solid var(--color-primary, #4387f4);
+  outline: 2px solid var(--color-primary, #2563eb);
   outline-offset: 2px;
 }
 

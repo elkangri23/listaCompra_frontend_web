@@ -200,7 +200,7 @@ export function ProductsManagement({ listId }: ProductsManagementProps) {
               <CardDescription>Comprados</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{listSummary.productosComprados}</div>
+              <div className="text-2xl font-bold text-[#15803d]">{listSummary.productosComprados}</div>
             </CardContent>
           </Card>
           <Card>

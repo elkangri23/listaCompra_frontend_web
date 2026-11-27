@@ -84,7 +84,7 @@ export function GdprSection() {
           Cuenta desactivada
         </p>
         <p className="mt-1 text-sm text-[#111418]">{deleted.mensaje}</p>
-        <p className="mt-2 text-sm text-[#60708a]">
+        <p className="mt-2 text-sm text-[#5b6b82]">
           Tus listas se eliminarán definitivamente el{' '}
           {formatFechaLarga(deleted.eliminacionDefinitivaEn)}. Si te
           arrepientes antes, escríbenos a anthonymoles89@gmail.com.
@@ -92,7 +92,7 @@ export function GdprSection() {
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: '/login' })}
-          className="mt-4 rounded-md bg-[#4387f4] px-4 py-2 text-sm font-medium text-white hover:bg-[#3573d6]"
+          className="mt-4 rounded-md bg-[#2563eb] px-4 py-2 text-sm font-medium text-white hover:bg-[#1d4ed8]"
         >
           Entendido, cerrar sesión
         </button>
@@ -106,13 +106,13 @@ export function GdprSection() {
         <p className="text-base font-medium text-[#111418]">
           Exportar mis datos
         </p>
-        <p className="mt-1 text-sm text-[#60708a]">
+        <p className="mt-1 text-sm text-[#5b6b82]">
           Descarga un archivo JSON con tu perfil, tus listas y sus productos,
           tus categorías, tiendas y plantillas, y las listas en las que
           colaboras.
         </p>
         {exportError && (
-          <p role="alert" className="mt-2 text-sm text-[#ef4444]">
+          <p role="alert" className="mt-2 text-sm text-[#dc2626]">
             {exportError}
           </p>
         )}
@@ -120,7 +120,7 @@ export function GdprSection() {
           type="button"
           onClick={handleExport}
           disabled={exporting}
-          className="mt-3 rounded-md bg-[#4387f4] px-4 py-2 text-sm font-medium text-white hover:bg-[#3573d6] disabled:opacity-50"
+          className="mt-3 rounded-md bg-[#2563eb] px-4 py-2 text-sm font-medium text-white hover:bg-[#1d4ed8] disabled:opacity-50"
         >
           {exporting ? 'Preparando…' : 'Exportar mis datos'}
         </button>
@@ -137,13 +137,13 @@ export function GdprSection() {
           colaborador.
         </p>
         {deleteError && (
-          <p role="alert" className="mt-2 text-sm text-[#ef4444]">
+          <p role="alert" className="mt-2 text-sm text-[#dc2626]">
             {deleteError}
           </p>
         )}
         {!confirmStep ? (
           <div className="mt-3 flex flex-col gap-2">
-            <label htmlFor="gdpr-password" className="text-sm text-[#60708a]">
+            <label htmlFor="gdpr-password" className="text-sm text-[#5b6b82]">
               Confirma con tu contraseña actual
             </label>
             <input
@@ -159,7 +159,7 @@ export function GdprSection() {
               type="button"
               onClick={() => setConfirmStep(true)}
               disabled={password.length === 0}
-              className="w-fit rounded-md bg-[#ef4444] px-4 py-2 text-sm font-medium text-white hover:bg-[#dc2626] disabled:opacity-50"
+              className="w-fit rounded-md bg-[#dc2626] px-4 py-2 text-sm font-medium text-white hover:bg-[#b91c1c] disabled:opacity-50"
             >
               Eliminar mi cuenta
             </button>
@@ -175,7 +175,7 @@ export function GdprSection() {
                 type="button"
                 onClick={handleDelete}
                 disabled={deleting}
-                className="rounded-md bg-[#ef4444] px-4 py-2 text-sm font-medium text-white hover:bg-[#dc2626] disabled:opacity-50"
+                className="rounded-md bg-[#dc2626] px-4 py-2 text-sm font-medium text-white hover:bg-[#b91c1c] disabled:opacity-50"
               >
                 {deleting ? 'Eliminando…' : 'Sí, eliminar mi cuenta'}
               </button>

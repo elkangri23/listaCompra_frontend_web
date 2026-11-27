@@ -21,7 +21,7 @@
 }
 
 .required {
-  color: #ef4444;
+  color: #dc2626;
 }
 
 /* Inputs */
@@ -43,14 +43,14 @@
 .textarea:focus,
 .select:focus {
   outline: none;
-  border-color: var(--primary, #1980e6);
+  border-color: var(--color-primary);
   background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(25, 128, 230, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .input::placeholder,
 .textarea::placeholder {
-  color: var(--foreground-tertiary, #60708a);
+  color: var(--foreground-tertiary, #5b6b82);
 }
 
 .textarea {
@@ -62,7 +62,7 @@
 .select {
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2360708a'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%235b6b82'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   background-size: 1.25rem;
@@ -76,19 +76,19 @@
 
 /* Input Error State */
 .inputError {
-  border-color: #ef4444;
+  border-color: #dc2626;
   background-color: #fef2f2;
 }
 
 .inputError:focus {
-  border-color: #ef4444;
+  border-color: #dc2626;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
 /* Error Message */
 .errorMessage {
   font-size: 0.875rem;
-  color: #ef4444;
+  color: #dc2626;
   margin: 0;
   display: flex;
   align-items: center;
@@ -98,7 +98,7 @@
 /* Helper Text */
 .helperText {
   font-size: 0.875rem;
-  color: var(--foreground-tertiary, #60708a);
+  color: var(--foreground-tertiary, #5b6b82);
   margin: 0;
 }
 
@@ -150,14 +150,14 @@
 }
 
 .buttonPrimary {
-  background-color: var(--primary, #1980e6);
+  background-color: var(--color-primary);
   color: #ffffff;
 }
 
 .buttonPrimary:hover:not(:disabled) {
   background-color: #1570cc;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(25, 128, 230, 0.3);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .buttonPrimary:active:not(:disabled) {
@@ -171,7 +171,7 @@
 
 .buttonSecondary {
   background-color: transparent;
-  color: var(--foreground-secondary, #60708a);
+  color: var(--foreground-secondary, #5b6b82);
   border: 1px solid var(--border-secondary, #dce0e5);
 }
 

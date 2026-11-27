@@ -260,7 +260,7 @@ export function LoginForm() {
             </span>
             <input
               id="email"
-              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
+              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#5b6b82] p-4 text-base font-normal leading-normal"
               placeholder="usuario@ejemplo.com"
               value={values.email}
               onChange={handleChange}
@@ -288,7 +288,7 @@ export function LoginForm() {
             </span>
             <input
               id="password"
-              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
+              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#5b6b82] p-4 text-base font-normal leading-normal"
               placeholder="Introduce tu contraseña"
               value={values.password}
               onChange={handleChange}
@@ -314,7 +314,7 @@ export function LoginForm() {
         <p className="text-right px-4 pt-2">
           <Link
             href="/forgot-password"
-            className="text-sm text-[#4387f4] underline"
+            className="text-sm text-[#2563eb] underline"
           >
             ¿Olvidaste tu contraseña?
           </Link>
@@ -330,7 +330,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 w-full bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
+          className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 w-full bg-[#2563eb] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
         >
           {isPending && (
             <svg
@@ -373,7 +373,7 @@ export function LoginForm() {
           </button>
         )}
       </div>
-      <p className="text-[#60708a] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center w-full max-w-[480px]">
+      <p className="text-[#5b6b82] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center w-full max-w-[480px]">
         <Link href="/register" className="underline">
           ¿No tienes cuenta? Regístrate
         </Link>

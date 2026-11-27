@@ -42,7 +42,7 @@ export const PurchaseHabitsSection: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div>
           <h3 className="text-base font-medium text-gray-900">Tus hábitos de compra</h3>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-[#4b5563]">
             La IA analiza tus compras y te cuenta qué patrones ve.
           </p>
         </div>
@@ -71,7 +71,7 @@ export const PurchaseHabitsSection: React.FC = () => {
       </div>
 
       {!requested && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-[#4b5563]">
           Elige un periodo y pulsa «Analizar mis hábitos» para ver qué dice la IA de tus compras.
         </p>
       )}
@@ -86,21 +86,21 @@ export const PurchaseHabitsSection: React.FC = () => {
       )}
 
       {requested && !isLoading && isError && (
-        <p className="text-sm text-red-500">
+        <p className="text-sm text-red-700">
           No se pudo analizar tus hábitos ahora mismo. Inténtalo de nuevo más tarde.
           {error instanceof Error && error.message ? ` (${error.message})` : ''}
         </p>
       )}
 
       {requested && !isLoading && !isError && data && insights.length === 0 && (
-        <p className="text-sm text-gray-500 py-4">
+        <p className="text-sm text-[#4b5563] py-4">
           Todavía no hay suficientes compras en este periodo para sacar conclusiones.
         </p>
       )}
 
       {requested && !isLoading && !isError && data && insights.length > 0 && (
         <>
-          <p className="text-xs text-gray-400 mb-3">
+          <p className="text-xs text-[#4b5563] mb-3">
             {data.metadata.productsAnalyzed} productos analizados en {data.metadata.listsAnalyzed}{' '}
             listas · {TIME_RANGE_LABELS[data.metadata.period.preset]}
           </p>
@@ -113,7 +113,7 @@ export const PurchaseHabitsSection: React.FC = () => {
                   >
                     {INSIGHT_TYPE_LABEL[insight.type] || insight.type}
                   </span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-[#6b7280]">
                     Confianza: {Math.round(insight.confidence * 100)}%
                   </span>
                 </div>

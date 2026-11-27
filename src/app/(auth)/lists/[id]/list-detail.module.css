@@ -31,7 +31,7 @@
 .inactiveIcon {
   width: 80px;
   height: 80px;
-  color: #f59e0b;
+  color: #b45309;
   margin-bottom: 24px;
 }
 
@@ -62,7 +62,7 @@
   align-items: center;
   justify-content: center;
   padding: 12px 24px;
-  background-color: #4387f4;
+  background-color: #2563eb;
   color: white;
   border: none;
   border-radius: 8px;
@@ -129,15 +129,21 @@
   font-size: 32px;
   font-weight: bold;
   color: #111418;
-  border: 2px solid #4387f4;
+  border: 2px solid #2563eb;
   border-radius: 8px;
   padding: 8px 12px;
   outline: none;
 }
 
+/* WCAG 2.2 AA (2.4.7): el borde ya es azul siempre, así que el foco se
+   marca con un anillo visible además del borde. */
+.editListNameInput:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
 .saveListButton {
   padding: 8px 16px;
-  background-color: #10b981;
+  background-color: #047857;
   color: white;
   border: none;
   border-radius: 6px;
@@ -158,7 +164,7 @@
 
 .cancelListButton {
   padding: 8px 16px;
-  background-color: #ef4444;
+  background-color: #dc2626;
   color: white;
   border: none;
   border-radius: 6px;
@@ -183,13 +189,18 @@
 .editDescTextarea {
   width: 100%;
   padding: 12px;
-  border: 2px solid #4387f4;
+  border: 2px solid #2563eb;
   border-radius: 8px;
   font-size: 14px;
   color: #111418;
   resize: vertical;
   outline: none;
   font-family: inherit;
+}
+
+/* WCAG 2.2 AA (2.4.7): anillo visible al enfocar (ver editListNameInput). */
+.editDescTextarea:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
 }
 
 .editDescActions {
@@ -248,7 +259,7 @@
 }
 
 .deleteListButton:hover:not(:disabled) {
-  background-color: #ef4444;
+  background-color: #dc2626;
   color: white;
 }
 
@@ -293,11 +304,11 @@
 
 .addProductInput:focus {
   outline: 0;
-  border-color: #4387f4;
+  border-color: #2563eb;
 }
 
 .addProductInput::placeholder {
-  color: #60708a;
+  color: #5b6b82;
 }
 
 .categoryTitle {
@@ -332,12 +343,12 @@
 
 .productItem.purchased .productName {
   text-decoration: line-through;
-  color: #60708a;
+  color: #5b6b82;
 }
 
 .productItem.purchased .productCantidad {
   text-decoration: line-through;
-  color: #60708a;
+  color: #5b6b82;
 }
 
 .productLeft {
@@ -357,24 +368,25 @@
 }
 
 .checkbox {
-  height: 20px;
-  width: 20px;
+  height: 24px;
+  width: 24px;
   border-radius: 4px;
   border: 2px solid #dbdfe6;
   background-color: transparent;
-  color: #4387f4;
+  color: #2563eb;
   cursor: pointer;
 }
 
 .checkbox:checked {
-  background-color: #4387f4;
-  border-color: #4387f4;
+  background-color: #2563eb;
+  border-color: #2563eb;
   background-image: url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27rgb(255,255,255)%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath d=%27M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z%27/%3e%3c/svg%3e');
 }
 
 .checkbox:focus {
-  border-color: #dbdfe6;
+  border-color: #2563eb;
   outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
 }
 
 .productInfo {
@@ -409,7 +421,7 @@
 }
 
 .productCantidad {
-  color: #4387f4;
+  color: #2563eb;
   font-weight: 600;
   font-size: 22px;
 }
@@ -418,7 +430,7 @@
   display: inline-flex;
   align-items: center;
   padding: 4px 8px;
-  background-color: #ea4335;
+  background-color: #dc2626;
   color: white;
   font-size: 11px;
   font-weight: 700;
@@ -428,7 +440,7 @@
 }
 
 .productQuantity {
-  color: #60708a;
+  color: #5b6b82;
   font-size: 14px;
   font-weight: normal;
   line-height: normal;
@@ -455,7 +467,7 @@
 }
 
 .deleteButton:hover {
-  color: #ef4444;
+  color: #dc2626;
 }
 
 /* Sidebar Styles */
@@ -492,7 +504,7 @@
 }
 
 .tabInactive {
-  color: #60708a;
+  color: #5b6b82;
 }
 
 .tabActive {
@@ -523,7 +535,7 @@
 }
 
 .detailLabel {
-  color: #60708a;
+  color: #5b6b82;
   font-size: 14px;
   font-weight: normal;
   line-height: normal;
@@ -578,7 +590,7 @@
   align-items: center;
   justify-content: center;
   padding: 10px 16px;
-  background-color: #4387f4;
+  background-color: #2563eb;
   color: white;
   border: none;
   border-radius: 8px;
@@ -664,11 +676,11 @@
 
 .formInput:focus {
   outline: 0;
-  border-color: #4387f4;
+  border-color: #2563eb;
 }
 
 .formInput::placeholder {
-  color: #60708a;
+  color: #5b6b82;
 }
 
 .checkboxLabel {
@@ -686,7 +698,7 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #4387f4;
+  accent-color: #2563eb;
 }
 
 .formActions {
@@ -704,7 +716,7 @@
   border-radius: 8px;
   height: 48px;
   padding: 0 20px;
-  background-color: #4387f4;
+  background-color: #2563eb;
   color: white;
   font-size: 16px;
   font-weight: 600;
@@ -747,7 +759,7 @@
 }
 
 .emptyStateText {
-  color: #60708a;
+  color: #5b6b82;
   font-size: 16px;
   line-height: 1.5;
 }
@@ -765,7 +777,7 @@
   width: 70px;
   height: 40px;
   padding: 8px 12px;
-  border: 2px solid #4387f4;
+  border: 2px solid #2563eb;
   border-radius: 6px;
   font-size: 18px;
   font-weight: 600;
@@ -782,7 +794,7 @@
   flex: 1;
   height: 40px;
   padding: 8px 12px;
-  border: 2px solid #4387f4;
+  border: 2px solid #2563eb;
   border-radius: 6px;
   font-size: 18px;
   font-weight: 500;
@@ -833,12 +845,12 @@
 }
 
 .saveButton {
-  background-color: #34a853;
+  background-color: #15803d;
   color: white;
 }
 
 .saveButton:hover:not(:disabled) {
-  background-color: #2d8f47;
+  background-color: #166534;
 }
 
 .saveButton:disabled {
@@ -848,7 +860,7 @@
 
 .cancelButton {
   background-color: #f0f2f5;
-  color: #60708a;
+  color: #5b6b82;
 }
 
 .cancelButton:hover {

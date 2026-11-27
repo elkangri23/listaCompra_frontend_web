@@ -96,6 +96,7 @@ export default function AdminUsersPage() {
           <div className="flex items-center gap-4">
             <Input
               type="search"
+              aria-label="Buscar usuarios por nombre o email"
               placeholder="Buscar usuarios por nombre o email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

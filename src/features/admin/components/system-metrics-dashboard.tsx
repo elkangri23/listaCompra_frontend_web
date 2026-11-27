@@ -20,7 +20,7 @@ const MetricCard = ({ title, value, subtitle, icon, trend }: MetricsCardProps) =
         <div className="text-2xl font-bold">{value}</div>
         {subtitle && (
           <p className="text-xs text-muted-foreground flex items-center gap-1">
-            {trend === 'up' && <span className="text-green-600">↑</span>}
+            {trend === 'up' && <span className="text-[#15803d]">↑</span>}
             {trend === 'down' && <span className="text-red-600">↓</span>}
             {subtitle}
           </p>

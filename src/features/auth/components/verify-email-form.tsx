@@ -105,7 +105,7 @@ export function VerifyEmailForm() {
           <button
             type="button"
             onClick={() => router.push('/login')}
-            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#2563eb] text-white text-sm font-bold leading-normal tracking-[0.015em]"
           >
             <span className="truncate">Ir a iniciar sesión</span>
           </button>
@@ -120,7 +120,7 @@ export function VerifyEmailForm() {
         <h2 className="text-[#111418] text-lg font-bold leading-normal mb-4">
           Verifica tu correo
         </h2>
-        <p className="text-sm text-[#60708a] mb-4">
+        <p className="text-sm text-[#5b6b82] mb-4">
           Te hemos enviado un código de 6 dígitos. Caduca en 15 minutos y
           solo sirve una vez.
         </p>
@@ -145,7 +145,7 @@ export function VerifyEmailForm() {
             </span>
             <input
               id="verify-email"
-              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
+              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#5b6b82] p-4 text-base font-normal leading-normal"
               placeholder="usuario@ejemplo.com"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -166,7 +166,7 @@ export function VerifyEmailForm() {
             </span>
             <input
               id="verify-code"
-              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal tracking-[0.5em]"
+              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#5b6b82] p-4 text-base font-normal leading-normal tracking-[0.5em]"
               placeholder="123456"
               value={codigo}
               onChange={(event) =>
@@ -196,7 +196,7 @@ export function VerifyEmailForm() {
           <button
             type="submit"
             disabled={isPending}
-            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
+            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#2563eb] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
           >
             <span className="truncate">
               {isPending ? 'Verificando…' : 'Verificar correo'}
@@ -217,7 +217,7 @@ export function VerifyEmailForm() {
           </button>
         </div>
 
-        <p className="text-sm text-[#60708a] px-4 py-3">
+        <p className="text-sm text-[#5b6b82] px-4 py-3">
           ¿Ya tienes cuenta?{' '}
           <Link href="/login" className="underline">
             Inicia sesión

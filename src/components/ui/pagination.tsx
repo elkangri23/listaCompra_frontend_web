@@ -42,7 +42,7 @@ const PaginationItem = React.forwardRef<
 PaginationItem.displayName = 'PaginationItem'
 
 const linkBase =
-  'inline-flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4387f4] disabled:pointer-events-none disabled:opacity-60'
+  'inline-flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] disabled:pointer-events-none disabled:opacity-60'
 
 const PaginationLink = ({
   className,
@@ -54,7 +54,7 @@ const PaginationLink = ({
     className={cn(
       linkBase,
       isActive
-        ? 'bg-[#4387f4] text-white'
+        ? 'bg-[#2563eb] text-white'
         : 'text-[#111418] hover:bg-[#f0f2f5]',
       className,
     )}
@@ -94,7 +94,7 @@ const PaginationEllipsis = ({
   <span
     aria-hidden
     className={cn(
-      'flex h-9 min-w-9 items-center justify-center text-[#60708a]',
+      'flex h-9 min-w-9 items-center justify-center text-[#5b6b82]',
       className,
     )}
     {...props}

@@ -111,7 +111,7 @@ export default function DashboardPage() {
   return (
     <div className={styles.container}>
       <div className={styles.contentHeader}>
-        <h2 className={styles.contentTitle}>Mis Listas</h2>
+        <h1 className={styles.contentTitle}>Mis Listas</h1>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <Button
             variant="outline"

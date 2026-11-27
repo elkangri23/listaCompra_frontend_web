@@ -29,7 +29,7 @@ export const CollaboratorsSection: React.FC<CollaboratorsSectionProps> = ({ list
   }
 
   if (error) {
-    return <p className="text-red-500">Error al cargar los colaboradores.</p>;
+    return <p className="text-red-600">Error al cargar los colaboradores.</p>;
   }
 
   const isOwner = currentUserId === ownerId;

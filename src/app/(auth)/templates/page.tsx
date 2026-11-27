@@ -74,8 +74,9 @@ export default function TemplatesPage() {
 
         <div className="flex gap-3 items-center">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6b7280]" />
             <Input
+              aria-label="Buscar plantillas"
               placeholder="Buscar plantillas..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -135,7 +136,7 @@ export default function TemplatesPage() {
               <h3 className="text-base font-medium text-gray-900">
                 Resultados para «{debouncedSearchTerm.trim()}»
                 {searchResults && (
-                  <span className="text-gray-500 font-normal"> ({searchResults.total})</span>
+                  <span className="text-[#4b5563] font-normal"> ({searchResults.total})</span>
                 )}
               </h3>
               <Button variant="ghost" size="sm" onClick={() => setSearchTerm('')}>
@@ -162,7 +163,7 @@ export default function TemplatesPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <FileText className="h-12 w-12 text-[#6b7280] mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   Nada por aquí con «{debouncedSearchTerm.trim()}».
                 </h3>
@@ -194,7 +195,7 @@ export default function TemplatesPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <FileText className="h-12 w-12 text-[#6b7280] mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 Aún no tienes plantillas.
               </h3>
@@ -221,7 +222,7 @@ export default function TemplatesPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <FileText className="h-12 w-12 text-[#6b7280] mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 Nadie ha compartido una plantilla todavía.
               </h3>

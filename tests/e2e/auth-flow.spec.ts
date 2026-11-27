@@ -15,7 +15,7 @@ test.describe('Flujo de Autenticación', () => {
     await login(page, TEST_USER.email, TEST_USER.password);
 
     // Verificar que estamos en el dashboard con contenido real
-    await expect(page.locator('h2:has-text("Mis Listas")')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('h1:has-text("Mis Listas")')).toBeVisible({ timeout: 15000 });
   });
 
   test('debe mostrar error con credenciales incorrectas', async ({ page }) => {
@@ -110,7 +110,7 @@ test.describe('Flujo de Autenticación', () => {
 
   test('debe realizar logout correctamente', async ({ page }) => {
     await login(page, TEST_USER.email, TEST_USER.password);
-    await expect(page.locator('h2:has-text("Mis Listas")')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('h1:has-text("Mis Listas")')).toBeVisible({ timeout: 15000 });
 
     await logout(page);
     await expect(page).toHaveURL(/\/login/);
@@ -118,13 +118,13 @@ test.describe('Flujo de Autenticación', () => {
 
   test('debe persistir sesión después de reload', async ({ page }) => {
     await login(page, TEST_USER.email, TEST_USER.password);
-    await expect(page.locator('h2:has-text("Mis Listas")')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('h1:has-text("Mis Listas")')).toBeVisible({ timeout: 15000 });
 
     await page.reload();
 
     // Debe seguir en dashboard (sesión persistente)
     await expect(page).toHaveURL(/\/dashboard/);
-    await expect(page.locator('h2:has-text("Mis Listas")')).toBeVisible();
+    await expect(page.locator('h1:has-text("Mis Listas")')).toBeVisible();
   });
 
   test('debe redirigir a login cuando no hay sesión', async ({ page }) => {

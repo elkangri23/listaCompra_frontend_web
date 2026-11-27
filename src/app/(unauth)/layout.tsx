@@ -7,7 +7,7 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className={styles.root}>
+    <div id="contenido" tabIndex={-1} className={styles.root}>
       {children}
     </div>
   )

@@ -136,7 +136,7 @@ export function PasskeyList() {
   return (
     <div className="w-full max-w-[480px]">
       {!supported && (
-        <p className="mb-2 text-xs text-[#60708a]" role="note">
+        <p className="mb-2 text-xs text-[#5b6b82]" role="note">
           Tu navegador no soporta passkeys (WebAuthn). Prueba con una versión
           reciente de Chrome, Edge, Safari o Firefox.
         </p>
@@ -167,7 +167,7 @@ export function PasskeyList() {
                 <p className="text-sm font-medium text-[#111418] truncate">
                   {passkey.nombre}
                 </p>
-                <p className="text-xs text-[#60708a]">
+                <p className="text-xs text-[#5b6b82]">
                   {passkey.deviceType === 'multiDevice'
                     ? 'Sincronizada'
                     : 'De dispositivo'}{' '}
@@ -185,7 +185,7 @@ export function PasskeyList() {
                   setRenamingId(passkey.id)
                   setRenameValue(passkey.nombre)
                 }}
-                className="text-xs text-[#4387f4] hover:underline px-1"
+                className="text-xs text-[#2563eb] hover:underline px-1"
                 aria-label={`Renombrar ${passkey.nombre}`}
               >
                 Renombrar
@@ -196,7 +196,7 @@ export function PasskeyList() {
                   setDeleteTarget(passkey)
                   setDeletePassword('')
                 }}
-                className="text-xs text-[#ef4444] hover:underline px-1"
+                className="text-xs text-[#dc2626] hover:underline px-1"
                 aria-label={`Eliminar ${passkey.nombre}`}
               >
                 Eliminar
@@ -208,7 +208,7 @@ export function PasskeyList() {
 
       <div aria-live="polite">
         {errorMessage ? (
-          <p role="alert" className="text-sm text-[#ef4444] mb-2">
+          <p role="alert" className="text-sm text-[#dc2626] mb-2">
             {errorMessage}
           </p>
         ) : null}
@@ -225,7 +225,7 @@ export function PasskeyList() {
               ? `Máximo ${MAX_PASSKEYS} passkeys. Elimina alguna para añadir otra.`
               : undefined
           }
-          className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#4387f4] text-white text-sm font-bold hover:bg-[#3a75d8] disabled:opacity-60"
+          className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#2563eb] text-white text-sm font-bold hover:bg-[#1d4ed8] disabled:opacity-60"
         >
           Añadir passkey
         </button>
@@ -249,14 +249,14 @@ export function PasskeyList() {
           <button
             type="submit"
             disabled={isPending || !password}
-            className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#4387f4] text-white text-sm font-bold hover:bg-[#3a75d8] disabled:opacity-60"
+            className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#2563eb] text-white text-sm font-bold hover:bg-[#1d4ed8] disabled:opacity-60"
           >
             {isPending ? 'Registrando…' : 'Continuar'}
           </button>
           <button
             type="button"
             onClick={() => setAddMode('idle')}
-            className="text-sm text-[#60708a] hover:underline text-left ml-3"
+            className="text-sm text-[#5b6b82] hover:underline text-left ml-3"
             disabled={isPending}
           >
             Cancelar
@@ -294,14 +294,14 @@ export function PasskeyList() {
           <button
             type="submit"
             disabled={isPending || !deletePassword}
-            className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#ef4444] text-white text-sm font-bold hover:bg-[#dc2626] disabled:opacity-60"
+            className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#dc2626] text-white text-sm font-bold hover:bg-[#b91c1c] disabled:opacity-60"
           >
             {isPending ? 'Eliminando…' : 'Eliminar definitivamente'}
           </button>
           <button
             type="button"
             onClick={() => setDeleteTarget(null)}
-            className="text-sm text-[#60708a] hover:underline text-left ml-3"
+            className="text-sm text-[#5b6b82] hover:underline text-left ml-3"
             disabled={isPending}
           >
             Cancelar

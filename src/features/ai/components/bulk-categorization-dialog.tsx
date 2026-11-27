@@ -189,7 +189,7 @@ export function BulkCategorizationDialog({
 
             {uncategorizedProducts.length === 0 ? (
               <div className="py-8 text-center text-muted-foreground">
-                <CheckCircle2 className="h-12 w-12 mx-auto mb-2 text-green-600" />
+                <CheckCircle2 className="h-12 w-12 mx-auto mb-2 text-[#15803d]" />
                 <p>Todos los productos ya tienen categoría</p>
               </div>
             ) : (

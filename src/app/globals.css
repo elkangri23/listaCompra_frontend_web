@@ -26,21 +26,44 @@
   --font-display: Inter, 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
   
   /* Color palette from mockups */
-  --color-primary: #4387f4;
+  --color-primary: #2563eb;
   --color-text-primary: #111418;
-  --color-text-secondary: #60708a;
+  --color-text-secondary: #5b6b82;
   --color-bg-input: #f0f2f5;
   --color-border: #dbdfe6;
 
   /* Aliases usados por la landing (homepage.module.css) */
   --bg: #f0f2f5;
   --text: #111418;
-  --accent: #4387f4;
-  --muted: #60708a;
-  --border: #dbdfe6;
   --color-white: #ffffff;
-  --color-destructive: #ef4444;
-  --color-success: #10b981;
+  --color-destructive: #dc2626;
+  --color-success: #047857;
+
+  /* Variables shadcn/ui en canales HSL (WCAG AA): las usan las clases
+     bg-primary, text-muted-foreground, border-input, ring-ring, etc.
+     NOTA: --accent/--muted/--border ya no existen como alias de la paleta
+     propia (la landing usa --color-primary/--color-text-secondary/
+     --color-border); estos nombres son ahora los de shadcn. */
+  --background: 0 0% 100%;
+  --foreground: 214 17% 8%;
+  --card: 0 0% 100%;
+  --card-foreground: 214 17% 8%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 214 17% 8%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 216 20% 95%;
+  --secondary-foreground: 214 17% 8%;
+  --muted: 216 20% 95%;
+  --muted-foreground: 214 17% 43%;
+  --accent: 216 20% 95%;
+  --accent-foreground: 214 17% 8%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 218 18% 88%;
+  --input: 218 18% 88%;
+  --ring: 221 83% 53%;
+  --radius: 0.5rem;
   
   /* Spacing */
   --spacing-xs: 0.25rem;
@@ -107,9 +130,9 @@ html,body,#root{height:100%}
   font-weight: 500;
 }
 
-/* Tabs trigger inactivo */
+/* Tabs trigger inactivo: #4b5563 sobre #f3f4f6 (6.6:1, WCAG AA) */
 [data-radix-tabs-trigger][data-state="inactive"] {
-  color: #6b7280;
+  color: #4b5563;
 }
 
 [data-radix-tabs-trigger]:hover {
@@ -199,4 +222,18 @@ html,body,#root{height:100%}
 [data-radix-select-item][data-state="checked"] {
   background-color: #e0e7ff !important;
   color: #3730a3 !important;
+}
+
+/* WCAG 2.2 AA (2.3.3): respetar la preferencia de reducir el movimiento.
+   Desactiva las animaciones y transiciones, incluida la animación fadeIn
+   de las pestañas. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

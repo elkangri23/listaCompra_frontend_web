@@ -43,9 +43,9 @@ export function SystemStatusSection() {
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
             {health.overall === 'healthy' ? (
-              <CheckCircle2 className="h-5 w-5 text-green-600" />
+              <CheckCircle2 className="h-5 w-5 text-[#15803d]" />
             ) : (
-              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+              <AlertTriangle className="h-5 w-5 text-[#a16207]" />
             )}
             <div>
               <p className="text-sm font-medium text-gray-900">
@@ -53,7 +53,7 @@ export function SystemStatusSection() {
                   ? 'Todo en orden'
                   : 'El servicio tiene incidencias'}
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-[#4b5563]">
                 API: {LEVEL_LABEL[health.services.api]} · Caché:{' '}
                 {LEVEL_LABEL[health.services.cache]} · En marcha desde hace{' '}
                 {formatUptime(health.uptime)}
@@ -68,14 +68,14 @@ export function SystemStatusSection() {
         </div>
 
         {isLoadingAlerts ? (
-          <p className="text-sm text-gray-500 mt-3">Comprobando alertas...</p>
+          <p className="text-sm text-[#4b5563] mt-3">Comprobando alertas...</p>
         ) : activeAlerts.length > 0 ? (
           <ul className="mt-3 space-y-2">
             {activeAlerts.map((alert) => (
               <li key={alert.type} className="flex items-start gap-2 text-sm">
                 <AlertTriangle
                   className={`h-4 w-4 mt-0.5 shrink-0 ${
-                    alert.severity === 'high' ? 'text-red-600' : 'text-yellow-600'
+                    alert.severity === 'high' ? 'text-red-600' : 'text-[#a16207]'
                   }`}
                 />
                 <span className="text-gray-700">{alert.message}</span>
@@ -83,7 +83,7 @@ export function SystemStatusSection() {
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-gray-500 mt-3">Sin alertas activas.</p>
+          <p className="text-sm text-[#4b5563] mt-3">Sin alertas activas.</p>
         )}
       </div>
     </section>

@@ -145,7 +145,7 @@ export function RegisterForm() {
             <span className="text-sm font-medium text-[#111418] mb-2">Nombre</span>
             <input
               id="nombre"
-              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
+              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#5b6b82] p-4 text-base font-normal leading-normal"
               placeholder="Juan"
               value={values.nombre}
               onChange={handleChange}
@@ -168,7 +168,7 @@ export function RegisterForm() {
             <span className="text-sm font-medium text-[#111418] mb-2">Apellidos</span>
             <input
               id="apellidos"
-              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
+              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#5b6b82] p-4 text-base font-normal leading-normal"
               placeholder="García López"
               value={values.apellidos}
               onChange={handleChange}
@@ -191,7 +191,7 @@ export function RegisterForm() {
             <span className="text-sm font-medium text-[#111418] mb-2">Correo electrónico</span>
             <input
               id="email"
-              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
+              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#5b6b82] p-4 text-base font-normal leading-normal"
               placeholder="usuario@ejemplo.com"
               value={values.email}
               onChange={handleChange}
@@ -218,7 +218,7 @@ export function RegisterForm() {
             <span className="text-sm font-medium text-[#111418] mb-2">Contraseña</span>
             <input
               id="password"
-              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
+              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#5b6b82] p-4 text-base font-normal leading-normal"
               placeholder="Introduce tu contraseña"
               value={values.password}
               onChange={handleChange}
@@ -230,7 +230,7 @@ export function RegisterForm() {
             />
           </label>
         </div>
-        <p className="text-[#60708a] text-sm font-normal leading-normal pb-3 pt-1 px-4">
+        <p className="text-[#5b6b82] text-sm font-normal leading-normal pb-3 pt-1 px-4">
           La contraseña debe tener al menos 8 caracteres
         </p>
         {fieldErrors.password ? (
@@ -244,7 +244,7 @@ export function RegisterForm() {
             <span className="text-sm font-medium text-[#111418] mb-2">Confirmar contraseña</span>
             <input
               id="confirmPassword"
-              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#60708a] p-4 text-base font-normal leading-normal"
+              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border-none bg-[#f0f2f5] focus:border-none h-14 placeholder:text-[#5b6b82] p-4 text-base font-normal leading-normal"
               placeholder="Repite tu contraseña"
               value={values.confirmPassword}
               onChange={handleChange}
@@ -270,7 +270,7 @@ export function RegisterForm() {
             type="checkbox"
             checked={termsAccepted}
             onChange={handleTermsChange}
-            className="h-5 w-5 rounded border-[#dbdfe6] border-2 bg-transparent text-[#4387f4] checked:bg-[#4387f4] checked:border-[#4387f4] checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-[#dbdfe6] focus:outline-none"
+            className="h-5 w-5 rounded border-[#dbdfe6] border-2 bg-transparent text-[#2563eb] checked:bg-[#2563eb] checked:border-[#2563eb] checked:bg-[image:--checkbox-tick-svg] focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 focus:border-[#dbdfe6] focus-visible:outline-none"
           />
           <span className="text-[#111418] text-base font-normal leading-normal">
             Acepto los{' '}
@@ -278,7 +278,7 @@ export function RegisterForm() {
               href="/terminos"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#4387f4] underline"
+              className="text-[#2563eb] underline"
               onClick={(event) => event.stopPropagation()}
             >
               Términos de Servicio
@@ -316,7 +316,7 @@ export function RegisterForm() {
       ) : null}
 
       {statusMessage ? (
-        <p role="status" className="text-sm text-emerald-600 px-4 py-2">
+        <p role="status" className="text-sm text-[#047857] px-4 py-2">
           {statusMessage}
         </p>
       ) : null}
@@ -325,7 +325,7 @@ export function RegisterForm() {
         <button
           type="submit"
           disabled={isPending || !termsAccepted || (turnstileSiteKey !== '' && !turnstileToken)}
-          className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
+          className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#2563eb] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
         >
           {isPending && (
             <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24" aria-hidden="true">
@@ -339,7 +339,7 @@ export function RegisterForm() {
         </button>
       </div>
 
-      <p className="text-[#60708a] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center w-full max-w-[480px]">
+      <p className="text-[#5b6b82] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center w-full max-w-[480px]">
         <Link href="/login" className="underline">
           ¿Ya tienes cuenta? Inicia Sesión
         </Link>
