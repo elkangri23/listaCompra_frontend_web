@@ -511,12 +511,16 @@ const server = http.createServer(async (req, res) => {
     }
 
     // ---------- TIENDAS ----------
+    // El backend real devuelve { success, data: { tiendas, total } }.
     if (path === '/stores' && method === 'GET') {
       sendJson(res, 200, {
         success: true,
-        data: [
-          { id: 'tienda-default', nombre: 'Supermercado', direccion: 'Calle Falsa 123', activa: true },
-        ],
+        data: {
+          tiendas: [
+            { id: 'tienda-default', nombre: 'Supermercado', direccion: 'Calle Falsa 123', activa: true },
+          ],
+          total: 1,
+        },
       });
       return;
     }
@@ -718,8 +722,28 @@ const server = http.createServer(async (req, res) => {
     }
 
     // ---------- CATEGORÍAS ----------
+    // El backend real envuelve las respuestas en { success, message, data }.
     if (path === '/categories' && method === 'GET') {
-      sendJson(res, 200, { categorias: state.categories, total: state.categories.length });
+      sendJson(res, 200, { success: true, data: { categorias: state.categories, total: state.categories.length } });
+      return;
+    }
+
+    if (path === '/categories' && method === 'POST') {
+      const nombre = (body.nombre || '').trim();
+      if (!nombre) return sendJson(res, 400, { success: false, message: 'El nombre es obligatorio' });
+      const existing = state.categories.find((c) => c.nombre.toLowerCase() === nombre.toLowerCase());
+      if (existing) {
+        sendJson(res, 200, { success: true, data: existing });
+        return;
+      }
+      const category = {
+        id: `cat-${crypto.randomUUID().slice(0, 8)}`,
+        nombre,
+        descripcion: body.descripcion || undefined,
+        tiendaId: body.tiendaId || 'tienda-default',
+      };
+      state.categories.push(category);
+      sendJson(res, 201, { success: true, data: category });
       return;
     }
 
