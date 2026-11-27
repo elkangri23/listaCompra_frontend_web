@@ -146,7 +146,7 @@ export function RecommendationsPanel({ listId, onAddProduct }: RecommendationsPa
         ) : isError ? (
           <div className="py-8 text-center">
             <p className="text-sm text-muted-foreground mb-2">
-              Error al cargar recomendaciones
+              No hemos podido cargar las recomendaciones
             </p>
             <Button variant="outline" size="sm" onClick={handleRefresh}>
               Reintentar
@@ -155,9 +155,9 @@ export function RecommendationsPanel({ listId, onAddProduct }: RecommendationsPa
         ) : recommendations.length === 0 ? (
           <div className="py-8 text-center text-muted-foreground">
             <Lightbulb className="h-12 w-12 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No hay recomendaciones disponibles</p>
+            <p className="text-sm">Aún no tengo nada que sugerirte.</p>
             <p className="text-xs mt-1">
-              Añade más productos a tu lista para obtener sugerencias
+              Añade unos cuantos productos a la lista y te propongo los que suelen faltar.
             </p>
           </div>
         ) : (

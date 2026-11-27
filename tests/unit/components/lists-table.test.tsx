@@ -193,7 +193,7 @@ describe('ListsTable', () => {
       const deleteButtons = screen.getAllByText('Eliminar');
       await user.click(deleteButtons[0]);
 
-      expect(confirmSpy).toHaveBeenCalledWith('¿Estás seguro de que quieres eliminar esta lista?');
+      expect(confirmSpy).toHaveBeenCalledWith('¿Borramos esta lista? Se borrarán también todos sus productos, y no hay vuelta atrás.');
       confirmSpy.mockRestore();
     });
 

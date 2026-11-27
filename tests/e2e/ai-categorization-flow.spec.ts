@@ -88,7 +88,7 @@ test.describe('Flujo de Categorización con IA', () => {
 
     // Toast de éxito
     await expect(
-      page.locator('[data-sonner-toast]').filter({ hasText: /categorizados exitosamente/i })
+      page.locator('[data-sonner-toast]').filter({ hasText: /categorizados/i })
     ).toBeVisible({ timeout: 15000 });
 
     // El dialog se cierra y los productos ya no aparecen en "Sin categoría"

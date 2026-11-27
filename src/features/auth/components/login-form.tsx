@@ -110,7 +110,7 @@ export function LoginForm() {
           if (!result || result.error) {
             const normalizedError =
               !result || result.error === 'CredentialsSignin'
-                ? 'Correo electrónico o contraseña incorrectos.'
+                ? 'Ese correo o esa contraseña no coinciden. Revísalos e inténtalo de nuevo.'
                 : result.error || 'Error desconocido.'
             setErrorMessage(normalizedError)
             return

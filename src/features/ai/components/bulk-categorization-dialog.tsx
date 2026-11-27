@@ -128,7 +128,7 @@ export function BulkCategorizationDialog({
 
     try {
       await onApply(categorizations);
-      toast.success(`${categorizations.size} productos categorizados exitosamente`);
+      toast.success(`${categorizations.size} productos categorizados.`);
       setOpen(false);
       resetState();
     } catch (error: any) {

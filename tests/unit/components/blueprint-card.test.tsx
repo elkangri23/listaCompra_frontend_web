@@ -202,7 +202,7 @@ describe('BlueprintCard (SECUNDARIO - 80% coverage)', () => {
       await user.click(deleteButton);
 
       expect(global.confirm).toHaveBeenCalledWith(
-        expect.stringContaining('¿Estás seguro de que quieres eliminar la plantilla "Compra Semanal"?')
+        expect.stringContaining('¿Borramos la plantilla "Compra Semanal"?')
       );
     });
 

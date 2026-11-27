@@ -83,7 +83,7 @@ describe('LoginForm', () => {
     fireEvent.change(screen.getByLabelText(/contraseña/i), { target: { value: 'contraseñaSegura' } })
     fireEvent.click(screen.getByRole('button', { name: /iniciar sesión/i }))
 
-    expect(await screen.findByText('Correo electrónico o contraseña incorrectos.')).toBeInTheDocument()
+    expect(await screen.findByText('Ese correo o esa contraseña no coinciden. Revísalos e inténtalo de nuevo.')).toBeInTheDocument()
     expect(pushMock).not.toHaveBeenCalled()
   })
 })

@@ -265,7 +265,7 @@ describe('LoginForm (CRÍTICO - 100% coverage)', () => {
 
       await waitFor(() => {
         expect(screen.getByRole('alert')).toHaveTextContent(
-          /correo electrónico o contraseña incorrectos/i,
+          /ese correo o esa contraseña no coinciden/i,
         )
       })
     })
@@ -406,7 +406,7 @@ describe('LoginForm: ramas restantes (callbackUrl y errores de signIn)', () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText('Correo electrónico o contraseña incorrectos.'),
+        screen.getByText('Ese correo o esa contraseña no coinciden. Revísalos e inténtalo de nuevo.'),
       ).toBeInTheDocument(),
     )
     expect(mockPush2).not.toHaveBeenCalled()
@@ -432,7 +432,7 @@ describe('LoginForm: ramas restantes (callbackUrl y errores de signIn)', () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText('Correo electrónico o contraseña incorrectos.'),
+        screen.getByText('Ese correo o esa contraseña no coinciden. Revísalos e inténtalo de nuevo.'),
       ).toBeInTheDocument(),
     )
     expect(mockPush2).not.toHaveBeenCalled()

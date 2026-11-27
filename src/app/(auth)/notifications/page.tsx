@@ -85,7 +85,7 @@ export default function NotificationsPage() {
   };
 
   const handleDeleteSelected = async () => {
-    if (window.confirm(`¿Eliminar ${selectedIds.size} notificaciones seleccionadas?`)) {
+    if (window.confirm(`¿Borramos estas ${selectedIds.size} notificaciones?`)) {
       for (const id of selectedIds) {
         deleteNotification(id);
       }

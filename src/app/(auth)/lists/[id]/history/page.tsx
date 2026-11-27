@@ -91,9 +91,9 @@ export default function ProductHistoryPage() {
             <svg className={styles.emptyIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
-            <h2 className={styles.emptyTitle}>No hay productos comprados aún</h2>
+            <h2 className={styles.emptyTitle}>Todavía no has tachado nada en esta lista.</h2>
             <p className={styles.emptyText}>
-              Los productos que marques como comprados aparecerán aquí en el historial.
+              Cuando marques un producto como comprado, aparecerá aquí.
             </p>
             <button 
               className={styles.emptyButton}

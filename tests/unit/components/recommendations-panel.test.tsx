@@ -178,7 +178,7 @@ describe('RecommendationsPanel (SECUNDARIO - 80% coverage)', () => {
 
       renderComponent();
 
-      expect(screen.getByText('Error al cargar recomendaciones')).toBeInTheDocument();
+      expect(screen.getByText('No hemos podido cargar las recomendaciones')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /reintentar/i })).toBeInTheDocument();
     });
 
@@ -193,9 +193,9 @@ describe('RecommendationsPanel (SECUNDARIO - 80% coverage)', () => {
 
       renderComponent();
 
-      expect(screen.getByText('No hay recomendaciones disponibles')).toBeInTheDocument();
+      expect(screen.getByText('Aún no tengo nada que sugerirte.')).toBeInTheDocument();
       expect(
-        screen.getByText('Añade más productos a tu lista para obtener sugerencias')
+        screen.getByText('Añade unos cuantos productos a la lista y te propongo los que suelen faltar.')
       ).toBeInTheDocument();
     });
   });

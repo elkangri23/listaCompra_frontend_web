@@ -23,7 +23,7 @@ export default function InvitationsPage() {
       )}
       {isError && (
         <div role="alert" style={{ padding: '1rem', backgroundColor: '#fee', color: '#c00', borderRadius: '8px', margin: '1rem 0' }}>
-          Error al cargar las invitaciones. Por favor, intenta nuevamente.
+          No hemos podido cargar las invitaciones. Prueba de nuevo en un momento.
         </div>
       )}
       {invitations && <InvitationsList invitations={invitations} />}

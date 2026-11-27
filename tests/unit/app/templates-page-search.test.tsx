@@ -97,7 +97,7 @@ describe('TemplatesPage: búsqueda de plantillas', () => {
     expect(screen.getByText('Mía')).toBeInTheDocument();
     expect(screen.getByText('Pública')).toBeInTheDocument();
     // Las pestañas quedan ocultas mientras se busca
-    expect(screen.queryByText('No tienes plantillas aún')).not.toBeInTheDocument();
+    expect(screen.queryByText('Aún no tienes plantillas.')).not.toBeInTheDocument();
   });
 
   it('limpiar la búsqueda vuelve a las pestañas', () => {
@@ -110,7 +110,7 @@ describe('TemplatesPage: búsqueda de plantillas', () => {
     fireEvent.click(screen.getByText('Limpiar búsqueda'));
 
     expect(screen.queryByText(/Resultados para/)).not.toBeInTheDocument();
-    expect(screen.getByText('No tienes plantillas aún')).toBeInTheDocument();
+    expect(screen.getByText('Aún no tienes plantillas.')).toBeInTheDocument();
   });
 
   it('sin resultados muestra el estado vacío de búsqueda', () => {
@@ -123,6 +123,6 @@ describe('TemplatesPage: búsqueda de plantillas', () => {
       target: { value: 'zzz' },
     });
 
-    expect(screen.getByText('Sin resultados para «zzz»')).toBeInTheDocument();
+    expect(screen.getByText('Nada por aquí con «zzz».')).toBeInTheDocument();
   });
 });

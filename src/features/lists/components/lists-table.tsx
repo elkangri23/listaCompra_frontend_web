@@ -22,7 +22,7 @@ export function ListsTable({ lists }: ListsTableProps) {
   };
 
   const handleDeleteList = (id: string) => {
-    if (confirm('¿Estás seguro de que quieres eliminar esta lista?')) {
+    if (confirm('¿Borramos esta lista? Se borrarán también todos sus productos, y no hay vuelta atrás.')) {
       deleteListMutation.mutate(id);
     }
   };

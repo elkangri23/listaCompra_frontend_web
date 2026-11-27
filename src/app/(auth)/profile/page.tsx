@@ -72,7 +72,7 @@ export default function ProfilePage() {
                 className={styles.input}
                 value={fullName}
                 onChange={(e: any) => setFullName(e.target.value)}
-                placeholder="Ingresa tu nombre completo"
+                placeholder="Tu nombre completo"
               />
             </label>
           </div>

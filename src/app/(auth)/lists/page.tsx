@@ -49,7 +49,7 @@ export default function ListsPage() {
             </Button>
             <input
               aria-label="Nombre de nueva lista"
-              placeholder="Nueva lista"
+              placeholder="Ej: Compra de la semana"
               value={newListName}
               onChange={(e) => setNewListName(e.target.value)}
               className={styles.createInput}
@@ -85,7 +85,7 @@ export default function ListsPage() {
         )}
         {isError && (
           <div role="alert" style={{ padding: '1rem', backgroundColor: '#fee', color: '#c00', borderRadius: '8px', margin: '1rem' }}>
-            Error al cargar las listas. Por favor, intenta nuevamente.
+            No hemos podido cargar tus listas. Prueba de nuevo en un momento.
           </div>
         )}
         

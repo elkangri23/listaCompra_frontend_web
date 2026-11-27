@@ -161,10 +161,10 @@ export default function TemplatesPage() {
               <div className="text-center py-12">
                 <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Sin resultados para «{debouncedSearchTerm.trim()}»
+                  Nada por aquí con «{debouncedSearchTerm.trim()}».
                 </h3>
                 <p className="text-gray-600">
-                  Prueba con otro término o revisa las pestañas de plantillas
+                  Prueba con otra palabra o echa un ojo a tus plantillas y a las públicas.
                 </p>
               </div>
             )}
@@ -191,10 +191,10 @@ export default function TemplatesPage() {
             <div className="text-center py-12">
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No tienes plantillas aún
+                Aún no tienes plantillas.
               </h3>
               <p className="text-gray-600 mb-6">
-                Ve a cualquiera de tus listas y guárdala como plantilla para reutilizarla
+                Guarda una de tus listas como plantilla y la próxima vez la tendrás hecha en un toque.
               </p>
             </div>
           )}
@@ -216,7 +216,7 @@ export default function TemplatesPage() {
             <div className="text-center py-12">
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No hay plantillas públicas disponibles
+                Nadie ha compartido una plantilla todavía.
               </h3>
               <p className="text-gray-600">
                 Sé el primero en compartir una plantilla con la comunidad

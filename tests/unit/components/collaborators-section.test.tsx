@@ -178,7 +178,7 @@ describe('CollaboratorsSection (SECUNDARIO - 80% coverage)', () => {
     it('debe mostrar mensaje cuando no hay colaboradores', () => {
       renderComponent();
 
-      expect(screen.getByText('No hay colaboradores en esta lista.')).toBeInTheDocument();
+      expect(screen.getByText('De momento compras solo en esta lista. Invita a alguien y se verá aquí.')).toBeInTheDocument();
       expect(screen.getByText('Colaboradores (0/10)')).toBeInTheDocument();
     });
 

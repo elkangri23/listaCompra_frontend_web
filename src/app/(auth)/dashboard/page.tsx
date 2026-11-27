@@ -90,9 +90,8 @@ export default function DashboardPage() {
 
   const handleDeleteList = (listId: string, listName: string) => {
     const confirmDelete = window.confirm(
-      `¿Estás seguro de que quieres eliminar la lista "${listName}"?\n\n` +
-      `Esta acción eliminará la lista y todos sus productos.\n\n` +
-      `Esta acción NO se puede deshacer.`
+      `¿Borramos la lista "${listName}"?\n\n` +
+      `Se borrarán también todos sus productos, y no hay vuelta atrás.`
     )
 
     if (confirmDelete) {
@@ -102,7 +101,7 @@ export default function DashboardPage() {
         },
         onError: (error) => {
           console.error('Error al eliminar la lista:', error)
-          alert('Error al eliminar la lista. Por favor, intenta de nuevo.')
+          alert('No se ha podido borrar la lista. Inténtalo de nuevo en un momento.')
         }
       })
     }
@@ -136,7 +135,7 @@ export default function DashboardPage() {
 
       {isError && (
         <div className={styles.errorContainer}>
-          <p>Error al cargar las listas. Por favor, intenta nuevamente.</p>
+          <p>No hemos podido cargar tus listas. Prueba de nuevo en un momento.</p>
         </div>
       )}
 
@@ -145,9 +144,9 @@ export default function DashboardPage() {
           <svg className={styles.emptyIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
-          <h3 className={styles.emptyTitle}>No tienes listas aún</h3>
+          <h3 className={styles.emptyTitle}>Aquí todavía no hay nada… pero eso se arregla en un minuto.</h3>
           <p className={styles.emptyDescription}>
-            Crea tu primera lista de compras para comenzar
+            Crea tu primera lista y empieza a comprar en equipo.
           </p>
           <Link href="/lists/create" className={styles.emptyButton}>
             Crear mi primera lista

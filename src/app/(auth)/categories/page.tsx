@@ -27,7 +27,7 @@ export default function CategoriesPage() {
 
   const handleCreateCategory = () => {
     if (!newCategoryName.trim()) {
-      toast.error('El nombre de la categoría es requerido');
+      toast.error('Ponle un nombre a la categoría.');
       return;
     }
     
@@ -38,27 +38,27 @@ export default function CategoriesPage() {
       },
       {
         onSuccess: () => {
-          toast.success('Categoría creada exitosamente');
+          toast.success('Categoría creada.');
           setNewCategoryName('');
           setNewCategoryDesc('');
         },
         onError: (error: any) => {
-          toast.error(error?.response?.data?.message || 'Error al crear la categoría');
+          toast.error(error?.response?.data?.message || 'No se ha podido crear la categoría.');
         }
       }
     );
   };
 
   const handleDelete = (id: string, nombre: string) => {
-    if (confirm(`¿Estás seguro de que quieres eliminar la categoría "${nombre}"?`)) {
+    if (confirm(`¿Borramos la categoría "${nombre}"? Los productos que la usaban se quedarán sin categoría.`)) {
       deleteCategory.mutate(
         { id },
         {
           onSuccess: () => {
-            toast.success('Categoría eliminada exitosamente');
+            toast.success('Categoría borrada.');
           },
           onError: (error: any) => {
-            toast.error(error?.response?.data?.message || 'Error al eliminar la categoría');
+            toast.error(error?.response?.data?.message || 'No se ha podido borrar la categoría.');
           }
         }
       );
@@ -70,10 +70,10 @@ export default function CategoriesPage() {
       { id: category.id, activa: !category.activa },
       {
         onSuccess: () => {
-          toast.success(`Categoría ${category.activa ? 'desactivada' : 'activada'} exitosamente`);
+          toast.success(`Categoría ${category.activa ? 'desactivada' : 'activada'}.`);
         },
         onError: (error: any) => {
-          toast.error(error?.response?.data?.message || 'Error al cambiar el estado');
+          toast.error(error?.response?.data?.message || 'No se ha podido cambiar el estado.');
         }
       }
     );
@@ -93,7 +93,7 @@ export default function CategoriesPage() {
 
   const handleUpdate = () => {
     if (!editingCategory || !editName.trim()) {
-      toast.error('El nombre de la categoría es requerido');
+      toast.error('Ponle un nombre a la categoría.');
       return;
     }
 
@@ -105,11 +105,11 @@ export default function CategoriesPage() {
       },
       {
         onSuccess: () => {
-          toast.success('Categoría actualizada exitosamente');
+          toast.success('Categoría actualizada.');
           cancelEdit();
         },
         onError: (error: any) => {
-          toast.error(error?.response?.data?.message || 'Error al actualizar la categoría');
+          toast.error(error?.response?.data?.message || 'No se ha podido actualizar la categoría.');
         }
       }
     );
@@ -129,7 +129,7 @@ export default function CategoriesPage() {
   if (error) return (
     <div className={styles.root}>
       <div role="alert" style={{ padding: '1rem', backgroundColor: '#fee', color: '#c00', borderRadius: '8px' }}>
-        Error al cargar las categorías: {error.message}
+        No hemos podido cargar las categorías: {error.message}
       </div>
     </div>
   );
@@ -207,8 +207,8 @@ export default function CategoriesPage() {
             <svg className={styles.emptyIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
-            <h3 className={styles.emptyTitle}>No tienes categorías aún</h3>
-            <p className={styles.emptyDescription}>Crea tu primera categoría para organizar mejor tus productos</p>
+            <h3 className={styles.emptyTitle}>Aún no hay categorías.</h3>
+            <p className={styles.emptyDescription}>Crea la primera y tus productos se ordenarán solos por pasillos.</p>
           </div>
         ) : (
           <ul className={styles.categoryList}>

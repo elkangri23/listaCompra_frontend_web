@@ -61,7 +61,7 @@ export const CollaboratorsSection: React.FC<CollaboratorsSectionProps> = ({ list
             />
           ))
         ) : (
-          <p className="text-sm text-gray-500 py-4 text-center">No hay colaboradores en esta lista.</p>
+          <p className="text-sm text-gray-500 py-4 text-center">De momento compras solo en esta lista. Invita a alguien y se verá aquí.</p>
         )}
       </div>
     </div>

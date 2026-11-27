@@ -28,8 +28,8 @@ export function BlueprintCard({ blueprint, onEdit }: BlueprintCardProps) {
 
   const handleDelete = async () => {
     const confirmDelete = window.confirm(
-      `¿Estás seguro de que quieres eliminar la plantilla "${blueprint.nombre}"?\n\n` +
-      `Esta acción NO se puede deshacer.`
+      `¿Borramos la plantilla "${blueprint.nombre}"?\n\n` +
+      `No hay vuelta atrás.`
     );
 
     if (confirmDelete) {

@@ -148,12 +148,11 @@ export default function ListDetailPage() {
 
   const handleDeleteList = async () => {
     const confirmDelete = window.confirm(
-      `¿Estás seguro de que quieres eliminar la lista "${list?.nombre}"?\n\n` +
-      `Esta acción eliminará:\n` +
-      `• La lista y todos sus datos\n` +
-      `• ${productStats.total} productos asociados\n` +
+      `¿Borramos la lista "${list?.nombre}"?\n\n` +
+      `Se van con ella:\n` +
+      `• ${productStats.total} productos\n` +
       `• Todas las invitaciones y colaboradores\n\n` +
-      `Esta acción NO se puede deshacer.`
+      `No hay vuelta atrás.`
     );
 
     if (confirmDelete) {
@@ -165,7 +164,7 @@ export default function ListDetailPage() {
         router.push('/dashboard');
       } catch (error) {
         console.error('Error al eliminar la lista:', error);
-        alert('Error al eliminar la lista. Por favor, intenta de nuevo.');
+        alert('No se ha podido borrar la lista. Inténtalo de nuevo en un momento.');
       }
     }
   };
@@ -541,7 +540,7 @@ export default function ListDetailPage() {
 
             {products.length === 0 ? (
               <div className={styles.emptyState}>
-                <p className={styles.emptyStateText}>No hay productos en esta lista. ¡Añade el primero!</p>
+                <p className={styles.emptyStateText}>Esta lista está vacía… por ahora. Escribe el primer producto arriba y pulsa Enter.</p>
               </div>
             ) : viewMode === 'kanban' ? (
               <ProductsKanban
@@ -734,7 +733,7 @@ export default function ListDetailPage() {
                         tabIndex={0}
                         onKeyDown={(e) => { if (e.key === 'Enter') handleStartEditListDesc()}}
                       >
-                        <p className="whitespace-pre-wrap">{list?.descripcion || <span className="text-gray-500">Sin descripción, haz click para añadir una.</span>}</p>
+                        <p className="whitespace-pre-wrap">{list?.descripcion || <span className="text-gray-500">Sin descripción, haz clic para añadir una.</span>}</p>
                       </div>
                     )}
                   </div>

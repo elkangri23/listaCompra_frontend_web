@@ -33,7 +33,7 @@ test.describe('Flujo de Creación de Listas y Productos', () => {
     ).toBeVisible({ timeout: 10000 });
 
     // Mensaje de lista vacía
-    await expect(page.locator('text=No hay productos en esta lista')).toBeVisible();
+    await expect(page.locator('text=Esta lista está vacía')).toBeVisible();
   });
 
   test('debe crear lista y agregar productos', async ({ page }) => {
@@ -83,7 +83,7 @@ test.describe('Flujo de Creación de Listas y Productos', () => {
       timeout: 5000,
     });
     // Y aparece el estado vacío de nuevo
-    await expect(page.locator('text=No hay productos en esta lista')).toBeVisible();
+    await expect(page.locator('text=Esta lista está vacía')).toBeVisible();
   });
 
   test('debe editar el nombre de la lista', async ({ page }) => {

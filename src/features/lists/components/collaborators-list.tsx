@@ -157,11 +157,11 @@ export function CollaboratorsList({
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>¿Eliminar colaborador?</AlertDialogTitle>
+                            <AlertDialogTitle>¿Quitar a este colaborador?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              ¿Estás seguro de que quieres eliminar a{' '}
-                              <strong>{collaborator.userName}</strong> de esta lista? Esta
-                              acción no se puede deshacer.
+                              ¿Quitamos a{' '}
+                              <strong>{collaborator.userName}</strong> de esta lista? Ya no
+                              podrá verla ni editarla.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
