@@ -16,7 +16,7 @@ export default function PrivacidadPage() {
       <div className="layout-container flex h-full grow flex-col items-center p-5">
         <div className="layout-content-container flex flex-col w-[720px] max-w-full py-5">
           <div className="bg-white rounded-lg px-6 py-8 sm:px-10">
-            <p className="text-[#2563eb] text-lg font-bold leading-normal mb-1">🛒 ListaCompra</p>
+            <p className="text-[#2563eb] text-lg font-bold leading-normal mb-1"><img src="/logo.svg" width={28} height={28} alt="ListaCompra" className="mr-1 inline-block align-middle" /> ListaCompra</p>
             <h1 className="text-[#111418] text-3xl font-bold leading-tight mb-2">
               Política de Privacidad
             </h1>

@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: 'ListaCompra — Sistema de diseño',
   description:
     'Base de componentes accesibles, tokens de diseño y soporte de temas para la aplicación ListaCompra.',
+  icons: [{ rel: 'icon', url: '/favicon.svg', type: 'image/svg+xml' }],
 }
 
 export default function RootLayout({

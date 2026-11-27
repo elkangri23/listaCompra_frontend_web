@@ -20,7 +20,7 @@ export function Sidebar() {
   return (
     <aside>
       <div>
-        <h1>ListaColab</h1>
+        <h1>ListaCompra</h1>
         <nav>
           {links.map(({ href, label, icon: Icon }) => (
             <Link

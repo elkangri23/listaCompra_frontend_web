@@ -26,6 +26,9 @@
 }
 
 .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: var(--font-size-xl, 1.5rem);
   font-weight: 700;
   color: var(--color-primary, #2563eb);

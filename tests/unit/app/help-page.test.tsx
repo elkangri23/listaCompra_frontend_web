@@ -33,4 +33,10 @@ describe('Página de Ayuda', () => {
     expect(mailLinks.length).toBeGreaterThan(0);
     expect(mailLinks[0]).toHaveAttribute('href', 'mailto:anthonymoles89@gmail.com');
   });
+
+  it('muestra el logo de ListaCompra en la cabecera', () => {
+    render(<HelpPage />);
+
+    expect(screen.getByAltText('ListaCompra')).toHaveAttribute('src', '/logo.svg');
+  });
 });

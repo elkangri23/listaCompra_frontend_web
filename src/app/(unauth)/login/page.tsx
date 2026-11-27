@@ -19,9 +19,7 @@ export default function LoginPage() {
           <div className="@container">
             <div className="@[480px]:px-4 @[480px]:py-3">
               <div className="w-full flex items-center justify-center gap-2 overflow-hidden bg-[#2563eb] @[480px]:rounded-lg min-h-[120px] px-4">
-                <span aria-hidden="true" className="text-3xl">
-                  🛒
-                </span>
+                <img src="/logo.svg" width={44} height={44} alt="ListaCompra" />
                 <span className="text-white text-2xl font-extrabold tracking-tight">
                   ListaCompra
                 </span>

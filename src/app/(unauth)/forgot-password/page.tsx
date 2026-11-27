@@ -15,7 +15,7 @@ export default function ForgotPasswordPage() {
     <div className={styles.root}>
       <div className={styles.card} style={{ maxWidth: 520 }}>
         <div className={styles.hero}>
-          <span aria-hidden="true">🛒</span>{' '}
+          <img src="/logo.svg" width={44} height={44} alt="ListaCompra" />
           <span>ListaCompra</span>
         </div>
         <div className={styles.form}>

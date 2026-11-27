@@ -17,7 +17,8 @@ export function AppHeader() {
       <div className={styles.container}>
         <div className={styles.logoSection}>
           <Link href="/dashboard" className={styles.logo}>
-            ListaColab
+            <img src="/logo.svg" width={32} height={32} alt="ListaCompra" />
+            <span>ListaCompra</span>
           </Link>
         </div>
 

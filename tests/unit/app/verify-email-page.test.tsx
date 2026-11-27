@@ -28,6 +28,7 @@ describe('Página de verificación de email', () => {
   it('muestra el título y el formulario de verificación', () => {
     render(<VerifyEmailPage />)
 
+    expect(screen.getByAltText('ListaCompra')).toHaveAttribute('src', '/logo.svg');
     expect(
       screen.getByRole('heading', { name: /verifica tu correo/i }),
     ).toBeInTheDocument()

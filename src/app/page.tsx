@@ -10,9 +10,7 @@ export default function Home() {
     <div className={styles.root}>
       <header className={styles.header}>
         <div className={styles.brand}>
-          <span className={styles.logo} aria-hidden>
-            🛒
-          </span>
+          <img src="/logo.svg" width={36} height={36} alt="ListaCompra" />
           <h2 className={styles.title}>ListaCompra</h2>
         </div>
 

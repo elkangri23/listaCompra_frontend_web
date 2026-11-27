@@ -14,6 +14,7 @@ describe('Landing', () => {
     render(<Home />);
 
     expect(screen.getByRole('heading', { name: /listacompra/i })).toBeInTheDocument();
+    expect(screen.getByAltText('ListaCompra')).toHaveAttribute('src', '/logo.svg');
     expect(screen.queryByText(/grocerymate/i)).not.toBeInTheDocument();
     expect(screen.getByText(/© 2026 ListaCompra/i)).toBeInTheDocument();
   });
