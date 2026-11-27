@@ -14,7 +14,7 @@ import { ProfileForm } from '@/features/auth/components/profile-form'
 import { ForgotPasswordForm } from '@/features/auth/components/forgot-password-form'
 import { ChangePasswordForm } from '@/features/auth/components/change-password-form'
 import { SessionStatus } from '@/features/auth/components/session/session-status'
-import { useProfile, useUpdateProfile } from '@/features/auth/hooks/use-profile'
+import { useProfile, useUpdateProfile, useChangePassword } from '@/features/auth/hooks/use-profile'
 import {
   requestPasswordReset,
   AuthApiError,
@@ -24,6 +24,7 @@ import { createTestQueryClient } from '../../utils/test-utils'
 jest.mock('@/features/auth/hooks/use-profile', () => ({
   useProfile: jest.fn(),
   useUpdateProfile: jest.fn(),
+  useChangePassword: jest.fn(),
 }))
 
 jest.mock('@/features/auth/services/auth-service', () => ({
@@ -119,6 +120,7 @@ jest.mock('@/components/ui/form', () => {
 
 const mockUseProfile = useProfile as jest.Mock
 const mockUseUpdateProfile = useUpdateProfile as jest.Mock
+const mockUseChangePassword = useChangePassword as jest.Mock
 const mockUseSession = useSession as jest.Mock
 const mockSignOut = signOut as jest.Mock
 const mockRequestReset = requestPasswordReset as jest.Mock
@@ -349,12 +351,31 @@ describe('componentes auth sin coverage previo', () => {
   })
 
   describe('ChangePasswordForm', () => {
-    it('debe mostrar el aviso de funcionalidad deshabilitada', () => {
-      render(<ChangePasswordForm />)
+    it('muestra el formulario real de cambio de contraseña', () => {
+      mockUseChangePassword.mockReturnValue({
+        mutateAsync: jest.fn(),
+        isPending: false,
+      })
+
+      render(<ChangePasswordForm />, { wrapper })
 
       expect(
-        screen.getByText(/temporalmente deshabilitada/i),
+        screen.getByPlaceholderText('Tu contraseña actual')
       ).toBeInTheDocument()
+      expect(
+        screen.getByPlaceholderText(
+          'Mínimo 8 caracteres, con mayúscula, minúscula y número'
+        )
+      ).toBeInTheDocument()
+      expect(
+        screen.getByPlaceholderText('Repite la contraseña nueva')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /cambiar contraseña/i })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByText(/temporalmente deshabilitada/i)
+      ).not.toBeInTheDocument()
     })
   })
 

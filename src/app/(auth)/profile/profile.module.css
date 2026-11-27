@@ -41,6 +41,9 @@
   border-bottom: 2px solid var(--color-border, #e0e0e0);
   gap: var(--spacing-xl, 2rem);
   overflow-x: auto;
+  /* El tab tiene top: 2px: sin esto, overflow-y computa a auto y aparece
+     una barra vertical en la tira. */
+  overflow-y: hidden;
 }
 
 .tab {
@@ -287,6 +290,13 @@
 }
 
 /* === Responsive === */
+/* En escritorio las pestañas caben: sin scroll horizontal ni barras. */
+@media (min-width: 769px) {
+  .tabsContainer {
+    overflow-x: visible;
+  }
+}
+
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;

@@ -17,6 +17,21 @@ jest.mock('@/features/gdpr/components/gdpr-section', () => ({
   GdprSection: () => <div data-testid="gdpr-section" />,
 }));
 
+jest.mock('@/features/auth/components/profile-form', () => ({
+  ProfileForm: () => (
+    <div data-testid="profile-form">
+      <label>
+        Nombre Completo
+        <input />
+      </label>
+    </div>
+  ),
+}));
+
+jest.mock('@/features/auth/components/change-password-form', () => ({
+  ChangePasswordForm: () => <div data-testid="change-password-form" />,
+}));
+
 describe('Página de perfil', () => {
   it('muestra la pestaña Perfil por defecto', () => {
     render(<ProfilePage />);
@@ -41,6 +56,7 @@ describe('Página de perfil', () => {
 
     expect(screen.getByTestId('totp-section')).toBeInTheDocument();
     expect(screen.getByTestId('passkey-list')).toBeInTheDocument();
+    expect(screen.getByTestId('change-password-form')).toBeInTheDocument();
   });
 
   it('muestra la pestaña Preferencias', () => {

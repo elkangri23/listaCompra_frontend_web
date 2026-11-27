@@ -20,6 +20,7 @@ import {
   type UseFormReturn,
 } from 'react-hook-form'
 
+import { Slot } from '@radix-ui/react-slot'
 import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
 
@@ -112,13 +113,16 @@ const FormLabel = React.forwardRef<
 FormLabel.displayName = 'FormLabel'
 
 const FormControl = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  React.ElementRef<typeof Slot>,
+  React.ComponentPropsWithoutRef<typeof Slot>
 >(({ ...props }, ref) => {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
 
+  // Slot pasa id/aria al control hijo (el <input>): antes era un <div> con el
+  // id y la etiqueta apuntaba al div, así que el campo no tenía nombre
+  // accesible (la etiqueta no se asociaba al input).
   return (
-    <div
+    <Slot
       ref={ref}
       id={formItemId}
       aria-describedby={

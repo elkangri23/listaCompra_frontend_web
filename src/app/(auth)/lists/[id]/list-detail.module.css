@@ -532,6 +532,24 @@
   padding: 0 16px;
   gap: 32px;
   overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* En escritorio, dentro del sidebar de 360px las 4 pestañas apenas caben:
+   se estrecha el hueco y se oculta la barra (siguen siendo desplazables),
+   porque overflow-x: visible + overflow-y: hidden computa overflow-x a auto
+   y la barra reaparecería. En móvil se mantiene el scroll horizontal. */
+@media (min-width: 769px) {
+  .tabsContainer {
+    overflow-x: visible;
+    gap: 16px;
+    padding: 0 12px;
+    scrollbar-width: none;
+  }
+
+  .tabsContainer::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .tab {

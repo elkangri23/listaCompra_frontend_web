@@ -2,9 +2,20 @@
 
 import { useState } from 'react'
 import { useCreateList } from '@/features/lists/hooks/use-lists'
-import { useStores } from '@/features/stores/hooks/use-stores'
+import { useStores, useCreateStore } from '@/features/stores/hooks/use-stores'
 import { CreateListDto } from '@/types/dtos/lists'
+import { StoreResponseDto } from '@/types/dtos/stores'
 import styles from './create-list-form-client.module.css'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 
 interface CreateListFormClientProps {
   onSuccess?: (listId: string) => void
@@ -23,6 +34,34 @@ export function CreateListFormClient({ onSuccess, onCancel }: CreateListFormClie
   const createListMutation = useCreateList()
   const { data: storesData, isLoading: storesLoading } = useStores({ activas: true })
   const stores = storesData?.tiendas ?? []
+  const createStoreMutation = useCreateStore()
+  const [isCreateStoreDialogOpen, setIsCreateStoreDialogOpen] = useState(false)
+  const [newStoreName, setNewStoreName] = useState('')
+  const [storeError, setStoreError] = useState<string | null>(null)
+  // La tienda recién creada se añade a las opciones al momento, sin
+  // esperar a que se refresque la lista (useCreateStore ya invalida
+  // la caché, pero el refetch puede tardar un instante).
+  const [createdStore, setCreatedStore] = useState<StoreResponseDto | null>(null)
+  const allStores =
+    createdStore && !stores.some((s) => s.id === createdStore.id)
+      ? [...stores, createdStore]
+      : stores
+
+  const handleCreateStore = async () => {
+    if (!newStoreName.trim()) return
+    setStoreError(null)
+    try {
+      const store = await createStoreMutation.mutateAsync({
+        nombre: newStoreName.trim(),
+      })
+      setCreatedStore(store)
+      setFormData((prev) => ({ ...prev, tiendaId: store.id }))
+      setNewStoreName('')
+      setIsCreateStoreDialogOpen(false)
+    } catch {
+      setStoreError('No se pudo crear la tienda. Inténtalo nuevamente.')
+    }
+  }
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof CreateListDto, string>> = {}
@@ -169,7 +208,7 @@ export function CreateListFormClient({ onSuccess, onCancel }: CreateListFormClie
           disabled={storesLoading}
         >
           <option value="">Sin tienda asignada</option>
-          {stores.map((store: { id: string; nombre: string }) => (
+          {allStores.map((store: { id: string; nombre: string }) => (
             <option key={store.id} value={store.id}>
               {store.nombre}
             </option>
@@ -178,6 +217,75 @@ export function CreateListFormClient({ onSuccess, onCancel }: CreateListFormClie
         <p className={styles.helperText}>
           Puedes seleccionar una tienda donde planeas comprar los productos
         </p>
+        <button
+          type="button"
+          className={styles.linkButton}
+          onClick={() => setIsCreateStoreDialogOpen(true)}
+        >
+          + Nueva tienda
+        </button>
+
+        <Dialog
+          open={isCreateStoreDialogOpen}
+          onOpenChange={(open) => {
+            setIsCreateStoreDialogOpen(open)
+            if (!open) {
+              setNewStoreName('')
+              setStoreError(null)
+            }
+          }}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Crear Nueva Tienda</DialogTitle>
+              <DialogDescription>
+                Ingresa el nombre de la nueva tienda. Quedará seleccionada
+                para esta lista.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <label htmlFor="new-store-name" className="text-sm font-medium">
+                  Nombre de la tienda
+                </label>
+                <Input
+                  id="new-store-name"
+                  type="text"
+                  value={newStoreName}
+                  onChange={(e) => setNewStoreName(e.target.value)}
+                  placeholder="Ej: Mercadona, Carrefour, Lidl..."
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      handleCreateStore()
+                    }
+                  }}
+                />
+              </div>
+              {storeError && (
+                <p className={styles.errorMessage} role="alert">
+                  {storeError}
+                </p>
+              )}
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => setIsCreateStoreDialogOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="button"
+                onClick={handleCreateStore}
+                disabled={createStoreMutation.isPending || !newStoreName.trim()}
+              >
+                {createStoreMutation.isPending ? 'Creando...' : 'Crear Tienda'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {apiError && (

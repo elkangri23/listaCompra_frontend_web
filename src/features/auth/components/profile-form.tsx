@@ -118,11 +118,16 @@ export function ProfileForm() {
                     type="email"
                     placeholder="usuario@ejemplo.com"
                     {...field}
+                    readOnly
+                    aria-readonly="true"
                     disabled={updateProfileMutation.isPending}
                     autoComplete="email"
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border border-[#dbdfe6] bg-white focus:border-[#dbdfe6] h-14 placeholder:text-[#5b6b82] p-[15px] text-base font-normal leading-normal"
+                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] focus-visible:ring-offset-2 border border-[#dbdfe6] bg-[#f0f2f5] focus:border-[#dbdfe6] h-14 placeholder:text-[#5b6b82] p-[15px] text-base font-normal leading-normal"
                   />
                 </FormControl>
+                <FormDescription className="text-[#5b6b82] text-sm">
+                  Este correo no se puede cambiar.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -162,7 +167,13 @@ export function ProfileForm() {
           <Button
             type="button"
             variant="outline"
-            onClick={() => form.reset()}
+            onClick={() =>
+              form.reset({
+                nombre: user?.name || '',
+                email: user?.email || '',
+                bio: '',
+              })
+            }
             disabled={updateProfileMutation.isPending || !form.formState.isDirty}
             className="min-w-[84px] h-10 px-4 rounded-lg border border-[#dbdfe6] text-[#111418] hover:bg-[#f0f2f5]"
           >

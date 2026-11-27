@@ -5,19 +5,14 @@ import styles from './profile.module.css'
 import { TotpSecuritySection } from '@/features/settings/components/totp-security-section'
 import { PasskeyList } from '@/features/settings/components/passkey-list'
 import { GdprSection } from '@/features/gdpr/components/gdpr-section'
+import { ProfileForm } from '@/features/auth/components/profile-form'
+import { ChangePasswordForm } from '@/features/auth/components/change-password-form'
 
 type Tab = 'perfil' | 'seguridad' | 'preferencias' | 'privacidad'
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<Tab>('perfil')
-  const [fullName, setFullName] = useState('')
-  const [email, setEmail] = useState('')
   const [emailNotifications, setEmailNotifications] = useState(false)
-
-  const handleChangePassword = () => {
-    // TODO: Implement change password logic
-    alert('Funcionalidad de cambiar contraseña (por implementar)')
-  }
 
   const handleSignOutAllDevices = () => {
     // TODO: Implement sign out all devices logic
@@ -64,31 +59,7 @@ export default function ProfilePage() {
       {activeTab === 'perfil' && (
         <>
           <h3 className={styles.sectionTitle}>Perfil</h3>
-          <div className={styles.fieldWrapper}>
-            <label htmlFor="fullName" className={styles.fieldLabel}>
-              <p className={styles.labelText}>Nombre Completo</p>
-              <input
-                id="fullName"
-                className={styles.input}
-                value={fullName}
-                onChange={(e: any) => setFullName(e.target.value)}
-                placeholder="Tu nombre completo"
-              />
-            </label>
-          </div>
-          <div className={styles.fieldWrapper}>
-            <label htmlFor="email" className={styles.fieldLabel}>
-              <p className={styles.labelText}>Email</p>
-              <input
-                id="email"
-                type="email"
-                className={styles.input}
-                value={email}
-                onChange={(e: any) => setEmail(e.target.value)}
-                placeholder="correo@ejemplo.com"
-              />
-            </label>
-          </div>
+          <ProfileForm />
         </>
       )}
 
@@ -103,12 +74,9 @@ export default function ProfilePage() {
                   Actualiza tu contraseña para mantener tu cuenta segura.
                 </p>
               </div>
-              <button
-                className={styles.actionButton}
-                onClick={handleChangePassword}
-              >
-                <span>Cambiar Contraseña</span>
-              </button>
+            </div>
+            <div className="p-4 pt-0">
+              <ChangePasswordForm />
             </div>
           </div>
           <div className={styles.actionCard}>
