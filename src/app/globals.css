@@ -31,6 +31,13 @@
   --color-text-secondary: #60708a;
   --color-bg-input: #f0f2f5;
   --color-border: #dbdfe6;
+
+  /* Aliases usados por la landing (homepage.module.css) */
+  --bg: #f0f2f5;
+  --text: #111418;
+  --accent: #4387f4;
+  --muted: #60708a;
+  --border: #dbdfe6;
   --color-white: #ffffff;
   --color-destructive: #ef4444;
   --color-success: #10b981;

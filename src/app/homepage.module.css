@@ -45,9 +45,38 @@
 .cardText{margin:0;color:var(--muted);font-size:0.95rem}
 
 .footer{width:100%;padding:28px 0;text-align:center}
-.footerLinks{display:flex;gap:18px;justify-content:center;margin-bottom:12px}
+.footerLinks{display:flex;gap:18px;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
 .footerLink{color:var(--muted);text-decoration:none}
 .footerCopy{color:var(--muted);margin:0}
+
+/* Secciones genéricas de la landing (item 2) */
+.section{width:100%;padding:26px 0}
+.sectionHeader{max-width:720px;margin:0 auto 22px;text-align:center}
+.sectionTitle{font-size:1.75rem;margin:0 0 8px}
+.sectionSubtitle{margin:0;color:var(--muted)}
+
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.step{background:white;border:1px solid var(--border);padding:18px;border-radius:10px}
+.stepNum{display:inline-flex;width:34px;height:34px;border-radius:50%;background:var(--accent);color:white;font-weight:800;align-items:center;justify-content:center;margin-bottom:10px}
+.stepTitle{margin:0 0 6px;font-weight:700}
+.stepText{margin:0;color:var(--muted);font-size:0.95rem}
+
+.faq{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.faqItem{background:white;border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.faqSummary{font-weight:700;cursor:pointer}
+.faqAnswer{margin:10px 0 0;color:var(--muted);font-size:0.95rem}
+
+.helpStrip{width:100%;background:white;border:1px solid var(--border);border-radius:12px;padding:22px;text-align:center}
+.helpStripTitle{margin:0 0 6px}
+.helpStripText{margin:0 0 12px;color:var(--muted)}
+
+.heroCtas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.ctaSecondary{display:inline-block;background:rgba(255,255,255,0.16);color:white;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700;border:1px solid rgba(255,255,255,0.5)}
+
+.cookieBanner{position:sticky;bottom:0;margin-top:20px;background:white;border-top:1px solid var(--border);padding:14px 20px;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;font-size:14px;box-shadow:0 -4px 16px rgba(17,20,24,0.08)}
+.cookieText{margin:0;color:var(--muted);max-width:640px}
+.cookieText a{color:var(--accent)}
+.cookieButton{background:var(--accent);color:white;border:0;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px}
 
 @media (min-width:720px){
   .heroTitle{font-size:2.5rem}
