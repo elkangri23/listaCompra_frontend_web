@@ -27,7 +27,7 @@ test.describe('Flujo de Autenticación', () => {
 
     // LoginForm muestra error con role="alert"
     await expect(
-      page.locator('[role="alert"]').filter({ hasText: /incorrectos/i })
+      page.locator('[role="alert"]').filter({ hasText: /no coinciden/i })
     ).toBeVisible({ timeout: 10000 });
 
     // Verificar que NO redirige
