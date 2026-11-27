@@ -63,12 +63,8 @@ export function ForgotPasswordForm() {
       if (!validation.success) {
         const zodErrors = validation.error.flatten().fieldErrors
         const nextErrors: ForgotPasswordFieldErrors = {}
-        const keys = Object.keys(zodErrors) as Array<keyof ForgotPasswordSchema>
-        keys.forEach((key) => {
-          const message = zodErrors[key]?.[0]
-          if (message) {
-            nextErrors[key] = message
-          }
+        Object.entries(zodErrors).forEach(([key, messages]) => {
+          nextErrors[key as keyof ForgotPasswordSchema] = messages[0]
         })
         setFieldErrors(nextErrors)
         return
@@ -111,12 +107,8 @@ export function ForgotPasswordForm() {
       if (!validation.success) {
         const zodErrors = validation.error.flatten().fieldErrors
         const nextErrors: ResetPasswordFieldErrors = {}
-        const keys = Object.keys(zodErrors) as Array<keyof ResetPasswordSchema>
-        keys.forEach((key) => {
-          const message = zodErrors[key]?.[0]
-          if (message) {
-            nextErrors[key] = message
-          }
+        Object.entries(zodErrors).forEach(([key, messages]) => {
+          nextErrors[key as keyof ResetPasswordSchema] = messages[0]
         })
         setFieldErrors(nextErrors)
         return

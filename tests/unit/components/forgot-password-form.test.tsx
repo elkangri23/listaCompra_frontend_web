@@ -95,10 +95,27 @@ describe('ForgotPasswordForm (item 9c)', () => {
       )
     })
 
-    it('debe mostrar el error del backend al pedir el código', async () => {
-      ;(requestPasswordReset as jest.Mock).mockRejectedValue(
-        new Error('No se pudo enviar el código de recuperación.'),
+    it('debe borrar el error del campo al escribir de nuevo', async () => {
+      render(<ForgotPasswordForm />)
+
+      await userEvent.type(
+        screen.getByLabelText(/correo electrónico/i),
+        'no-es-email',
       )
+      fireEvent.submit(screen.getByRole('button', { name: /enviar el código/i }))
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'Ingresa un correo electrónico válido.',
+      )
+
+      await userEvent.type(
+        screen.getByLabelText(/correo electrónico/i),
+        '@example.com',
+      )
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    })
+
+    it('debe mostrar el mensaje genérico cuando el error no es un Error', async () => {
+      ;(requestPasswordReset as jest.Mock).mockRejectedValue('boom')
       render(<ForgotPasswordForm />)
 
       await userEvent.type(
@@ -114,9 +131,36 @@ describe('ForgotPasswordForm (item 9c)', () => {
           'No se pudo enviar el código de recuperación.',
         )
       })
-      expect(
-        screen.queryByRole('heading', { name: /pon tu contraseña nueva/i }),
-      ).not.toBeInTheDocument()
+    })
+
+    it('debe mostrar el spinner y el texto de envío mientras pide el código', async () => {
+      let resolveRequest: (value: unknown) => void = () => {}
+      ;(requestPasswordReset as jest.Mock).mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolveRequest = resolve
+          }),
+      )
+      render(<ForgotPasswordForm />)
+
+      await userEvent.type(
+        screen.getByLabelText(/correo electrónico/i),
+        'juan@example.com',
+      )
+      const user = userEvent.setup()
+      await user.click(screen.getByRole('button', { name: /enviar el código/i }))
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', { name: /enviando el código/i }),
+        ).toBeInTheDocument()
+      })
+      resolveRequest(undefined)
+      await waitFor(() => {
+        expect(
+          screen.getByRole('heading', { name: /pon tu contraseña nueva/i }),
+        ).toBeInTheDocument()
+      })
     })
   })
 
@@ -202,13 +246,33 @@ describe('ForgotPasswordForm (item 9c)', () => {
       ).toHaveAttribute('href', '/login')
     })
 
-    it('debe mostrar el error del backend con un código no válido', async () => {
-      ;(resetPassword as jest.Mock).mockRejectedValue(
-        new Error('El código no es válido o ha caducado.'),
-      )
+    it('debe rechazar una contraseña nueva demasiado corta', async () => {
       await goToStep2()
 
-      await userEvent.type(screen.getByLabelText(/código de 6 dígitos/i), '111111')
+      await userEvent.type(screen.getByLabelText(/código de 6 dígitos/i), '482913')
+      await userEvent.type(
+        screen.getByLabelText(/^contraseña nueva$/i),
+        'corta',
+      )
+      await userEvent.type(
+        screen.getByLabelText(/repite la contraseña nueva/i),
+        'corta',
+      )
+      fireEvent.submit(
+        screen.getByRole('button', { name: /cambiar la contraseña/i }),
+      )
+
+      expect(
+        document.getElementById('nuevaPassword-error'),
+      ).toHaveTextContent('La contraseña debe tener al menos 8 caracteres.')
+      expect(resetPassword).not.toHaveBeenCalled()
+    })
+
+    it('debe mostrar el mensaje genérico cuando el error no es un Error', async () => {
+      ;(resetPassword as jest.Mock).mockRejectedValue('boom')
+      await goToStep2()
+
+      await userEvent.type(screen.getByLabelText(/código de 6 dígitos/i), '482913')
       await userEvent.type(
         screen.getByLabelText(/^contraseña nueva$/i),
         'NuevaPass123!',
@@ -223,9 +287,34 @@ describe('ForgotPasswordForm (item 9c)', () => {
 
       await waitFor(() => {
         expect(screen.getByRole('alert')).toHaveTextContent(
-          'El código no es válido o ha caducado.',
+          'No se pudo cambiar la contraseña. Inténtalo nuevamente.',
         )
       })
+    })
+
+    it('debe mostrar el panel de éxito aunque el backend no devuelva mensaje', async () => {
+      ;(resetPassword as jest.Mock).mockResolvedValue({})
+      await goToStep2()
+
+      await userEvent.type(screen.getByLabelText(/código de 6 dígitos/i), '482913')
+      await userEvent.type(
+        screen.getByLabelText(/^contraseña nueva$/i),
+        'NuevaPass123!',
+      )
+      await userEvent.type(
+        screen.getByLabelText(/repite la contraseña nueva/i),
+        'NuevaPass123!',
+      )
+      await userEvent.click(
+        screen.getByRole('button', { name: /cambiar la contraseña/i }),
+      )
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('heading', { name: /contraseña cambiada/i }),
+        ).toBeInTheDocument()
+      })
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
     })
 
     it('debe reenviar el código y mostrar el mensaje', async () => {
@@ -242,6 +331,38 @@ describe('ForgotPasswordForm (item 9c)', () => {
       expect(screen.getByRole('status')).toHaveTextContent(
         'Te hemos enviado un código nuevo.',
       )
+    })
+
+    it('debe mostrar el mensaje genérico cuando el error de reenvío no es un Error', async () => {
+      ;(resendPasswordResetCode as jest.Mock).mockRejectedValue('boom')
+      await goToStep2()
+
+      await userEvent.click(
+        screen.getByRole('button', { name: /reenviar el código/i }),
+      )
+
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toHaveTextContent(
+          'No se pudo reenviar el código. Inténtalo nuevamente.',
+        )
+      })
+    })
+
+    it('debe mostrar el error del backend al reenviar', async () => {
+      ;(resendPasswordResetCode as jest.Mock).mockRejectedValue(
+        new Error('Espera un minuto antes de pedir otro código.'),
+      )
+      await goToStep2()
+
+      await userEvent.click(
+        screen.getByRole('button', { name: /reenviar el código/i }),
+      )
+
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toHaveTextContent(
+          'Espera un minuto antes de pedir otro código.',
+        )
+      })
     })
 
     it('debe volver al paso 1 con «Cambiar el correo»', async () => {
