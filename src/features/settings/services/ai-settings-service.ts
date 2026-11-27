@@ -10,6 +10,12 @@ import { axiosInstance } from '@/lib/api/axios-instance';
 
 export const AI_PROVIDERS = [
   {
+    id: 'freellmapi',
+    nombre: 'FreeLLMAPI (gratuito, local)',
+    apiUrlPorDefecto: 'http://freellmapi:3001/v1',
+    modelosSugeridos: ['qwen3.8-27b', 'gemini-3.5-flash-lite'],
+  },
+  {
     id: 'perplexity',
     nombre: 'Perplexity (Sonar online)',
     apiUrlPorDefecto: 'https://api.perplexity.ai',

@@ -143,6 +143,7 @@ describe('aiSettingsService (CU-31)', () => {
 
       expect(ids).toEqual(
         expect.arrayContaining([
+          'freellmapi',
           'perplexity',
           'openai',
           'openrouter',
@@ -150,6 +151,18 @@ describe('aiSettingsService (CU-31)', () => {
           'azure-openai',
         ]),
       )
+    })
+
+    it('debe tener freellmapi con URL local y modelos verificados', () => {
+      const byId = Object.fromEntries(AI_PROVIDERS.map((p) => [p.id, p]))
+
+      expect(byId['freellmapi'].apiUrlPorDefecto).toBe(
+        'http://freellmapi:3001/v1',
+      )
+      expect(byId['freellmapi'].modelosSugeridos).toEqual([
+        'qwen3.8-27b',
+        'gemini-3.5-flash-lite',
+      ])
     })
 
     it('debe tener apiUrl por defecto para perplexity, openai y openrouter', () => {
