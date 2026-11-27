@@ -912,3 +912,35 @@ autenticadora) + códigos de respaldo de un solo uso. Backend: commit
 **Totales**: 845 tests unitarios (51 suites) · cobertura sobre umbrales
 99/92/99/99 · CI verde. Pendiente: fase 2 passkeys (WebAuthn), fase 3 E2E
 con Playwright virtual authenticator (requiere Docker).
+
+---
+
+## ACTUALIZACIÓN 27 NOV 2026 - CU-MFA fase 2 (passkeys) + fase 3 (E2E real)
+
+**Passkeys (fase 2)**:
+- Backend: modelo `webauthn_credentials`, use cases registro/login/CRUD con
+  step-up, política de contador (4 casos, regresión → bloqueo), endpoints
+  gated por `FF_PASSKEYS_ENABLED`, 24 tests.
+- Frontend: provider `passkey` de NextAuth, botón en login (sin WebAuthn →
+  oculto), `PasskeyList` en /profile Seguridad, 21 tests.
+
+**Fase 3 (E2E + infra)**:
+- BD real: migraciones MFA aplicadas; `lista_compra_test_db` creada; `.env`
+  con `MFA_ENCRYPTION_KEY` + `WEBAUTHN_*`.
+- Integración backend: suites HTTP (58) y persistencia (38) en verde con
+  Postgres real; +7 tests de integración de repos MFA (challenges de un uso,
+  cap atómico, backups race-safe, passkey CRUD + unique).
+- **FIX real**: el callback `session` de NextAuth no exponía `challengeId` →
+  el paso 2 del login nunca aparecía en el navegador.
+- **E2E mock**: 7 tests del login dos pasos TOTP (código correcto/incorrecto,
+  ventana ±30s, backup code, cancelar, validación local). Los E2E usan
+  `getByRole('heading', { name: 'Mis Listas' })` (h1 tras ajuste a11y).
+- **E2E real** (`MFA_E2E_REAL=1`, solo local): autenticador virtual CDP +
+  backend real: registro de passkey con step-up → listado → logout → login
+  sin contraseña → dashboard. Fixture auto-reparable del usuario en BD.
+- CI: `.npmrc` legacy-peer-deps (simplewebauthn v13 vs peer ^9 de next-auth
+  beta) + Dockerfile copia `.npmrc`.
+
+**Totales**: 1020 unitarios (79 suites) + 40 E2E mock + 1 E2E real ·
+CI + Deploy verdes. Docker necesario para: backend real, E2E real e
+integración (requisito ya cumplido).
