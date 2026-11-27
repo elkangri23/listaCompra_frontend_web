@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { LayoutGrid, Table as TableIcon, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import styles from './list-detail.module.css';
 import { useList, useUpdateList, useDeleteList } from '@/features/lists/hooks/use-lists';
 import { useProducts, useCreateProduct, useDeleteProduct, useToggleProductPurchased, useUpdateProduct } from '@/features/products/hooks/use-products';
@@ -13,7 +13,6 @@ import { ShareListDialog } from '@/features/invitations/components/share-list-di
 import { CollaboratorsSection } from '@/features/invitations/components/collaborators-section';
 import { AuditHistorySection } from '@/features/audit/components/audit-history-section';
 import { BulkCategorizationDialog } from '@/features/ai/components/bulk-categorization-dialog';
-import { ProductsKanban } from '@/features/products/components/products-kanban';
 import { RecommendationsPanel } from '@/features/ai/components/recommendations-panel';
 import { CreateBlueprintFromListDialog } from '@/features/blueprints/components/create-blueprint-from-list-dialog';
 import { CollaborationIndicator } from '@/features/lists/components/collaboration-indicator';
@@ -36,8 +35,7 @@ export default function ListDetailPage() {
   const [editingCantidad, setEditingCantidad] = useState(1);
   const [editingUrgente, setEditingUrgente] = useState(false);
   
-  // Estados para Sprint 2
-  const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
+  // Estado para el diálogo de categorización masiva
   const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
   
   // Estados para editar nombre y descripción de la lista
@@ -282,13 +280,6 @@ export default function ListDetailPage() {
     router.refresh();
   };
 
-  const handleMoveProduct = async (productId: string, newCategoryId: string | null) => {
-    await updateProductMutation.mutateAsync({
-      productId,
-      data: { categoriaId: newCategoryId || undefined },
-    });
-  };
-
   const handleAddRecommendation = async (recommendation: Recommendation) => {
     await createProductMutation.mutateAsync({
       nombre: recommendation.productoNombre,
@@ -461,18 +452,6 @@ export default function ListDetailPage() {
                   <Sparkles className="h-4 w-4 mr-2" />
                   Categorizar
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setViewMode(prev => prev === 'table' ? 'kanban' : 'table')}
-                  title={viewMode === 'table' ? 'Vista Kanban' : 'Vista Tabla'}
-                >
-                  {viewMode === 'table' ? (
-                    <LayoutGrid className="h-4 w-4" />
-                  ) : (
-                    <TableIcon className="h-4 w-4" />
-                  )}
-                </Button>
                 <Link href={`/lists/${listId}/history`} className={styles.historyButton}>
                   <span>Ver Historial</span>
                 </Link>
@@ -567,12 +546,6 @@ export default function ListDetailPage() {
               <div className={styles.emptyState}>
                 <p className={styles.emptyStateText}>Esta lista está vacía… por ahora. Escribe el primer producto arriba y pulsa Enter.</p>
               </div>
-            ) : viewMode === 'kanban' ? (
-              <ProductsKanban
-                products={products}
-                categories={categoriesResp?.categorias || []}
-                onMoveProduct={handleMoveProduct}
-              />
             ) : (
               Object.entries(grouped).map(([catId, productos]) => (
                 <div key={catId}>
