@@ -250,7 +250,7 @@ export function LoginForm() {
     <form noValidate onSubmit={handleSubmit}>
       <div className="mt-8 px-4">
         <h2 className="text-[#111418] text-lg font-bold leading-normal mb-4">
-          Seguridad
+          Iniciar sesión
         </h2>
 
         <div className="flex w-full max-w-[480px] flex-wrap items-end gap-4 py-3">
@@ -311,6 +311,14 @@ export function LoginForm() {
             {fieldErrors.password}
           </p>
         ) : null}
+        <p className="text-right px-4 pt-2">
+          <Link
+            href="/forgot-password"
+            className="text-sm text-[#4387f4] underline"
+          >
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </p>
       </div>
 
       {errorMessage ? (
@@ -318,11 +326,11 @@ export function LoginForm() {
           {errorMessage}
         </p>
       ) : null}
-      <div className="flex px-4 py-3 mt-6">
+      <div className="flex flex-col gap-3 px-4 py-3 mt-6">
         <button
           type="submit"
           disabled={isPending}
-          className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
+          className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 w-full bg-[#4387f4] text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2 disabled:opacity-60"
         >
           {isPending && (
             <svg
@@ -346,7 +354,7 @@ export function LoginForm() {
               ></path>
             </svg>
           )}
-          <span className="truncate">
+          <span>
             {isPending ? 'Iniciando sesión…' : 'Iniciar Sesión'}
           </span>
         </button>

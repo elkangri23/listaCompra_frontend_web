@@ -12,6 +12,8 @@ import {
   refreshToken,
   registerUser,
   requestPasswordReset,
+  resetPassword,
+  resendPasswordResetCode,
   getCurrentUser,
   updateProfile,
   changePassword,
@@ -555,7 +557,7 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
   })
 
   describe('requestPasswordReset', () => {
-    it('debe enviar enlace de recuperación', async () => {
+    it('debe enviar el código de recuperación', async () => {
       // Arrange
       const resetRequest = {
         email: '  TEST@EXAMPLE.COM  ',
@@ -588,6 +590,83 @@ describe('auth-service (CRÍTICO - 100% coverage)', () => {
       await expect(requestPasswordReset(resetRequest)).rejects.toThrow(
         AuthApiError,
       )
+    })
+  })
+
+  describe('resetPassword', () => {
+    it('debe restablecer la contraseña con el código', async () => {
+      ;(axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: {
+          success: true,
+          data: {
+            mensaje: 'Tu contraseña ha sido cambiada. Ya puedes entrar con la nueva.',
+          },
+        },
+      })
+
+      const result = await resetPassword({
+        email: '  TEST@EXAMPLE.COM  ',
+        codigo: '482913',
+        nuevaPassword: 'NuevaPass123!',
+      })
+
+      expect(axiosInstance.post).toHaveBeenCalledWith('/auth/reset-password', {
+        email: 'test@example.com', // normalizado
+        codigo: '482913',
+        nuevaPassword: 'NuevaPass123!',
+      })
+      expect(result.mensaje).toContain('contraseña ha sido cambiada')
+    })
+
+    it('debe rechazar un código incorrecto', async () => {
+      ;(axiosInstance.post as jest.Mock).mockRejectedValue({
+        isAxiosError: true,
+        response: { data: { message: 'El código no es válido o ha caducado.' } },
+      })
+
+      await expect(
+        resetPassword({
+          email: 'test@example.com',
+          codigo: '111111',
+          nuevaPassword: 'NuevaPass123!',
+        }),
+      ).rejects.toThrow('El código no es válido o ha caducado.')
+    })
+
+    it('debe rechazar una respuesta sin success del backend', async () => {
+      ;(axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: { success: false, message: 'No se pudo cambiar la contraseña.' },
+      })
+
+      await expect(
+        resetPassword({
+          email: 'test@example.com',
+          codigo: '482913',
+          nuevaPassword: 'NuevaPass123!',
+        }),
+      ).rejects.toThrow('No se pudo cambiar la contraseña.')
+    })
+  })
+
+  describe('resendPasswordResetCode', () => {
+    it('debe reenviar el código con el correo normalizado', async () => {
+      ;(axiosInstance.post as jest.Mock).mockResolvedValue({
+        data: { success: true },
+      })
+
+      await resendPasswordResetCode('  TEST@EXAMPLE.COM  ')
+
+      expect(axiosInstance.post).toHaveBeenCalledWith('/auth/forgot-password', {
+        email: 'test@example.com',
+      })
+    })
+
+    it('debe lanzar el error genérico si el reenvío falla', async () => {
+      ;(axiosInstance.post as jest.Mock).mockRejectedValue(new Error())
+
+      await expect(
+        resendPasswordResetCode('test@example.com'),
+      ).rejects.toThrow('No se pudo reenviar el código.')
     })
   })
 

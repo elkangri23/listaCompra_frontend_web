@@ -10,12 +10,14 @@ export const metadata: Metadata = {
 }
 
 export default function ForgotPasswordPage() {
-  const heroUrl = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBUKmKFcOwLBHtR9WmpIiNK5cYkxO8QGTPTIkMiTSGi8WuRnTpC2zBCIyIMbMZWZB2a3EoIu_Na-NtFW8T5rWYULfqT2RZv1oQUj9JSqWy8SbpwQ4AfVc6D94PFud8aTy3sdff8dJ64e520BSaPTFxlD-NSvt5wIY-UuMmEv4tXL_G2MLV2QnCqBPNDqE5tjzv3JJ4V81ulnxujzGg8YzPcxZQrKGBvpMkz7cO_XnvONAGnstnT-ikQDNOIJExzWvT9OeTrUyKsW1a0'
 
   return (
     <div className={styles.root}>
       <div className={styles.card} style={{ maxWidth: 520 }}>
-        <div className={styles.hero} style={{ backgroundImage: `url(${heroUrl})` }} />
+        <div className={styles.hero}>
+          <span aria-hidden="true">🛒</span>{' '}
+          <span>ListaCompra</span>
+        </div>
         <div className={styles.form}>
           <Suspense fallback={<div className={styles.fallback}>Cargando...</div>}>
             <ForgotPasswordForm />

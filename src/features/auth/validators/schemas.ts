@@ -41,6 +41,23 @@ export const forgotPasswordSchema = z.object({
   email: emailSchema,
 })
 
+/** Paso 2 del restablecimiento: código + contraseña nueva (item 9c) */
+export const resetPasswordSchema = z
+  .object({
+    codigo: z
+      .string()
+      .trim()
+      .regex(/^\d{6}$/, 'El código tiene 6 dígitos.'),
+    nuevaPassword: passwordSchema,
+    confirmPassword: passwordSchema,
+  })
+  .refine((data) => data.nuevaPassword === data.confirmPassword, {
+    message: 'Las contraseñas no coinciden.',
+    path: ['confirmPassword'],
+  })
+
+export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>
+
 export type LoginSchema = z.infer<typeof loginSchema>
 export type RegisterSchema = z.infer<typeof registerSchema>
 export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>

@@ -63,6 +63,19 @@ describe('LoginForm (CRÍTICO - 100% coverage)', () => {
       expect(registerLink).toHaveAttribute('href', '/register')
     })
 
+    it('debe titularse «Iniciar sesión» y enlazar a recuperar la contraseña', () => {
+      render(<LoginForm />)
+
+      expect(
+        screen.getByRole('heading', { name: /iniciar sesión/i }),
+      ).toBeInTheDocument()
+      const forgotLink = screen.getByRole('link', {
+        name: /¿olvidaste tu contraseña\?/i,
+      })
+      expect(forgotLink).toBeInTheDocument()
+      expect(forgotLink).toHaveAttribute('href', '/forgot-password')
+    })
+
     it('debe tener placeholders apropiados', () => {
       render(<LoginForm />)
 

@@ -286,7 +286,7 @@ describe('componentes auth sin coverage previo', () => {
 
       expect(screen.getByLabelText(/correo electrónico/i)).toBeInTheDocument()
       expect(
-        screen.getByRole('button', { name: /enviar instrucciones/i }),
+        screen.getByRole('button', { name: /enviar el código/i }),
       ).toBeInTheDocument()
     })
 
@@ -300,7 +300,7 @@ describe('componentes auth sin coverage previo', () => {
         'no-es-email',
       )
       await user.click(
-        screen.getByRole('button', { name: /enviar instrucciones/i }),
+        screen.getByRole('button', { name: /enviar el código/i }),
       )
 
       await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument())
@@ -317,7 +317,7 @@ describe('componentes auth sin coverage previo', () => {
         'user@example.com',
       )
       await user.click(
-        screen.getByRole('button', { name: /enviar instrucciones/i }),
+        screen.getByRole('button', { name: /enviar el código/i }),
       )
 
       await waitFor(() =>
@@ -341,7 +341,7 @@ describe('componentes auth sin coverage previo', () => {
         'user@example.com',
       )
       await user.click(
-        screen.getByRole('button', { name: /enviar instrucciones/i }),
+        screen.getByRole('button', { name: /enviar el código/i }),
       )
 
       await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument())
@@ -475,7 +475,7 @@ describe('ForgotPasswordForm: limpieza de errores al reescribir', () => {
     const emailInput = screen.getByLabelText(/correo electrónico/i)
     await user.type(emailInput, 'no-es-email')
     await user.click(
-      screen.getByRole('button', { name: /enviar instrucciones/i }),
+      screen.getByRole('button', { name: /enviar el código/i }),
     )
 
     await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument())

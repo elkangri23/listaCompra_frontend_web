@@ -14,6 +14,8 @@ import type {
   VerifyEmailRequest,
   VerifyEmailResponse,
   ResendVerificationCodeResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
 } from '@/features/auth/types'
 import type { ProfileFormValues } from '@/features/auth/validators/profile-schema'
 import type { ChangePasswordFormValues } from '@/features/auth/validators/password-schema'
@@ -274,7 +276,52 @@ export async function requestPasswordReset(
   } catch (error) {
     throw buildAuthApiError(
       error,
-      'No se pudo enviar el enlace de recuperación.',
+      'No se pudo enviar el código de recuperación.',
+    )
+  }
+}
+
+/**
+ * Restablece la contraseña con el código de 6 dígitos (POST /auth/reset-password, item 9c).
+ */
+export async function resetPassword(
+  request: ResetPasswordRequest,
+): Promise<{ mensaje: string }> {
+  try {
+    const { data: response } = await axiosInstance.post<ResetPasswordResponse>(
+      '/auth/reset-password',
+      {
+        email: normalizeEmail(request.email),
+        codigo: request.codigo.trim(),
+        nuevaPassword: request.nuevaPassword,
+      },
+    )
+    if (!response.success) {
+      throw new Error(response.message || 'No se pudo cambiar la contraseña.')
+    }
+    return response.data
+  } catch (error) {
+    throw buildAuthApiError(
+      error,
+      'No se pudo cambiar la contraseña. Inténtalo nuevamente.',
+    )
+  }
+}
+
+/**
+ * Reenvía el código de restablecimiento (POST /auth/forgot-password, item 9c).
+ * Es el mismo endpoint que la solicitud: el backend genera un código nuevo
+ * e invalida el anterior.
+ */
+export async function resendPasswordResetCode(email: string): Promise<void> {
+  try {
+    await axiosInstance.post('/auth/forgot-password', {
+      email: normalizeEmail(email),
+    })
+  } catch (error) {
+    throw buildAuthApiError(
+      error,
+      'No se pudo reenviar el código. Inténtalo nuevamente.',
     )
   }
 }

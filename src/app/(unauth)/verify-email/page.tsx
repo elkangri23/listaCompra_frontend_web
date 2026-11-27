@@ -10,8 +10,6 @@ export const metadata: Metadata = {
 }
 
 export default function VerifyEmailPage() {
-  const heroUrl =
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuBUKmKFcOwLBHtR9WmpIiNK5cYkxO8QGTPTIkMiTSGi8WuRnTpC2zBCIyIMbMZWZB2a3EoIu_Na-NtFW8T5rWYULfqT2RZv1oQUj9JSqWy8SbpwQ4AfVc6D94PFud8aTy3sdff8dJ64e520BSaPTFxlD-NSvt5wIY-UuMmEv4tXL_G2MLV2QnCqBPNDqE5tjzv3JJ4V81ulnxujzGg8YzPcxZQrKGBvpMkz7cO_XnvONAGnstnT-ikQDNOIJExzWvT9OeTrUyKsW1a0'
 
   return (
     <div
@@ -27,10 +25,14 @@ export default function VerifyEmailPage() {
         <div className="layout-content-container flex flex-col w-full max-w-[512px] py-5">
           <div className="@container">
             <div className="@[480px]:px-4 @[480px]:py-3">
-              <div
-                className="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-white @[480px]:rounded-lg min-h-[218px]"
-                style={{ backgroundImage: `url("${heroUrl}")` }}
-              ></div>
+              <div className="w-full flex items-center justify-center gap-2 overflow-hidden bg-[#4387f4] @[480px]:rounded-lg min-h-[120px] px-4">
+                <span aria-hidden="true" className="text-3xl">
+                  🛒
+                </span>
+                <span className="text-white text-2xl font-extrabold tracking-tight">
+                  ListaCompra
+                </span>
+              </div>
             </div>
           </div>
           <Suspense fallback={<div>Cargando...</div>}>

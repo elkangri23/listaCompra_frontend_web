@@ -152,6 +152,22 @@ export interface ForgotPasswordRequest {
   email: string
 }
 
+/** POST /auth/reset-password (item 9c) */
+export interface ResetPasswordRequest {
+  email: string
+  codigo: string
+  nuevaPassword: string
+}
+
+export interface ResetPasswordResponse {
+  success: boolean
+  data: {
+    mensaje: string
+  }
+  message: string
+  timestamp: string
+}
+
 export interface RefreshTokenRequest {
   refreshToken?: string
 }
