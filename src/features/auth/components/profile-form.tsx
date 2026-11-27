@@ -21,6 +21,7 @@ import { toast } from 'sonner'
 import { useProfile, useUpdateProfile } from '@/features/auth/hooks/use-profile'
 import { profileSchema, type ProfileFormValues } from '@/features/auth/validators/profile-schema'
 import { AuthApiError } from '@/features/auth/services/auth-service'
+import { SkeletonForm } from '@/components/ui/skeleton'
 
 export function ProfileForm() {
   const { data: user, isLoading: isLoadingProfile } = useProfile()
@@ -67,8 +68,9 @@ export function ProfileForm() {
 
   if (isLoadingProfile) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div role="status" aria-label="Cargando perfil…">
+        <span className="sr-only">Cargando perfil…</span>
+        <SkeletonForm />
       </div>
     )
   }

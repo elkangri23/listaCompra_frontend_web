@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FileText, Search, Filter, Plus, Loader2, X } from 'lucide-react';
+import { FileText, Search, Filter, Plus, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { BlueprintCard } from '@/features/blueprints/components/blueprint-card';
 import { BlueprintSearchResultCard } from '@/features/blueprints/components/blueprint-search-result-card';
 import type { BlueprintDto } from '@/types/dtos/blueprint';
 import styles from './templates.module.css';
+import { SkeletonCard, SkeletonRow } from '@/components/ui/skeleton'
 
 export default function TemplatesPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -143,9 +144,11 @@ export default function TemplatesPage() {
               </Button>
             </div>
             {isLoadingSearch ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-                <span className="ml-3 text-gray-600">Buscando plantillas...</span>
+              <div role="status" aria-label="Buscando plantillas…" className="space-y-3 py-4">
+                <span className="sr-only">Buscando plantillas…</span>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <SkeletonRow key={i} />
+                ))}
               </div>
             ) : searchResults && searchResults.results.length > 0 ? (
               <div className="space-y-3">
@@ -173,9 +176,11 @@ export default function TemplatesPage() {
           <>
         <TabsContent value="mis-plantillas" className="mt-6">
           {isLoadingMias ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-              <span className="ml-3 text-gray-600">Cargando plantillas...</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" role="status" aria-label="Cargando plantillas…">
+              <span className="sr-only">Cargando plantillas…</span>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
           ) : misPlantillas && misPlantillas.items.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -202,9 +207,11 @@ export default function TemplatesPage() {
 
         <TabsContent value="publicas" className="mt-6">
           {isLoadingPublicas ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-              <span className="ml-3 text-gray-600">Cargando plantillas públicas...</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" role="status" aria-label="Cargando plantillas públicas…">
+              <span className="sr-only">Cargando plantillas públicas…</span>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
           ) : plantillasPublicas && plantillasPublicas.items.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

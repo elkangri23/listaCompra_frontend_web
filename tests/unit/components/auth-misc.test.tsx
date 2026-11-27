@@ -165,12 +165,13 @@ describe('componentes auth sin coverage previo', () => {
       })
     })
 
-    it('debe mostrar el spinner mientras carga el perfil', () => {
+    it('debe mostrar el esqueleto mientras carga el perfil', () => {
       mockUseProfile.mockReturnValue({ data: undefined, isLoading: true })
 
       const { container } = render(<ProfileForm />, { wrapper })
 
-      expect(container.querySelector('.animate-spin')).toBeInTheDocument()
+      expect(screen.getByRole('status', { name: /Cargando perfil/i })).toBeInTheDocument()
+      expect(container.querySelector('.animate-pulse')).toBeInTheDocument()
       expect(
         screen.queryByRole('button', { name: /guardar/i }),
       ).not.toBeInTheDocument()

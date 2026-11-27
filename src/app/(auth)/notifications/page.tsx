@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Bell, Check, CheckCheck, Trash2, Search, Filter, Loader2 } from 'lucide-react';
+import { Bell, Check, CheckCheck, Trash2, Search, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { useNotifications } from '@/features/notifications/hooks/use-notifications';
+import { SkeletonCard } from '@/components/ui/skeleton'
 
 export default function NotificationsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -225,9 +226,11 @@ export default function NotificationsPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-          <span className="ml-3 text-gray-600">Cargando notificaciones...</span>
+        <div className="space-y-3" role="status" aria-label="Cargando notificaciones…">
+          <span className="sr-only">Cargando notificaciones…</span>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
         </div>
       ) : filteredNotifications.length === 0 ? (
         <div className="text-center py-12">

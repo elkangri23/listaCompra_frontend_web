@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { GeneralLoading } from '@/components/layout';
 import { usePurchaseHabits } from '../hooks/use-ai';
 import { PurchaseHabitsTimeRange } from '../services/ai-service';
+import { SkeletonCard } from '@/components/ui/skeleton'
 
 const TIME_RANGE_LABELS: Record<PurchaseHabitsTimeRange, string> = {
   '30d': 'Últimos 30 días',
@@ -76,7 +76,14 @@ export const PurchaseHabitsSection: React.FC = () => {
         </p>
       )}
 
-      {requested && isLoading && <GeneralLoading />}
+      {requested && isLoading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4" role="status" aria-label="Analizando tus hábitos…">
+          <span className="sr-only">Analizando tus hábitos…</span>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      )}
 
       {requested && !isLoading && isError && (
         <p className="text-sm text-red-500">

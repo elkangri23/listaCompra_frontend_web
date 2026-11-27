@@ -6,6 +6,7 @@ import { useProducts } from '@/features/products/hooks/use-products';
 import { useCategories } from '@/features/categories/hooks/use-categories';
 import styles from './history.module.css';
 import { useMemo } from 'react';
+import { SkeletonRow } from '@/components/ui/skeleton'
 
 export default function ProductHistoryPage() {
   const params = useParams();
@@ -56,9 +57,11 @@ export default function ProductHistoryPage() {
   if (isLoading) {
     return (
       <section className={styles.root}>
-        <div className={styles.loadingContainer}>
-          <div className={styles.spinner}></div>
-          <p>Cargando historial...</p>
+        <div role="status" aria-label="Cargando historial…" style={{ padding: '0 1rem' }}>
+          <span className="sr-only">Cargando historial…</span>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <SkeletonRow key={i} />
+          ))}
         </div>
       </section>
     );

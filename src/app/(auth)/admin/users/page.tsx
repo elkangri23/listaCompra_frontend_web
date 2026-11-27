@@ -31,6 +31,7 @@ import {
 } from '@/features/admin/hooks/use-admin-users';
 import { SystemMetricsDashboard } from '@/features/admin/components/system-metrics-dashboard';
 import { SystemHealthPanel } from '@/features/admin/components/system-health-panel';
+import { SkeletonCard, SkeletonRow } from '@/components/ui/skeleton'
 
 export default function AdminUsersPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -77,8 +78,11 @@ export default function AdminUsersPage() {
         {/* Tab: Métricas del Sistema */}
         <TabsContent value="metrics" className="space-y-4">
           {metricsLoading ? (
-            <div className="flex items-center justify-center p-8">
-              <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" role="status" aria-label="Cargando métricas…">
+              <span className="sr-only">Cargando métricas…</span>
+              {Array.from({ length: 4 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
           ) : metrics ? (
             <SystemMetricsDashboard metrics={metrics} />
@@ -103,8 +107,11 @@ export default function AdminUsersPage() {
           </div>
 
           {usersLoading ? (
-            <div className="flex items-center justify-center p-8">
-              <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+            <div className="rounded-md border p-4 space-y-3" role="status" aria-label="Cargando usuarios…">
+              <span className="sr-only">Cargando usuarios…</span>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <SkeletonRow key={i} />
+              ))}
             </div>
           ) : usersData && usersData.usuarios.length > 0 ? (
             <div className="rounded-md border">

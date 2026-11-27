@@ -1,9 +1,9 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { GeneralLoading } from '@/components/layout';
 import { useSession } from 'next-auth/react';
 import { CollaboratorItem } from './collaborator-item';
 import { useCollaborators } from '../hooks/use-collaborators';
 import { TriangleAlert } from 'lucide-react';
+import { SkeletonRow } from '@/components/ui/skeleton'
 
 interface CollaboratorsSectionProps {
   listId: string;
@@ -18,7 +18,14 @@ export const CollaboratorsSection: React.FC<CollaboratorsSectionProps> = ({ list
   const currentUserId = session?.user?.id;
 
   if (isLoading) {
-    return <GeneralLoading />;
+    return (
+      <div role="status" aria-label="Cargando colaboradores…" className="space-y-2">
+        <span className="sr-only">Cargando colaboradores…</span>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <SkeletonRow key={i} />
+        ))}
+      </div>
+    );
   }
 
   if (error) {

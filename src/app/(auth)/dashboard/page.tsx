@@ -10,6 +10,7 @@ import { PurchaseHabitsSection } from '@/features/ai/components/purchase-habits-
 import { SystemStatusSection } from '@/features/system-status/components/system-status-section'
 import { Button } from '@/components/ui/button'
 import styles from './dashboard.module.css'
+import { SkeletonCard } from '@/components/ui/skeleton'
 
 // Componente para mostrar el resumen de una lista individual
 function ListCardWithSummary({ list, onDelete }: { list: any; onDelete: (id: string, nombre: string) => void }) {
@@ -127,9 +128,11 @@ export default function DashboardPage() {
       </div>
 
       {isLoading && (
-        <div className={styles.loadingContainer}>
-          <div className={styles.spinner}></div>
-          <p>Cargando tus listas...</p>
+        <div className={styles.listsGrid} role="status" aria-label="Cargando tus listas…">
+          <span className="sr-only">Cargando tus listas…</span>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
         </div>
       )}
 

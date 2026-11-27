@@ -133,7 +133,7 @@ describe('CollaboratorsSection (SECUNDARIO - 80% coverage)', () => {
       } as any);
     });
 
-    it('debe mostrar GeneralLoading cuando isLoading=true', () => {
+    it('debe mostrar el esqueleto cuando isLoading=true', () => {
       mockUseCollaborators.mockReturnValue({
         data: undefined,
         isLoading: true,
@@ -142,8 +142,8 @@ describe('CollaboratorsSection (SECUNDARIO - 80% coverage)', () => {
 
       renderComponent();
 
-      expect(screen.getByTestId('general-loading')).toBeInTheDocument();
-      expect(screen.getByText('Cargando...')).toBeInTheDocument();
+      expect(screen.getByRole('status', { name: /Cargando colaboradores/i })).toBeInTheDocument();
+      expect(screen.getByText('Cargando colaboradores…')).toBeInTheDocument();
     });
 
     it('debe mostrar mensaje de error cuando hay error', () => {

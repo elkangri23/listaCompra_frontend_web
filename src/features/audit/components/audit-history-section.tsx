@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { GeneralLoading } from '@/components/layout';
 import { useListAuditHistory, useListCollaborators } from '../hooks/use-audit-history';
 import { AuditChangeType, AuditEntryDto } from '../types';
+import { SkeletonRow } from '@/components/ui/skeleton'
 
 const FIELD_LABELS: Record<string, string> = {
   nombre: 'nombre',
@@ -112,7 +112,14 @@ export const AuditHistorySection: React.FC<AuditHistorySectionProps> = ({ listId
   }, [collaborators]);
 
   if (isLoading) {
-    return <GeneralLoading />;
+    return (
+      <div role="status" aria-label="Cargando historial de cambios…" className="space-y-2">
+        <span className="sr-only">Cargando historial de cambios…</span>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <SkeletonRow key={i} />
+        ))}
+      </div>
+    );
   }
 
   if (error) {

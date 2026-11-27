@@ -37,6 +37,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import type { StoreResponseDto } from '@/types/dtos/stores';
+import { SkeletonRow } from '@/components/ui/skeleton'
 
 export default function StoresPage() {
   const { data: storesData, isLoading, error } = useStores();
@@ -94,8 +95,11 @@ export default function StoresPage() {
   if (isLoading) {
     return (
       <div className="container mx-auto p-6">
-        <div className="flex items-center justify-center p-12">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+        <div role="status" aria-label="Cargando tiendas…">
+          <span className="sr-only">Cargando tiendas…</span>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <SkeletonRow key={i} />
+          ))}
         </div>
       </div>
     );

@@ -20,6 +20,7 @@ import { CollaborationIndicator } from '@/features/lists/components/collaboratio
 import { useAutoRefresh, useConflictDetection } from '@/features/lists/hooks/use-collaboration';
 import { Button } from '@/components/ui/button';
 import type { Recommendation } from '@/types/dtos/ai';
+import { Skeleton, SkeletonRow } from '@/components/ui/skeleton'
 
 export default function ListDetailPage() {
   const params = useParams();
@@ -299,6 +300,28 @@ export default function ListDetailPage() {
       categoriaId: undefined,
     });
   };
+
+  // Carga inicial: esqueleto de cabecera + filas de producto
+  if (isLoadingList) {
+    return (
+      <div className={styles.root}>
+        <div className={styles.container}>
+          <div className={styles.wrapper}>
+            <div className={styles.mainContent} role="status" aria-label="Cargando lista…">
+              <span className="sr-only">Cargando lista…</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem 0' }}>
+                <Skeleton className="h-8 w-2/5" />
+                <Skeleton className="h-4 w-1/3" />
+              </div>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <SkeletonRow key={i} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Verificar si la lista está inactiva
   if (!isLoadingList && list && list.activa === false) {
