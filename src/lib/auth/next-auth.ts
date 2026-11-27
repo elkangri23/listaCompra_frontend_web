@@ -173,17 +173,11 @@ export const authConfig: NextAuthConfig = {
         password: { label: 'Contraseña', type: 'password' },
       },
       async authorize(credentials) {
-        console.log('--- Authorize Function Start ---')
-        console.log('Received credentials:', {
-          email: credentials?.email,
-          hasChallengeId: 'challengeId' in (credentials ?? {}),
-        })
 
         // PASO 2 del login dos fases: challengeId + code | backupCode
         if (credentials && 'challengeId' in credentials) {
           const mfaParsed = mfaStepSchema.safeParse(credentials)
           if (!mfaParsed.success) {
-            console.log('MFA step validation failed')
             return null
           }
           try {
@@ -211,23 +205,17 @@ export const authConfig: NextAuthConfig = {
 
         const parsed = loginSchema.safeParse(credentials)
         if (!parsed.success) {
-          console.log('Credential validation failed:', parsed.error.flatten())
-          console.log('--- Authorize Function End (Validation Failed) ---')
           return null
         }
 
         const { email, password } = parsed.data
-        console.log('Credentials parsed successfully for email:', email)
 
         try {
-          console.log('Attempting to call login service...')
           const authResponse = await login({ email, password })
-          console.log('Login service response:', authResponse)
 
           // Usuario con TOTP activo: devolver token INTERMEDIO (mfaPending).
           // El jwt callback lo persiste con TTL de 5 min y session.mfaRequired lo expone.
           if ('mfaRequired' in authResponse && authResponse.mfaRequired) {
-            console.log('Login requires MFA — returning intermediate token.')
             return { mfaPending: true, challengeId: authResponse.challengeId }
           }
 
@@ -237,9 +225,6 @@ export const authConfig: NextAuthConfig = {
             'emailNotVerified' in authResponse &&
             authResponse.emailNotVerified
           ) {
-            console.log(
-              'Login requires email verification — returning intermediate token.',
-            )
             return { emailNotVerified: true, email: authResponse.email }
           }
 
@@ -248,13 +233,9 @@ export const authConfig: NextAuthConfig = {
             !('token' in authResponse) ||
             !authResponse.token
           ) {
-            console.log('Authentication response is invalid or missing token.')
-            console.log('--- Authorize Function End (Invalid Response) ---')
-            return null
+                return null
           }
 
-          console.log('Authentication successful, token received.')
-          console.log('--- Authorize Function End (Success) ---')
 
           // The user object passed to the jwt callback
           return {
@@ -267,7 +248,6 @@ export const authConfig: NextAuthConfig = {
             'Error during login attempt:',
             JSON.stringify(error, null, 2),
           )
-          console.log('--- Authorize Function End (Error) ---')
           return null // Returning null triggers a failed login
         }
       },
