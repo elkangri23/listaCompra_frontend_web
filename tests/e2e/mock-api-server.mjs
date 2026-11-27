@@ -29,6 +29,20 @@ const state = {
       emailVerificado: true,
     },
     {
+      id: 'user-mfa-0001',
+      email: 'mfa@example.com',
+      password: 'Password123!',
+      nombre: 'Usuario',
+      apellidos: 'MFA',
+      nombreCompleto: 'Usuario MFA',
+      rol: 'USER',
+      activo: true,
+      emailVerificado: true,
+      // TOTP activo para el E2E del login dos pasos (CU-MFA fase 1)
+      totpEnabled: true,
+      totpSecret: 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
+    },
+    {
       id: 'user-admin-0001',
       email: 'admin@example.com',
       password: 'Admin123!',
@@ -51,6 +65,51 @@ const state = {
     { id: 'cat-bebidas', nombre: 'Bebidas', tiendaId: 'tienda-default' },
   ],
 };
+// ---------- MFA (CU-MFA fase 1) ----------
+// Challenges de login MFA de un solo uso (5 min, máx 5 intentos)
+const mfaChallenges = new Map(); // challengeId -> { userId, intentos, expiraAt, usado }
+
+/**
+ * TOTP RFC 6238 (SHA-1, 6 dígitos, 30s) — el E2E calcula el código esperado
+ * con el mismo algoritmo que el backend real.
+ */
+function base32Decode(input) {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let bits = '';
+  for (const ch of input.replace(/=+$/, '').toUpperCase()) {
+    const idx = alphabet.indexOf(ch);
+    if (idx === -1) continue;
+    bits += idx.toString(2).padStart(5, '0');
+  }
+  const bytes = [];
+  for (let i = 0; i + 8 <= bits.length; i += 8) {
+    bytes.push(parseInt(bits.slice(i, i + 8), 2));
+  }
+  return Buffer.from(bytes);
+}
+
+function totpCodeAt(secretBase32, timeSeconds) {
+  const key = base32Decode(secretBase32);
+  const counter = Math.floor(timeSeconds / 30);
+  const buf = Buffer.alloc(8);
+  buf.writeUInt32BE(Math.floor(counter / 2 ** 32), 0);
+  buf.writeUInt32BE(counter >>> 0, 4);
+  const hmac = crypto.createHmac('sha1', key).update(buf).digest();
+  const offset = hmac[hmac.length - 1] & 0x0f;
+  const code =
+    ((hmac[offset] & 0x7f) << 24) |
+    ((hmac[offset + 1] & 0xff) << 16) |
+    ((hmac[offset + 2] & 0xff) << 8) |
+    (hmac[offset + 3] & 0xff);
+  return String(code % 1_000_000).padStart(6, '0');
+}
+
+function totpValidNow(secretBase32, code) {
+  const now = Math.floor(Date.now() / 1000);
+  // Ventana ±1 período (igual que el backend: tolerancia 31s → 3 epochs)
+  return [-1, 0, 1].some((w) => totpCodeAt(secretBase32, now + w * 30) === code);
+}
+
 
 let listCounter = 0;
 function nextListId() {
@@ -234,6 +293,25 @@ const server = http.createServer(async (req, res) => {
         sendJson(res, 401, { success: false, message: 'Credenciales incorrectas' });
         return;
       }
+
+      // Usuario con TOTP activo → paso 1 devuelve mfaRequired + challengeId
+      if (user.totpEnabled) {
+        const challengeId = crypto.randomUUID();
+        mfaChallenges.set(challengeId, {
+          userId: user.id,
+          intentos: 0,
+          expiraAt: Date.now() + 5 * 60 * 1000,
+          usado: false,
+        });
+        sendJson(res, 200, {
+          success: true,
+          data: { mfaRequired: true, mfa: { challengeId } },
+          message: 'Autenticación exitosa',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
       sendJson(res, 200, {
         success: true,
         data: {
@@ -245,6 +323,79 @@ const server = http.createServer(async (req, res) => {
           },
         },
         message: 'Login exitoso',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    // Paso 2 del login MFA (CU-MFA fase 1): challengeId + code | backupCode
+    if (path === '/auth/login/mfa' && method === 'POST') {
+      const challengeId = String(body.challengeId || '');
+      const challenge = mfaChallenges.get(challengeId);
+      if (!challenge || challenge.usado || challenge.expiraAt <= Date.now()) {
+        mfaChallenges.delete(challengeId);
+        sendJson(res, 410, {
+          success: false,
+          error: { type: 'MFA_ERROR', code: 'CHALLENGE_EXPIRED', message: 'Vuelve a iniciar sesión' },
+        });
+        return;
+      }
+      const user = state.users.find((u) => u.id === challenge.userId);
+      if (!user || !user.totpEnabled) {
+        sendJson(res, 410, {
+          success: false,
+          error: { type: 'MFA_ERROR', code: 'CHALLENGE_EXPIRED', message: 'Vuelve a iniciar sesión' },
+        });
+        return;
+      }
+
+      const hasCode = typeof body.code === 'string';
+      const hasBackup = typeof body.backupCode === 'string';
+      if (hasCode === hasBackup) {
+        sendJson(res, 400, {
+          success: false,
+          error: { type: 'MFA_ERROR', code: 'TOTP_CODE_INVALID', message: 'Código incorrecto.' },
+        });
+        return;
+      }
+
+      const valid = hasCode
+        ? totpValidNow(user.totpSecret, body.code)
+        : // backup code del E2E: valor fijo conocido
+          body.backupCode.replace(/\s|-/g, '').toUpperCase() === 'AAAAZZZZ';
+
+      if (!valid) {
+        challenge.intentos += 1;
+        if (challenge.intentos >= 5) {
+          mfaChallenges.delete(challengeId);
+          sendJson(res, 429, {
+            success: false,
+            error: { type: 'MFA_ERROR', code: 'MFA_TOO_MANY_ATTEMPTS', message: 'Demasiados intentos incorrectos.' },
+          });
+          return;
+        }
+        sendJson(res, 400, {
+          success: false,
+          error: {
+            type: 'MFA_ERROR',
+            code: hasCode ? 'TOTP_CODE_INVALID' : 'BACKUP_CODE_INVALID',
+            message: 'Código incorrecto.',
+          },
+        });
+        return;
+      }
+
+      // Éxito: challenge de un solo uso + tokens definitivos
+      challenge.usado = true;
+      mfaChallenges.delete(challengeId);
+      sendJson(res, 200, {
+        success: true,
+        data: {
+          user: apiUser(user),
+          tokens: { accessToken: makeToken(user), refreshToken: makeToken(user), expiresIn: 86400 },
+          mfaInfo: hasCode ? { method: 'TOTP' } : { method: 'BACKUP_CODE', backupUsed: true },
+        },
+        message: 'Autenticación MFA exitosa',
         timestamp: new Date().toISOString(),
       });
       return;
@@ -293,6 +444,28 @@ const server = http.createServer(async (req, res) => {
         return null;
       }
     })();
+
+    // Estado MFA (Bearer): pinta la pestaña Seguridad del perfil
+    if (path === '/auth/mfa/status' && method === 'GET') {
+      const user = authUser ?? null;
+      if (!user) {
+        sendJson(res, 401, { success: false, message: 'No autenticado' });
+        return;
+      }
+      sendJson(res, 200, {
+        success: true,
+        data: {
+          totpEnabled: Boolean(user.totpEnabled),
+          totpPending: false,
+          passkeyCount: 0,
+          backupCodesLeft: user.totpEnabled ? 10 : 0,
+        },
+        message: 'Estado MFA',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
 
     if (path === '/auth/me' && method === 'GET') {
       if (!authUser) return sendJson(res, 401, { success: false, message: 'Token de acceso requerido' });

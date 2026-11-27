@@ -11,6 +11,7 @@ declare module 'next-auth' {
     error?: string
     /** true en el estado intermedio: el login necesita el paso MFA */
     mfaRequired?: boolean
+        challengeId?: string
     /** true en el estado intermedio: la cuenta necesita verificar el correo (item 3) */
     emailNotVerified?: boolean
     user: DefaultSession['user'] & {

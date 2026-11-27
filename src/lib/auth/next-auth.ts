@@ -138,6 +138,8 @@ const callbacks: NextAuthConfig['callbacks'] = {
     // Estado intermedio del login dos pasos (sin accessToken)
     if (token.mfaPending && !token.accessToken) {
       session.mfaRequired = true
+      // challengeId necesario en el cliente para completar el paso 2
+      session.challengeId = token.challengeId as string | undefined
     }
     // Estado intermedio de verificación de correo (sin accessToken, item 3)
     if (token.emailNotVerified && !token.accessToken) {
