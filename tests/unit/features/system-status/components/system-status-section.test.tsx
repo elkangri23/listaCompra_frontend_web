@@ -17,7 +17,7 @@ const mockGetAlerts = systemStatusService.getSystemAlerts as jest.Mock;
 const healthy = {
   overall: 'healthy',
   services: { api: 'healthy', cache: 'healthy', metrics: 'healthy' },
-  uptime: 5400,
+  uptime: 5400000,
   timestamp: '2026-11-26T17:00:00.000Z',
 };
 
@@ -46,6 +46,14 @@ describe('SystemStatusSection', () => {
     expect(screen.getByText('Sin alertas activas.')).toBeInTheDocument();
     expect(screen.getByText(/API: En orden · Caché: En orden/)).toBeInTheDocument();
     expect(screen.getByText(/1 h/)).toBeInTheDocument();
+  });
+
+  it('muestra el tiempo en marcha en minutos cuando el uptime viene en milisegundos', async () => {
+    mockGetHealth.mockResolvedValue({ ...healthy, uptime: 960000 });
+    renderSection();
+
+    expect(await screen.findByText('Todo en orden')).toBeInTheDocument();
+    expect(screen.getByText(/16 min/)).toBeInTheDocument();
   });
 
   it('muestra las alertas activas cuando las hay', async () => {

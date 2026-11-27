@@ -13,7 +13,7 @@ export interface SystemHealthDto {
     cache: SystemHealthLevel;
     metrics: SystemHealthLevel;
   };
-  /** Segundos desde que arrancó la API */
+  /** Milisegundos desde que arrancó la API (el backend devuelve Date.now() - startTime) */
   uptime: number;
   timestamp: string;
 }
