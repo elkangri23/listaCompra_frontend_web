@@ -72,7 +72,7 @@ test.describe.serial('Passkeys contra backend real (virtual authenticator)', () 
     await page.fill('#email', REAL_USER.email);
     await page.fill('#password', REAL_USER.password);
     await page.click('button[type="submit"]');
-    await expect(page.locator('h2:has-text("Mis Listas")')).toBeVisible({ timeout: 20000 });
+    await expect(page.getByRole('heading', { name: 'Mis Listas' })).toBeVisible({ timeout: 20000 });
 
     // 2. /profile → pestaña Seguridad → PasskeyList
     await page.goto('/profile');
@@ -97,6 +97,6 @@ test.describe.serial('Passkeys contra backend real (virtual authenticator)', () 
     await page.getByRole('button', { name: /iniciar sesión con passkey/i }).click();
 
     // La aserción virtual resuelve sin usuario presente → sesión + dashboard
-    await expect(page.locator('h2:has-text("Mis Listas")')).toBeVisible({ timeout: 30000 });
+    await expect(page.getByRole('heading', { name: 'Mis Listas' })).toBeVisible({ timeout: 30000 });
   });
 });

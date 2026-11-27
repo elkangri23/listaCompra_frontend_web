@@ -74,7 +74,7 @@ test.describe('Login dos pasos con TOTP (CU-MFA fase 1)', () => {
     await page.getByRole('button', { name: 'Verificar' }).click();
 
     // Sesión completa: dashboard con listas
-    await expect(page.locator('h2:has-text("Mis Listas")')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('heading', { name: 'Mis Listas' })).toBeVisible({ timeout: 15000 });
   });
 
   test('código que cruza el límite de ventana sigue siendo válido (±30s)', async ({ page }) => {
@@ -83,7 +83,7 @@ test.describe('Login dos pasos con TOTP (CU-MFA fase 1)', () => {
     await loginStep1(page);
     await page.getByLabel('Código de verificación').fill(prevOrNext);
     await page.getByRole('button', { name: 'Verificar' }).click();
-    await expect(page.locator('h2:has-text("Mis Listas")')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('heading', { name: 'Mis Listas' })).toBeVisible({ timeout: 15000 });
   });
 
   test('paso 2 con código de respaldo → dashboard', async ({ page }) => {
@@ -93,7 +93,7 @@ test.describe('Login dos pasos con TOTP (CU-MFA fase 1)', () => {
     await page.getByLabel('Código de respaldo').fill(BACKUP_CODE);
     await page.getByRole('button', { name: 'Verificar' }).click();
 
-    await expect(page.locator('h2:has-text("Mis Listas")')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('heading', { name: 'Mis Listas' })).toBeVisible({ timeout: 15000 });
   });
 
   test('código de respaldo inválido → error', async ({ page }) => {
