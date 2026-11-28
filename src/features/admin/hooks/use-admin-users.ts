@@ -245,8 +245,12 @@ function errorMessage(error: unknown): string {
 
 /**
  * Hook para obtener el historial de copias (fase 6), con paginación.
- * Mientras haya una copia PENDING o RESTORING, revalida cada 15 s para
+ * Mientras haya una copia PENDING o RESTORING, revalida cada 120 s para
  * ver cómo avanza; en cuanto termina, el refresco automático se detiene.
+ * El intervalo es de 120 s (no 15 s) a propósito: el watcher del host solo
+ * pasa cada 5 min, así que sondear más rápido no adelanta nada, y con 15 s
+ * la pestaña agotaba el presupuesto del limitador admin (10/15 min) y
+ * recibía 429 antes de que la copia terminara (arreglo 2026-11-28).
  */
 export const useBackups = (page = 1, limit = 20) => {
   return useQuery({
@@ -254,7 +258,7 @@ export const useBackups = (page = 1, limit = 20) => {
     queryFn: () => adminService.getBackups(page, limit),
     staleTime: 1000 * 30, // 30 segundos
     refetchInterval: (query) =>
-      backupsHaveActiveWork(query.state.data?.backups ?? []) ? 1000 * 15 : false,
+      backupsHaveActiveWork(query.state.data?.backups ?? []) ? 1000 * 120 : false,
   });
 };
 

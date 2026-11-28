@@ -717,6 +717,40 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
 
       await waitFor(() => expect(result.current.isError).toBe(true));
     });
+
+    it('debe revalidar cada 120 s solo mientras haya trabajo activo (no 15 s)', async () => {
+      // 15 s agotaba el presupuesto del limitador admin (10/15 min) y la
+      // pestaña recibía 429 antes de que la copia terminara (2026-11-28).
+      // El watcher del host pasa cada 5 min, así que 120 s basta.
+      const pendingBackups = {
+        ...mockBackups,
+        backups: [{ ...mockBackups.backups[0], status: 'PENDING' }],
+      };
+      (adminService.getBackups as jest.Mock).mockResolvedValue(pendingBackups);
+
+      renderHook(() => useBackups(1, 10), { wrapper });
+
+      await waitFor(() =>
+        expect(
+          queryClient
+            .getQueryCache()
+            .find({ queryKey: ['admin', 'backups', 1, 10] })
+        ).toBeDefined()
+      );
+
+      const query = queryClient
+        .getQueryCache()
+        .find({ queryKey: ['admin', 'backups', 1, 10] });
+      const refetchInterval = query?.options.refetchInterval;
+      expect(typeof refetchInterval).toBe('function');
+
+      const intervalFn = refetchInterval as unknown as (query: {
+        state: { data?: { backups: { status: string }[] } };
+      }) => number | false;
+      expect(intervalFn({ state: { data: pendingBackups } })).toBe(120000);
+      expect(intervalFn({ state: { data: mockBackups } })).toBe(false);
+      expect(intervalFn({ state: { data: undefined } })).toBe(false);
+    });
   });
 
   describe('useCreateBackup', () => {
