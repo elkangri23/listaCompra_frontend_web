@@ -1,7 +1,7 @@
 /**
- * Tests - Panel de administración (/admin, fase 3): shell con las 7 pestañas.
- * Estado, Usuarios e IA muestran contenido real del backend; el resto sigue
- * con el estado vacío honesto.
+ * Tests - Panel de administración (/admin, fase 4): shell con las 7 pestañas.
+ * Estado, Usuarios, IA y Auditoría muestran contenido real del backend;
+ * el resto sigue con el estado vacío honesto.
  */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -13,6 +13,12 @@ import { createTestQueryClient } from '../../utils/test-utils';
 import { ReactNode } from 'react';
 
 jest.mock('@/features/admin/services/admin-service');
+jest.mock('next-auth/react', () => ({
+  useSession: jest.fn(() => ({
+    data: { user: { id: 'user-1', name: 'Antonio', email: 'antonio@example.com' } },
+    status: 'authenticated',
+  })),
+}));
 jest.mock('@/features/settings/services/ai-settings-service', () => ({
   AI_PROVIDERS: [
     {
@@ -174,6 +180,26 @@ const mockCacheAnalytics = {
   window: '5m',
 };
 
+const mockAuditLogs = {
+  entries: [
+    {
+      id: 'e1',
+      entityType: 'Producto',
+      entityId: 'p1',
+      changeType: 'UPDATE',
+      changedByUserId: 'user-1',
+      timestamp: '2026-11-26T15:27:21.148Z',
+      changedFields: ['comprado', 'fechaCompra'],
+      oldValue: { comprado: false, nombre: 'Leche' },
+      newValue: { comprado: true, nombre: 'Leche' },
+    },
+  ],
+  total: 1,
+  page: 1,
+  pageSize: 10,
+  totalPages: 1,
+};
+
 const renderPage = () => {
   const queryClient = createTestQueryClient();
   const wrapper = ({ children }: { children: ReactNode }) => (
@@ -196,6 +222,7 @@ describe('Panel de administración (fase 2)', () => {
     (cacheAnalyticsService.getCacheRealtime as jest.Mock).mockResolvedValue(
       mockCacheAnalytics
     );
+    (adminService.getAuditLogs as jest.Mock).mockResolvedValue(mockAuditLogs);
   });
 
   it('muestra el título y las 7 pestañas', () => {
@@ -257,7 +284,21 @@ describe('Panel de administración (fase 2)', () => {
     ).not.toBeInTheDocument();
   });
 
-  it.each(TAB_LABELS.filter((label) => !['Estado', 'Usuarios', 'IA'].includes(label)))(
+  it('la pestaña Auditoría muestra la sección real', async () => {
+    renderPage();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Auditoría' }));
+
+    expect(await screen.findByText('Cambios en la aplicación')).toBeInTheDocument();
+    expect(screen.getByText('Tú marcaste como comprado Leche')).toBeInTheDocument();
+    expect(
+      screen.queryByText(/próximamente: esta sección llega en la siguiente fase/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it.each(
+    TAB_LABELS.filter((label) => !['Estado', 'Usuarios', 'IA', 'Auditoría'].includes(label))
+  )(
     'la pestaña %s muestra el estado vacío',
     (label) => {
       renderPage();

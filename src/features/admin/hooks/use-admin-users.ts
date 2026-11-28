@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminService } from '../services/admin-service';
+import type { AdminAuditFilters } from '../services/admin-service';
 import { toast } from 'sonner';
-import type { AuditLogFiltersDto } from '@/types/dtos/admin';
 
 // ============================================================================
 // Dashboard Hooks
@@ -168,9 +168,11 @@ export const useEndImpersonation = () => {
 // ============================================================================
 
 /**
- * Hook para obtener logs de auditoría
+ * Hook para obtener la vista global de auditoría (fase 4).
+ * Filtros reales del endpoint: entityType ('Lista' | 'Producto'),
+ * changeType, changedByUserId, startDate, endDate.
  */
-export const useAuditLogs = (filters?: AuditLogFiltersDto, page = 1, limit = 20) => {
+export const useAuditLogs = (filters?: AdminAuditFilters, page = 1, limit = 20) => {
   return useQuery({
     queryKey: ['admin', 'audit-logs', filters, page, limit],
     queryFn: () => adminService.getAuditLogs(filters, page, limit),

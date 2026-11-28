@@ -6,6 +6,7 @@ import { SkeletonCard } from '@/components/ui/skeleton'
 import { AdminStatusSection } from '@/features/admin/components/admin-status-section'
 import { AdminUsersSection } from '@/features/admin/components/admin-users-section'
 import { AdminAISection } from '@/features/admin/components/admin-ai-section'
+import { AdminAuditSection } from '@/features/admin/components/admin-audit-section'
 
 type AdminTab =
   | 'estado'
@@ -83,6 +84,8 @@ export default function AdminPage() {
         <AdminUsersSection />
       ) : activeTab === 'ia' ? (
         <AdminAISection />
+      ) : activeTab === 'auditoria' ? (
+        <AdminAuditSection />
       ) : (
         <ComingSoon section={activeLabel} />
       )}

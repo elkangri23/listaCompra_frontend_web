@@ -652,97 +652,94 @@ describe('adminService (CRÍTICO - 100% coverage)', () => {
   });
 
   describe('getAuditLogs', () => {
-    it('debe obtener logs de auditoría', async () => {
-      const mockLogs = {
-        items: [
-          {
-            id: 'log-1',
-            action: 'delete',
-            entity: 'list',
-            entityId: 'list-1',
-            userId: 'user-1',
-            timestamp: new Date('2025-11-25'),
-          },
-          {
-            id: 'log-2',
-            action: 'share',
-            entity: 'invitation',
-            entityId: 'inv-1',
-            userId: 'user-2',
-            timestamp: new Date('2025-11-24'),
-          },
-        ],
-        total: 2,
-        page: 1,
-        limit: 20,
-        totalPages: 1,
-      };
+    const mockHistory = {
+      entries: [
+        {
+          id: 'e1',
+          entityType: 'Producto',
+          entityId: 'p1',
+          changeType: 'UPDATE',
+          changedByUserId: 'user-1',
+          timestamp: '2025-11-26T15:27:21.148Z',
+          changedFields: ['comprado'],
+          oldValue: { comprado: false, nombre: 'Leche' },
+          newValue: { comprado: true, nombre: 'Leche' },
+        },
+        {
+          id: 'e2',
+          entityType: 'Lista',
+          entityId: 'l1',
+          changeType: 'CREATE',
+          changedByUserId: 'user-2',
+          timestamp: '2025-11-26T14:00:00.000Z',
+          changedFields: ['nombre'],
+          newValue: { nombre: 'Compra semanal' },
+        },
+      ],
+      total: 2,
+      page: 1,
+      pageSize: 10,
+      totalPages: 1,
+    };
 
+    it('debe obtener el historial global desempaquetando {success, data}', async () => {
       (axiosInstance.get as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockLogs)
+        createMockAxiosResponse({ success: true, data: mockHistory })
       );
 
       const result = await getAuditLogs();
 
       expect(axiosInstance.get).toHaveBeenCalledWith('/admin/audit-logs', {
-        params: { page: 1, limit: 20 },
+        params: { page: 1, pageSize: 20 },
       });
-      expect(result.items).toHaveLength(2);
-      expect(result.items[0].action).toBe('delete');
+      expect(result.entries).toHaveLength(2);
+      expect(result.entries[0].changeType).toBe('UPDATE');
+      expect(result.total).toBe(2);
     });
 
-    it('debe filtrar logs por acción', async () => {
-      const mockLogs = {
-        items: [
-          {
-            id: 'log-1',
-            action: 'delete',
-            entity: 'list',
-            entityId: 'list-1',
-            userId: 'user-1',
-            timestamp: new Date('2025-11-25'),
-          },
-        ],
-        total: 1,
-        page: 1,
-        limit: 20,
-        totalPages: 1,
-      };
-
+    it('debe filtrar por tipo de entidad y de cambio', async () => {
       (axiosInstance.get as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockLogs)
+        createMockAxiosResponse({ success: true, data: mockHistory })
       );
 
-      const result = await getAuditLogs({ action: 'delete' }, 1, 20);
+      const result = await getAuditLogs(
+        { entityType: 'Producto', changeType: 'UPDATE' },
+        1,
+        10
+      );
 
       expect(axiosInstance.get).toHaveBeenCalledWith('/admin/audit-logs', {
-        params: { action: 'delete', page: 1, limit: 20 },
+        params: { entityType: 'Producto', changeType: 'UPDATE', page: 1, pageSize: 10 },
       });
-      expect(result.items[0].action).toBe('delete');
+      expect(result.entries).toHaveLength(2);
     });
 
-    it('debe filtrar logs por usuario y entidad', async () => {
-      const filters = {
-        userId: 'user-1',
-        entity: 'list',
-      };
-
-      const mockLogs = {
-        items: [],
-        total: 0,
-        page: 1,
-        limit: 20,
-        totalPages: 0,
-      };
-
+    it('debe filtrar por usuario y fechas', async () => {
       (axiosInstance.get as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockLogs)
+        createMockAxiosResponse({
+          success: true,
+          data: { ...mockHistory, entries: [], total: 0, totalPages: 0 },
+        })
       );
 
-      await getAuditLogs(filters, 1, 20);
+      await getAuditLogs(
+        {
+          changedByUserId: 'user-1',
+          startDate: '2025-11-01',
+          endDate: '2025-11-30',
+        },
+        2,
+        10
+      );
 
       expect(axiosInstance.get).toHaveBeenCalledWith('/admin/audit-logs', {
-        params: { userId: 'user-1', entity: 'list', page: 1, limit: 20 },
+        params: {
+          changedByUserId: 'user-1',
+          startDate: '2025-11-01',
+          endDate: '2025-11-30',
+          page: 2,
+          pageSize: 10,
+        },
       });
     });
   });

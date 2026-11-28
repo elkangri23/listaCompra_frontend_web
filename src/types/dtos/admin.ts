@@ -262,36 +262,12 @@ export interface AIHealthDto {
 }
 
 // ============================================================================
-// Audit Logs
+// Audit Logs (fase 4)
 // ============================================================================
-
-export interface AuditLogDto {
-  id: string;
-  userId: string;
-  userName: string;
-  action: string;
-  entity: string;
-  entityId: string;
-  details: string;
-  ipAddress: string;
-  timestamp: string;
-}
-
-export interface PaginatedAuditLogsDto {
-  logs: AuditLogDto[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
-export interface AuditLogFiltersDto {
-  userId?: string;
-  action?: string;
-  entity?: string;
-  startDate?: string;
-  endDate?: string;
-}
+// La vista global de auditoría usa los tipos reales de la funcionalidad de
+// auditoría (src/features/audit/types.ts): AuditHistoryResponse y
+// AdminAuditFilters (en el servicio admin). Los DTOs de plantilla que había
+// aquí (AuditLogDto, con action/entity/ipAddress) no existen en el backend.
 
 // ============================================================================
 // Security Alerts

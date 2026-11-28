@@ -471,47 +471,65 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
   });
 
   describe('useAuditLogs', () => {
-    it('debe obtener logs de auditoría', async () => {
-      const mockLogs = {
-        items: [
-          { id: 'log-1', action: 'delete', entity: 'list', userId: 'user-1' },
-          { id: 'log-2', action: 'share', entity: 'invitation', userId: 'user-2' },
+    it('debe obtener el historial global de auditoría', async () => {
+      const mockHistory = {
+        entries: [
+          {
+            id: 'e1',
+            entityType: 'Producto',
+            entityId: 'p1',
+            changeType: 'UPDATE',
+            changedByUserId: 'user-1',
+            timestamp: '2025-11-26T15:27:21.148Z',
+          },
+          {
+            id: 'e2',
+            entityType: 'Lista',
+            entityId: 'l1',
+            changeType: 'CREATE',
+            changedByUserId: 'user-2',
+            timestamp: '2025-11-26T14:00:00.000Z',
+          },
         ],
         total: 2,
         page: 1,
-        limit: 20,
+        pageSize: 20,
         totalPages: 1,
       };
 
-      (adminService.getAuditLogs as jest.Mock).mockResolvedValue(mockLogs);
+      (adminService.getAuditLogs as jest.Mock).mockResolvedValue(mockHistory);
 
       const { result } = renderHook(() => useAuditLogs(), { wrapper });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(result.current.data).toEqual(mockLogs);
+      expect(result.current.data).toEqual(mockHistory);
       expect(adminService.getAuditLogs).toHaveBeenCalledWith(undefined, 1, 20);
     });
 
-    it('debe filtrar logs por acción', async () => {
-      const mockLogs = {
-        items: [{ id: 'log-1', action: 'delete', entity: 'list', userId: 'user-1' }],
-        total: 1,
+    it('debe filtrar por tipo de entidad y de cambio', async () => {
+      const mockHistory = {
+        entries: [],
+        total: 0,
         page: 1,
-        limit: 20,
-        totalPages: 1,
+        pageSize: 10,
+        totalPages: 0,
       };
 
-      (adminService.getAuditLogs as jest.Mock).mockResolvedValue(mockLogs);
+      (adminService.getAuditLogs as jest.Mock).mockResolvedValue(mockHistory);
 
       const { result } = renderHook(
-        () => useAuditLogs({ action: 'delete' }, 1, 20),
+        () => useAuditLogs({ entityType: 'Producto', changeType: 'UPDATE' }, 1, 10),
         { wrapper }
       );
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(adminService.getAuditLogs).toHaveBeenCalledWith({ action: 'delete' }, 1, 20);
+      expect(adminService.getAuditLogs).toHaveBeenCalledWith(
+        { entityType: 'Producto', changeType: 'UPDATE' },
+        1,
+        10
+      );
     });
   });
 

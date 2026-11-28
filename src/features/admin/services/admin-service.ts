@@ -1,4 +1,5 @@
 import { axiosInstance } from '@/lib/api/axios-instance';
+import type { AuditHistoryFilters, AuditHistoryResponse } from '@/features/audit/types';
 import type {
   SystemMetricsDto,
   PaginatedAdminUsersDto,
@@ -7,8 +8,6 @@ import type {
   ImpersonateResponseDto,
   EndImpersonationDto,
   EndImpersonationResponseDto,
-  PaginatedAuditLogsDto,
-  AuditLogFiltersDto,
   PaginatedSecurityAlertsDto,
   PerformanceMetricsDto,
   HealthStatusDto,
@@ -16,6 +15,12 @@ import type {
   AIUsageDto,
   AIHealthDto,
 } from '@/types/dtos/admin';
+
+/** Filtros de la vista global de auditoría (fase 4). */
+export interface AdminAuditFilters extends AuditHistoryFilters {
+  /** 'Lista' | 'Producto'. En producción no hay eventos de Usuario. */
+  entityType?: 'Lista' | 'Producto';
+}
 
 /**
  * Servicio de administración del sistema
@@ -159,17 +164,21 @@ export const endImpersonation = async (
 // ============================================================================
 
 /**
- * Obtener logs de auditoría con filtros
+ * Vista global de auditoría (fase 4).
+ * GET /admin/audit-logs → {success, data: {entries, total, page, pageSize, totalPages}}.
  */
 export const getAuditLogs = async (
-  filters?: AuditLogFiltersDto,
+  filters?: AdminAuditFilters,
   page = 1,
   limit = 20
-): Promise<PaginatedAuditLogsDto> => {
-  const response = await axiosInstance.get<PaginatedAuditLogsDto>('/admin/audit-logs', {
-    params: { ...filters, page, limit },
-  });
-  return response.data;
+): Promise<AuditHistoryResponse> => {
+  const response = await axiosInstance.get<{ success: boolean; data: AuditHistoryResponse }>(
+    '/admin/audit-logs',
+    {
+      params: { ...filters, page, pageSize: limit },
+    }
+  );
+  return response.data.data;
 };
 
 /**
