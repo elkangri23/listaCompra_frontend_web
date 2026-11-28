@@ -15,6 +15,8 @@ import {
   useHealthStatus,
   usePerformanceMetrics,
   useDashboardAlerts,
+  useAIUsage,
+  useAIHealth,
   useAdminUsers,
   useUpdateUserStatus,
   useImpersonateUser,
@@ -193,6 +195,80 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
       (adminService.getAlerts as jest.Mock).mockRejectedValue(new Error('Error del servidor'));
 
       const { result } = renderHook(() => useDashboardAlerts(), { wrapper });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+    });
+  });
+
+  describe('useAIUsage', () => {
+    it('debe obtener el uso real de IA', async () => {
+      const mockUsage = {
+        provider: 'freellmapi',
+        model: 'qwen3.8-27b',
+        today: {
+          total: 12,
+          byOperation: {
+            'category-suggestions': 10,
+            'bulk-categorize': 1,
+            'config-test': 1,
+          },
+          success: 11,
+          failed: 1,
+          avgLatencyMs: 225,
+          cached: 4,
+          cachedPercentage: 33.3,
+        },
+        last7Days: [],
+        hasData: true,
+      };
+
+      (adminService.getAIUsage as jest.Mock).mockResolvedValue(mockUsage);
+
+      const { result } = renderHook(() => useAIUsage(), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(result.current.data).toEqual(mockUsage);
+      expect(adminService.getAIUsage).toHaveBeenCalledTimes(1);
+    });
+
+    it('debe manejar error al obtener el uso de IA', async () => {
+      (adminService.getAIUsage as jest.Mock).mockRejectedValue(
+        new Error('Error del servidor')
+      );
+
+      const { result } = renderHook(() => useAIUsage(), { wrapper });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+    });
+  });
+
+  describe('useAIHealth', () => {
+    it('debe obtener la salud de IA', async () => {
+      const mockHealth = {
+        status: 'healthy',
+        provider: 'freellmapi',
+        model: 'qwen3.8-27b',
+        latencyMs: 225,
+        checkedAt: '2025-11-28T10:00:00.000Z',
+        cached: false,
+      };
+
+      (adminService.getAIHealth as jest.Mock).mockResolvedValue(mockHealth);
+
+      const { result } = renderHook(() => useAIHealth(), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(result.current.data).toEqual(mockHealth);
+    });
+
+    it('debe manejar error al obtener la salud de IA', async () => {
+      (adminService.getAIHealth as jest.Mock).mockRejectedValue(
+        new Error('Error del servidor')
+      );
+
+      const { result } = renderHook(() => useAIHealth(), { wrapper });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
     });

@@ -1,16 +1,38 @@
 /**
- * Tests - Panel de administración (/admin, fase 2): shell con las 7 pestañas.
- * Estado y Usuarios muestran contenido real del backend; el resto sigue
+ * Tests - Panel de administración (/admin, fase 3): shell con las 7 pestañas.
+ * Estado, Usuarios e IA muestran contenido real del backend; el resto sigue
  * con el estado vacío honesto.
  */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import AdminPage from '@/app/(auth)/admin/page';
 import { adminService } from '@/features/admin/services/admin-service';
+import { aiSettingsService } from '@/features/settings/services/ai-settings-service';
+import { cacheAnalyticsService } from '@/features/settings/services/cache-analytics-service';
 import { createTestQueryClient } from '../../utils/test-utils';
 import { ReactNode } from 'react';
 
 jest.mock('@/features/admin/services/admin-service');
+jest.mock('@/features/settings/services/ai-settings-service', () => ({
+  AI_PROVIDERS: [
+    {
+      id: 'freellmapi',
+      nombre: 'FreeLLMAPI (gratuito, local)',
+      apiUrlPorDefecto: 'http://freellmapi:3001/v1',
+      modelosSugeridos: ['qwen3.8-27b', 'gemini-3.5-flash-lite'],
+    },
+  ],
+  aiSettingsService: {
+    getConfig: jest.fn(),
+    updateConfig: jest.fn(),
+    testConfig: jest.fn(),
+  },
+}));
+jest.mock('@/features/settings/services/cache-analytics-service', () => ({
+  cacheAnalyticsService: {
+    getCacheRealtime: jest.fn(),
+  },
+}));
 jest.mock('sonner', () => ({
   toast: {
     success: jest.fn(),
@@ -81,6 +103,77 @@ const mockUsers = {
   totalPages: 1,
 };
 
+const mockAIConfig = {
+  provider: 'freellmapi',
+  apiUrl: 'http://freellmapi:3001/v1',
+  model: 'qwen3.8-27b',
+  temperature: 0.7,
+  maxTokens: 1000,
+  timeout: 30000,
+  cache: { enabled: true, ttl: 3600 },
+  rateLimit: { requestsPerMinute: 30 },
+  apiKeyConfigured: true,
+  apiKeyMasked: '****1234',
+};
+
+const mockAIHealth = {
+  status: 'healthy',
+  provider: 'freellmapi',
+  model: 'qwen3.8-27b',
+  latencyMs: 225,
+  checkedAt: '2025-11-28T10:00:00.000Z',
+  cached: false,
+};
+
+const mockAIUsage = {
+  provider: 'freellmapi',
+  model: 'qwen3.8-27b',
+  today: {
+    total: 12,
+    byOperation: {
+      'category-suggestions': 10,
+      'bulk-categorize': 1,
+      'config-test': 1,
+    },
+    success: 11,
+    failed: 1,
+    avgLatencyMs: 225,
+    cached: 4,
+    cachedPercentage: 33.3,
+  },
+  last7Days: [
+    {
+      date: '2025-11-28',
+      total: 12,
+      success: 11,
+      failed: 1,
+      byOperation: {
+        'category-suggestions': 10,
+        'bulk-categorize': 1,
+        'config-test': 1,
+      },
+    },
+  ],
+  hasData: true,
+};
+
+const mockCacheAnalytics = {
+  hits: 80,
+  misses: 20,
+  hitRatio: 0.8,
+  averageResponseTime: 45,
+  cacheResponseTime: 12,
+  apiResponseTime: 180,
+  totalOperations: 100,
+  readsPerMinute: 50,
+  writesPerMinute: 10,
+  costSavings: 80,
+  spaceSavings: 12.5,
+  categoryStats: {},
+  timestamp: '2025-11-28T10:00:00.000Z',
+  window: '5m',
+};
+
 const renderPage = () => {
   const queryClient = createTestQueryClient();
   const wrapper = ({ children }: { children: ReactNode }) => (
@@ -97,6 +190,12 @@ describe('Panel de administración (fase 2)', () => {
     (adminService.getSystemMetrics as jest.Mock).mockResolvedValue(mockMetrics);
     (adminService.getPerformanceMetrics as jest.Mock).mockResolvedValue(mockPerformance);
     (adminService.getAdminUsers as jest.Mock).mockResolvedValue(mockUsers);
+    (aiSettingsService.getConfig as jest.Mock).mockResolvedValue(mockAIConfig);
+    (adminService.getAIHealth as jest.Mock).mockResolvedValue(mockAIHealth);
+    (adminService.getAIUsage as jest.Mock).mockResolvedValue(mockAIUsage);
+    (cacheAnalyticsService.getCacheRealtime as jest.Mock).mockResolvedValue(
+      mockCacheAnalytics
+    );
   });
 
   it('muestra el título y las 7 pestañas', () => {
@@ -144,7 +243,21 @@ describe('Panel de administración (fase 2)', () => {
     ).not.toBeInTheDocument();
   });
 
-  it.each(TAB_LABELS.filter((label) => !['Estado', 'Usuarios'].includes(label)))(
+  it('la pestaña IA muestra la sección real', async () => {
+    renderPage();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'IA' }));
+
+    expect(await screen.findByText('FreeLLMAPI (gratuito, local)')).toBeInTheDocument();
+    expect(screen.getByText('Proveedor activo')).toBeInTheDocument();
+    expect(screen.getByText('Sugerencias de categoría')).toBeInTheDocument();
+    expect(screen.getByText('80 aciertos · 20 fallos')).toBeInTheDocument();
+    expect(
+      screen.queryByText(/próximamente: esta sección llega en la siguiente fase/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it.each(TAB_LABELS.filter((label) => !['Estado', 'Usuarios', 'IA'].includes(label)))(
     'la pestaña %s muestra el estado vacío',
     (label) => {
       renderPage();

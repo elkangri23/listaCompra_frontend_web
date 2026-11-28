@@ -15,6 +15,8 @@ import {
   getHealthStatus,
   getPerformanceMetrics,
   getAlerts,
+  getAIUsage,
+  getAIHealth,
   getAdminUsers,
   updateUserStatus,
   impersonateUser,
@@ -224,6 +226,152 @@ describe('adminService (CRÍTICO - 100% coverage)', () => {
       );
 
       await expect(getAlerts()).rejects.toMatchObject({
+        message: 'Error del servidor',
+      });
+    });
+  });
+
+  describe('getAIUsage', () => {
+    it('debe obtener el uso real de IA desempaquetando {success, data}', async () => {
+      const mockUsage = {
+        provider: 'freellmapi',
+        model: 'qwen3.8-27b',
+        today: {
+          total: 12,
+          byOperation: {
+            'category-suggestions': 10,
+            'bulk-categorize': 1,
+            'config-test': 1,
+          },
+          success: 11,
+          failed: 1,
+          avgLatencyMs: 225,
+          cached: 4,
+          cachedPercentage: 33.3,
+        },
+        last7Days: [
+          {
+            date: '2026-11-22',
+            total: 3,
+            success: 3,
+            failed: 0,
+            byOperation: {
+              'category-suggestions': 3,
+              'bulk-categorize': 0,
+              'config-test': 0,
+            },
+          },
+        ],
+        hasData: true,
+      };
+
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ success: true, data: mockUsage })
+      );
+
+      const result = await getAIUsage();
+
+      expect(axiosInstance.get).toHaveBeenCalledWith('/ai/usage');
+      expect(result.today.total).toBe(12);
+      expect(result.today.byOperation['category-suggestions']).toBe(10);
+      expect(result.last7Days).toHaveLength(1);
+      expect(result.hasData).toBe(true);
+    });
+
+    it('debe manejar el caso sin datos (hasData false)', async () => {
+      const mockUsage = {
+        provider: 'freellmapi',
+        model: 'qwen3.8-27b',
+        today: {
+          total: 0,
+          byOperation: {
+            'category-suggestions': 0,
+            'bulk-categorize': 0,
+            'config-test': 0,
+          },
+          success: 0,
+          failed: 0,
+          avgLatencyMs: null,
+          cached: 0,
+          cachedPercentage: null,
+        },
+        last7Days: [],
+        hasData: false,
+      };
+
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ success: true, data: mockUsage })
+      );
+
+      const result = await getAIUsage();
+
+      expect(result.hasData).toBe(false);
+      expect(result.today.avgLatencyMs).toBeNull();
+      expect(result.today.cachedPercentage).toBeNull();
+    });
+
+    it('debe manejar error al obtener el uso de IA', async () => {
+      (axiosInstance.get as jest.Mock).mockRejectedValue(
+        createMockAxiosError('No autorizado', 403)
+      );
+
+      await expect(getAIUsage()).rejects.toMatchObject({
+        response: { status: 403 },
+      });
+    });
+  });
+
+  describe('getAIHealth', () => {
+    it('debe obtener la salud de IA desempaquetando {success, data}', async () => {
+      const mockHealth = {
+        status: 'healthy',
+        provider: 'freellmapi',
+        model: 'qwen3.8-27b',
+        latencyMs: 225,
+        checkedAt: '2025-11-28T10:00:00.000Z',
+        cached: false,
+      };
+
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ success: true, data: mockHealth })
+      );
+
+      const result = await getAIHealth();
+
+      expect(axiosInstance.get).toHaveBeenCalledWith('/ai/health');
+      expect(result.status).toBe('healthy');
+      expect(result.latencyMs).toBe(225);
+      expect(result.cached).toBe(false);
+    });
+
+    it('debe detectar salud degradada con motivo', async () => {
+      const mockHealth = {
+        status: 'degraded',
+        provider: 'freellmapi',
+        model: 'qwen3.8-27b',
+        latencyMs: null,
+        reason: 'Latencia alta',
+        checkedAt: '2025-11-28T10:00:00.000Z',
+        cached: true,
+      };
+
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ success: true, data: mockHealth })
+      );
+
+      const result = await getAIHealth();
+
+      expect(result.status).toBe('degraded');
+      expect(result.reason).toBe('Latencia alta');
+      expect(result.latencyMs).toBeNull();
+    });
+
+    it('debe manejar error al obtener la salud de IA', async () => {
+      (axiosInstance.get as jest.Mock).mockRejectedValue(
+        createMockAxiosError('Error del servidor', 500)
+      );
+
+      await expect(getAIHealth()).rejects.toMatchObject({
         message: 'Error del servidor',
       });
     });

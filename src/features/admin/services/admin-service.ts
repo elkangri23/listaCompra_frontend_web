@@ -13,6 +13,8 @@ import type {
   PerformanceMetricsDto,
   HealthStatusDto,
   DashboardAlertsDto,
+  AIUsageDto,
+  AIHealthDto,
 } from '@/types/dtos/admin';
 
 /**
@@ -64,6 +66,32 @@ export const getPerformanceMetrics = async (): Promise<PerformanceMetricsDto> =>
 export const getAlerts = async (): Promise<DashboardAlertsDto> => {
   const response = await axiosInstance.get<{ status: string; data: DashboardAlertsDto }>(
     '/dashboard/alerts'
+  );
+  return response.data.data;
+};
+
+// ============================================================================
+// AI — Uso y salud (fase 3)
+// ============================================================================
+
+/**
+ * Obtener uso real de IA (solo ADMIN).
+ * GET /ai/usage → {success, data}; hasData false = sin uso aún.
+ */
+export const getAIUsage = async (): Promise<AIUsageDto> => {
+  const response = await axiosInstance.get<{ success: boolean; data: AIUsageDto }>(
+    '/ai/usage'
+  );
+  return response.data.data;
+};
+
+/**
+ * Obtener salud del proveedor de IA.
+ * GET /ai/health → {success, data}.
+ */
+export const getAIHealth = async (): Promise<AIHealthDto> => {
+  const response = await axiosInstance.get<{ success: boolean; data: AIHealthDto }>(
+    '/ai/health'
   );
   return response.data.data;
 };
@@ -163,6 +191,9 @@ export const adminService = {
   getHealthStatus,
   getPerformanceMetrics,
   getAlerts,
+  // AI
+  getAIUsage,
+  getAIHealth,
   // Users
   getAdminUsers,
   updateUserStatus,

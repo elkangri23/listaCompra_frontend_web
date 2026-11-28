@@ -5,6 +5,7 @@ import styles from './admin.module.css'
 import { SkeletonCard } from '@/components/ui/skeleton'
 import { AdminStatusSection } from '@/features/admin/components/admin-status-section'
 import { AdminUsersSection } from '@/features/admin/components/admin-users-section'
+import { AdminAISection } from '@/features/admin/components/admin-ai-section'
 
 type AdminTab =
   | 'estado'
@@ -80,6 +81,8 @@ export default function AdminPage() {
         <AdminStatusSection />
       ) : activeTab === 'usuarios' ? (
         <AdminUsersSection />
+      ) : activeTab === 'ia' ? (
+        <AdminAISection />
       ) : (
         <ComingSoon section={activeLabel} />
       )}

@@ -54,6 +54,33 @@ export const useDashboardAlerts = () => {
 };
 
 // ============================================================================
+// AI Hooks (fase 3)
+// ============================================================================
+
+/**
+ * Hook para obtener el uso real de IA (GET /ai/usage)
+ */
+export const useAIUsage = () => {
+  return useQuery({
+    queryKey: ['admin', 'ai', 'usage'],
+    queryFn: adminService.getAIUsage,
+    staleTime: 1000 * 60, // 1 minuto
+  });
+};
+
+/**
+ * Hook para obtener la salud del proveedor de IA (GET /ai/health)
+ */
+export const useAIHealth = () => {
+  return useQuery({
+    queryKey: ['admin', 'ai', 'health'],
+    queryFn: adminService.getAIHealth,
+    staleTime: 1000 * 30, // 30 segundos
+    refetchInterval: 1000 * 60, // Refetch cada minuto
+  });
+};
+
+// ============================================================================
 // User Management Hooks
 // ============================================================================
 

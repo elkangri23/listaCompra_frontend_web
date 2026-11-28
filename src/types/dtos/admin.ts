@@ -210,6 +210,58 @@ export interface EndImpersonationResponseDto {
 }
 
 // ============================================================================
+// IA — Uso y salud (GET /ai/usage y GET /ai/health, fase 3)
+// ============================================================================
+
+export type AIOperation = 'category-suggestions' | 'bulk-categorize' | 'config-test';
+
+export type AIUsageByOperationDto = Record<AIOperation, number>;
+
+/** GET /ai/usage → data.today */
+export interface AIUsageTodayDto {
+  total: number;
+  byOperation: AIUsageByOperationDto;
+  success: number;
+  failed: number;
+  /** Latencia media en ms; null sin peticiones. */
+  avgLatencyMs: number | null;
+  cached: number;
+  /** Porcentaje 0-100; null sin peticiones. */
+  cachedPercentage: number | null;
+}
+
+/** GET /ai/usage → data.last7Days[i] (de más antiguo a más reciente). */
+export interface AIUsageDayDto {
+  /** Fecha 'YYYY-MM-DD'. */
+  date: string;
+  total: number;
+  success: number;
+  failed: number;
+  byOperation: AIUsageByOperationDto;
+}
+
+/** GET /ai/usage → data. hasData false = todo a cero, sin uso real aún. */
+export interface AIUsageDto {
+  provider: string;
+  model: string;
+  today: AIUsageTodayDto;
+  last7Days: AIUsageDayDto[];
+  hasData: boolean;
+}
+
+/** GET /ai/health → data */
+export interface AIHealthDto {
+  status: 'healthy' | 'degraded';
+  provider: string;
+  model: string;
+  /** Latencia en ms; null si no se pudo medir. */
+  latencyMs: number | null;
+  reason?: string;
+  checkedAt: string;
+  cached: boolean;
+}
+
+// ============================================================================
 // Audit Logs
 // ============================================================================
 
