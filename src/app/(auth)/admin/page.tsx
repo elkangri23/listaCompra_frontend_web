@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 import styles from './admin.module.css'
-import { SkeletonCard } from '@/components/ui/skeleton'
 import { AdminStatusSection } from '@/features/admin/components/admin-status-section'
 import { AdminUsersSection } from '@/features/admin/components/admin-users-section'
 import { AdminAISection } from '@/features/admin/components/admin-ai-section'
 import { AdminAuditSection } from '@/features/admin/components/admin-audit-section'
 import { AdminSecuritySection } from '@/features/admin/components/admin-security-section'
 import { AdminBackupsSection } from '@/features/admin/components/admin-backups-section'
+import { AdminMetricsSection } from '@/features/admin/components/admin-metrics-section'
 
 type AdminTab =
   | 'estado'
@@ -29,28 +29,8 @@ const TABS: { id: AdminTab; label: string }[] = [
   { id: 'metricas', label: 'Métricas' },
 ]
 
-/**
- * Estado vacío honesto de las secciones que aún no existen.
- * El esqueleto es una vista previa decorativa de cómo se verá el contenido.
- */
-function ComingSoon({ section }: { section: string }) {
-  return (
-    <div className={styles.comingSoon}>
-      <h2 className={styles.sectionTitle}>{section}</h2>
-      <p>Próximamente: esta sección llega en la siguiente fase.</p>
-      <div className={styles.skeletonGrid} aria-hidden="true">
-        <SkeletonCard />
-        <SkeletonCard />
-        <SkeletonCard />
-      </div>
-    </div>
-  )
-}
-
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>('estado')
-  const activeLabel =
-    TABS.find((tab) => tab.id === activeTab)?.label ?? 'Estado'
 
   return (
     <div className={styles.container}>
@@ -93,7 +73,7 @@ export default function AdminPage() {
       ) : activeTab === 'copias' ? (
         <AdminBackupsSection />
       ) : (
-        <ComingSoon section={activeLabel} />
+        <AdminMetricsSection />
       )}
     </div>
   )

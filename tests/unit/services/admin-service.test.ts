@@ -29,6 +29,7 @@ import {
   createBackup,
   downloadBackup,
   restoreBackup,
+  getAdminMetrics,
 } from '@/features/admin/services/admin-service';
 import { axiosInstance } from '@/lib/api/axios-instance';
 import { createMockAxiosResponse, createMockAxiosError } from '../../utils/test-utils';
@@ -1138,6 +1139,106 @@ describe('adminService (CRÍTICO - 100% coverage)', () => {
       await expect(
         restoreBackup('bk-1', { confirmacion: 'RESTAURAR', motivo: 'Prueba' })
       ).rejects.toMatchObject({
+        response: { status: 403 },
+      });
+    });
+  });
+
+  describe('getAdminMetrics', () => {
+    const mockOverview = {
+      growth: {
+        registrationsByDay: [{ date: '2026-11-28', count: 1 }],
+        registrationsByMonth: [{ month: '2026-11', count: 1 }],
+        listsByDay: [{ date: '2026-11-28', count: 2 }],
+        productsByDay: [{ date: '2026-11-28', count: 3 }],
+        totals: {
+          users: 1,
+          verifiedUsers: 1,
+          verifiedPct: 100,
+          lists: 3,
+          products: 6,
+          categorizedProducts: 4,
+          categorizedPct: 66.7,
+        },
+      },
+      funnel: {
+        registered: 1,
+        verified: 1,
+        withList: 1,
+        withProduct: 1,
+        shared: 0,
+      },
+      activity: {
+        activeUsersByDay: [{ date: '2026-11-28', count: 1 }],
+        retention: { available: false, reason: 'Sin última conexión registrada.' },
+      },
+      backupHealth: {
+        lastCreated: {
+          id: 'bk-1',
+          filename: 'backup-2026-11-28-040000.sql.gz',
+          sizeBytes: 4404019,
+          createdAt: '2026-11-28T04:00:00.000Z',
+          ageHours: 9,
+        },
+        stale: false,
+        reason: null,
+      },
+      aiUsage7d: {
+        total: 5,
+        success: 4,
+        failed: 1,
+        cached: 2,
+        byDay: [{ date: '2026-11-28', total: 5, success: 4 }],
+      },
+    };
+
+    it('debe obtener el resumen desempaquetando {success, data}', async () => {
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ success: true, data: mockOverview })
+      );
+
+      const result = await getAdminMetrics();
+
+      expect(axiosInstance.get).toHaveBeenCalledWith('/admin/metrics/overview');
+      expect(result.growth.totals.users).toBe(1);
+      expect(result.funnel.shared).toBe(0);
+      expect(result.activity.retention.available).toBe(false);
+      expect(result.backupHealth.lastCreated?.filename).toBe(
+        'backup-2026-11-28-040000.sql.gz'
+      );
+      expect(result.aiUsage7d.total).toBe(5);
+    });
+
+    it('debe pasar los tramos del embudo a null sin tocarlos', async () => {
+      const withNullFunnel = {
+        ...mockOverview,
+        funnel: {
+          registered: 1,
+          verified: null,
+          withList: null,
+          withProduct: 1,
+          shared: null,
+        },
+      };
+
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ success: true, data: withNullFunnel })
+      );
+
+      const result = await getAdminMetrics();
+
+      expect(result.funnel.verified).toBeNull();
+      expect(result.funnel.withList).toBeNull();
+      expect(result.funnel.shared).toBeNull();
+      expect(result.funnel.withProduct).toBe(1);
+    });
+
+    it('debe rechazar sin rol ADMIN (403)', async () => {
+      (axiosInstance.get as jest.Mock).mockRejectedValue(
+        createMockAxiosError('No autorizado', 403)
+      );
+
+      await expect(getAdminMetrics()).rejects.toMatchObject({
         response: { status: 403 },
       });
     });

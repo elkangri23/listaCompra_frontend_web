@@ -20,6 +20,7 @@ import type {
   PaginatedBackupsDto,
   BackupResponseDto,
   RestoreBackupDto,
+  MetricsOverviewDto,
 } from '@/types/dtos/admin';
 
 /** Filtros de la vista global de auditoría (fase 4). */
@@ -305,6 +306,23 @@ export const restoreBackup = async (
   return response.data.data;
 };
 
+// ============================================================================
+// Métricas de uso (fase 7)
+// ============================================================================
+
+/**
+ * Resumen de métricas de uso (fase 7): crecimiento, embudo de activación,
+ * actividad, salud de la última copia y uso de IA de los últimos 7 días.
+ * GET /admin/metrics/overview → {success, data}.
+ */
+export const getAdminMetrics = async (): Promise<MetricsOverviewDto> => {
+  const response = await axiosInstance.get<{
+    success: boolean;
+    data: MetricsOverviewDto;
+  }>('/admin/metrics/overview');
+  return response.data.data;
+};
+
 export const adminService = {
   // Dashboard
   getSystemMetrics,
@@ -330,4 +348,6 @@ export const adminService = {
   createBackup,
   downloadBackup,
   restoreBackup,
+  // Métricas de uso
+  getAdminMetrics,
 };

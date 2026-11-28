@@ -408,3 +408,96 @@ export interface RestoreBackupDto {
   confirmacion: 'RESTAURAR';
   motivo: string;
 }
+
+// ============================================================================
+// Métricas de uso (fase 7)
+// ============================================================================
+// Formas REALES del backend (GET /api/v1/admin/metrics/overview): el
+// overview responde `{success, data}` con crecimiento, embudo, actividad,
+// salud de la copia y uso de IA de los últimos 7 días. Cualquier tramo del
+// embudo puede venir a null si el backend no lo pudo calcular: la UI lo
+// muestra como «sin datos», nunca inventa un número.
+
+/** Un día de una serie: fecha 'YYYY-MM-DD' y conteo (con ceros). */
+export interface MetricsDayCountDto {
+  date: string;
+  count: number;
+}
+
+/** Un mes de una serie: mes 'YYYY-MM' y conteo (con ceros). */
+export interface MetricsMonthCountDto {
+  month: string;
+  count: number;
+}
+
+export interface MetricsGrowthDto {
+  registrationsByDay: MetricsDayCountDto[];
+  registrationsByMonth: MetricsMonthCountDto[];
+  listsByDay: MetricsDayCountDto[];
+  productsByDay: MetricsDayCountDto[];
+  totals: {
+    users: number;
+    verifiedUsers: number;
+    /** Porcentaje 0-100. */
+    verifiedPct: number;
+    lists: number;
+    products: number;
+    categorizedProducts: number;
+    /** Porcentaje 0-100. */
+    categorizedPct: number;
+  };
+}
+
+/** Embudo de activación; un tramo a null = el backend no lo pudo calcular. */
+export interface MetricsFunnelDto {
+  registered: number | null;
+  verified: number | null;
+  withList: number | null;
+  withProduct: number | null;
+  shared: number | null;
+}
+
+export interface MetricsActivityDto {
+  activeUsersByDay: MetricsDayCountDto[];
+  retention: {
+    available: boolean;
+    reason: string;
+  };
+}
+
+export interface MetricsBackupHealthDto {
+  lastCreated: {
+    id: string;
+    filename: string;
+    sizeBytes: number;
+    createdAt: string;
+    /** Horas desde que se creó la copia. */
+    ageHours: number;
+  } | null;
+  stale: boolean;
+  reason: string | null;
+}
+
+export interface MetricsAIUsageDayDto {
+  /** Fecha 'YYYY-MM-DD'. */
+  date: string;
+  total: number;
+  success: number;
+}
+
+export interface MetricsAIUsage7dDto {
+  total: number;
+  success: number;
+  failed: number;
+  cached: number;
+  byDay: MetricsAIUsageDayDto[];
+}
+
+/** GET /admin/metrics/overview → data */
+export interface MetricsOverviewDto {
+  growth: MetricsGrowthDto;
+  funnel: MetricsFunnelDto;
+  activity: MetricsActivityDto;
+  backupHealth: MetricsBackupHealthDto;
+  aiUsage7d: MetricsAIUsage7dDto;
+}

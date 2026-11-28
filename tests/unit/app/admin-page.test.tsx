@@ -1,7 +1,7 @@
 /**
- * Tests - Panel de administración (/admin, fase 5): shell con las 7 pestañas.
- * Estado, Usuarios, IA, Auditoría y Seguridad muestran contenido real del
- * backend; el resto sigue con el estado vacío honesto.
+ * Tests - Panel de administración (/admin, fase 7): shell con las 7 pestañas.
+ * Las 7 muestran contenido real del backend; ya no queda ninguna con el
+ * estado vacío «Próximamente».
  */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -254,6 +254,53 @@ const mockBackups = {
   totalPages: 1,
 };
 
+const mockMetricsOverview = {
+  growth: {
+    registrationsByDay: [{ date: '2026-11-28', count: 1 }],
+    registrationsByMonth: [{ month: '2026-11', count: 1 }],
+    listsByDay: [{ date: '2026-11-28', count: 2 }],
+    productsByDay: [{ date: '2026-11-28', count: 3 }],
+    totals: {
+      users: 1,
+      verifiedUsers: 1,
+      verifiedPct: 100,
+      lists: 3,
+      products: 6,
+      categorizedProducts: 4,
+      categorizedPct: 66.7,
+    },
+  },
+  funnel: {
+    registered: 1,
+    verified: 1,
+    withList: 1,
+    withProduct: 1,
+    shared: 0,
+  },
+  activity: {
+    activeUsersByDay: [{ date: '2026-11-28', count: 1 }],
+    retention: { available: false, reason: 'Sin última conexión registrada.' },
+  },
+  backupHealth: {
+    lastCreated: {
+      id: 'bk-1',
+      filename: 'backup-2026-11-28-040000.sql.gz',
+      sizeBytes: 4404019,
+      createdAt: '2026-11-28T04:00:00.000Z',
+      ageHours: 9,
+    },
+    stale: false,
+    reason: null,
+  },
+  aiUsage7d: {
+    total: 5,
+    success: 4,
+    failed: 1,
+    cached: 2,
+    byDay: [{ date: '2026-11-28', total: 5, success: 4 }],
+  },
+};
+
 const renderPage = () => {
   const queryClient = createTestQueryClient();
   const wrapper = ({ children }: { children: ReactNode }) => (
@@ -262,7 +309,7 @@ const renderPage = () => {
   return render(<AdminPage />, { wrapper });
 };
 
-describe('Panel de administración (fase 2)', () => {
+describe('Panel de administración (fase 7)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (adminService.getHealthStatus as jest.Mock).mockResolvedValue(mockHealth);
@@ -287,6 +334,9 @@ describe('Panel de administración (fase 2)', () => {
       mockLoginAttempts
     );
     (adminService.getBackups as jest.Mock).mockResolvedValue(mockBackups);
+    (adminService.getAdminMetrics as jest.Mock).mockResolvedValue(
+      mockMetricsOverview
+    );
   });
 
   it('muestra el título y las 7 pestañas', () => {
@@ -388,24 +438,20 @@ describe('Panel de administración (fase 2)', () => {
     ).not.toBeInTheDocument();
   });
 
-  it.each(
-    TAB_LABELS.filter(
-      (label) =>
-        !['Estado', 'Usuarios', 'IA', 'Auditoría', 'Seguridad', 'Copias'].includes(label)
-    )
-  )(
-    'la pestaña %s muestra el estado vacío',
-    (label) => {
-      renderPage();
+  it('la pestaña Métricas muestra la sección real', async () => {
+    renderPage();
 
-      fireEvent.click(screen.getByRole('tab', { name: label }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Métricas' }));
 
-      expect(
-        screen.getByText(/próximamente: esta sección llega en la siguiente fase/i),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole('heading', { level: 2, name: label }),
-      ).toBeInTheDocument();
-    },
-  );
+    expect(
+      await screen.findByText('Registros por día (últimos 30 días)')
+    ).toBeInTheDocument();
+    expect(screen.getByText('Métricas de uso')).toBeInTheDocument();
+    expect(screen.getByText('Embudo de activación')).toBeInTheDocument();
+    expect(screen.getByText('Última copia')).toBeInTheDocument();
+    expect(screen.getByText('Uso de IA (últimos 7 días)')).toBeInTheDocument();
+    expect(
+      screen.queryByText(/próximamente: esta sección llega en la siguiente fase/i),
+    ).not.toBeInTheDocument();
+  });
 });

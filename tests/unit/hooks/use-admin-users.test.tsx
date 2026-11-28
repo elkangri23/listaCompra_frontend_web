@@ -29,6 +29,7 @@ import {
   useCreateBackup,
   useDownloadBackup,
   useRestoreBackup,
+  useAdminMetrics,
   backupsHaveActiveWork,
 } from '@/features/admin/hooks/use-admin-users';
 import { createTestQueryClient } from '../../utils/test-utils';
@@ -901,6 +902,84 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
       expect(toast.error).toHaveBeenCalledWith(
         'Error al restaurar la copia: La confirmación debe ser exactamente RESTAURAR'
       );
+    });
+  });
+
+  describe('useAdminMetrics', () => {
+    const mockOverview = {
+      growth: {
+        registrationsByDay: [{ date: '2026-11-28', count: 1 }],
+        registrationsByMonth: [{ month: '2026-11', count: 1 }],
+        listsByDay: [{ date: '2026-11-28', count: 2 }],
+        productsByDay: [{ date: '2026-11-28', count: 3 }],
+        totals: {
+          users: 1,
+          verifiedUsers: 1,
+          verifiedPct: 100,
+          lists: 3,
+          products: 6,
+          categorizedProducts: 4,
+          categorizedPct: 66.7,
+        },
+      },
+      funnel: {
+        registered: 1,
+        verified: 1,
+        withList: 1,
+        withProduct: 1,
+        shared: 0,
+      },
+      activity: {
+        activeUsersByDay: [{ date: '2026-11-28', count: 1 }],
+        retention: { available: false, reason: 'Sin última conexión registrada.' },
+      },
+      backupHealth: { lastCreated: null, stale: false, reason: null },
+      aiUsage7d: { total: 0, success: 0, failed: 0, cached: 0, byDay: [] },
+    };
+
+    it('debe obtener el resumen de métricas con la clave propia', async () => {
+      (adminService.getAdminMetrics as jest.Mock).mockResolvedValue(mockOverview);
+
+      const { result } = renderHook(() => useAdminMetrics(), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(result.current.data).toEqual(mockOverview);
+      expect(adminService.getAdminMetrics).toHaveBeenCalledTimes(1);
+      expect(
+        queryClient
+          .getQueryCache()
+          .find({ queryKey: ['admin', 'metrics-overview'] })
+      ).toBeDefined();
+    });
+
+    it('debe manejar error al obtener las métricas', async () => {
+      (adminService.getAdminMetrics as jest.Mock).mockRejectedValue(
+        new Error('No autorizado')
+      );
+
+      const { result } = renderHook(() => useAdminMetrics(), { wrapper });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+    });
+
+    it('no debe tener refetchInterval: una carga por visita basta', async () => {
+      (adminService.getAdminMetrics as jest.Mock).mockResolvedValue(mockOverview);
+
+      renderHook(() => useAdminMetrics(), { wrapper });
+
+      await waitFor(() =>
+        expect(
+          queryClient
+            .getQueryCache()
+            .find({ queryKey: ['admin', 'metrics-overview'] })
+        ).toBeDefined()
+      );
+
+      const query = queryClient
+        .getQueryCache()
+        .find({ queryKey: ['admin', 'metrics-overview'] });
+      expect(query?.options.refetchInterval).toBeUndefined();
     });
   });
 });

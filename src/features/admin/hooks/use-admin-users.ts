@@ -316,3 +316,22 @@ export const useRestoreBackup = () => {
     },
   });
 };
+
+// ============================================================================
+// Métricas de uso (fase 7)
+// ============================================================================
+
+/**
+ * Hook para obtener el resumen de métricas de uso (fase 7).
+ * Una sola carga por visita, sin refetchInterval: las métricas son series
+ * históricas y el presupuesto admin es de 60 peticiones/15 min.
+ * La clave es ['admin', 'metrics-overview']: ['admin', 'metrics'] ya la
+ * usa useSystemMetrics para /dashboard/metrics.
+ */
+export const useAdminMetrics = () => {
+  return useQuery({
+    queryKey: ['admin', 'metrics-overview'],
+    queryFn: adminService.getAdminMetrics,
+    staleTime: 1000 * 60 * 5, // 5 minutos
+  });
+};
