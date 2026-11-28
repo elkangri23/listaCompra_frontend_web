@@ -1,0 +1,135 @@
+/* Panel de administración — mismo patrón de pestañas que Perfil y Detalle de lista. */
+
+/* === Container === */
+.container {
+  padding: var(--spacing-2xl);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* === Header === */
+.title {
+  font-size: var(--font-size-2xl, 2rem);
+  font-weight: 700;
+  color: var(--color-text, #1a1a1a);
+  margin: 0;
+}
+
+.subtitle {
+  color: var(--color-text-secondary, #666);
+  margin: var(--spacing-sm, 0.75rem) 0 var(--spacing-xl, 2rem);
+}
+
+/* === Tabs === */
+.tabs {
+  margin-bottom: var(--spacing-lg, 1.5rem);
+}
+
+.tabsContainer {
+  display: flex;
+  border-bottom: 2px solid var(--color-border, #e0e0e0);
+  gap: var(--spacing-xl, 2rem);
+  overflow-x: auto;
+  /* El tab tiene top: 2px: sin esto, overflow-y computa a auto y aparece
+     una barra vertical en la tira. */
+  overflow-y: hidden;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: var(--spacing-md, 1rem) var(--spacing-sm, 0.75rem);
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  top: 2px;
+}
+
+.tabInactive {
+  color: var(--color-text-secondary, #666);
+  border-bottom-color: transparent;
+}
+
+.tabInactive:hover {
+  color: var(--color-primary, #2563eb);
+}
+
+.tabActive {
+  color: var(--color-primary, #2563eb);
+  border-bottom-color: var(--color-primary, #2563eb);
+  font-weight: 600;
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--color-primary, #2563eb);
+  outline-offset: 2px;
+}
+
+.tabText {
+  font-size: var(--font-size-md, 1rem);
+  font-weight: 600;
+}
+
+/* === Contenido === */
+.sectionTitle {
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 700;
+  color: var(--color-text, #1a1a1a);
+  margin: 0 0 var(--spacing-md, 1rem);
+}
+
+.comingSoon {
+  padding: var(--spacing-lg, 1.5rem) 0;
+}
+
+.comingSoon p {
+  color: var(--color-text-secondary, #666);
+  margin: 0 0 var(--spacing-lg, 1.5rem);
+  max-width: 640px;
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md, 1rem);
+  max-width: 960px;
+}
+
+.linkButton {
+  display: inline-block;
+  background: var(--color-primary, #2563eb);
+  color: #fff;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.linkButton:hover {
+  color: #fff;
+}
+
+/* === Responsive === */
+/* En escritorio las pestañas caben: sin scroll horizontal ni barras. */
+@media (min-width: 769px) {
+  .tabsContainer {
+    overflow-x: visible;
+  }
+}
+
+@media (max-width: 768px) {
+  .tabsContainer {
+    gap: var(--spacing-md, 1rem);
+  }
+
+  .skeletonGrid {
+    grid-template-columns: 1fr;
+  }
+}

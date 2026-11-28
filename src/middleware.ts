@@ -31,6 +31,20 @@ export default auth((request) => {
     return NextResponse.redirect(loginUrl)
   }
 
+  // Solo ADMIN en /admin/* (fase 1 del panel de administración). El rol
+  // llega en la sesión (session.user.roles, del token o de /auth/me).
+  // Sin rol ADMIN se redirige al panel principal.
+  if (
+    nextUrl.pathname === '/admin' ||
+    nextUrl.pathname.startsWith('/admin/')
+  ) {
+    const roles =
+      (session?.user as { roles?: string[] } | undefined)?.roles ?? []
+    if (!roles.includes('ADMIN')) {
+      return NextResponse.redirect(new URL('/dashboard', nextUrl))
+    }
+  }
+
   return NextResponse.next()
 })
 

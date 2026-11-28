@@ -2,11 +2,16 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { signOutViaForm } from '@/lib/auth/sign-out'
 import styles from './app-header.module.css'
 
 export function AppHeader() {
   const pathname = usePathname()
+  const { data: session } = useSession()
+  const isAdmin = session?.user?.roles?.includes('ADMIN') ?? false
+  const isAdminRoute =
+    pathname === '/admin' || pathname.startsWith('/admin/')
 
   const handleSignOut = async () => {
     await signOutViaForm('/login')
@@ -52,6 +57,18 @@ export function AppHeader() {
             </svg>
             <span>Ajustes</span>
           </Link>
+
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className={`${styles.navLink} ${isAdminRoute ? styles.navLinkActive : ''}`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M128,24,200,56v72c0,48-32,82-72,104-40-22-72-56-72-104V56Z" />
+              </svg>
+              <span>Administración</span>
+            </Link>
+          )}
         </nav>
 
         <div className={styles.actions}>
