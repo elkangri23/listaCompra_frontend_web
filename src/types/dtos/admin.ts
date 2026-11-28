@@ -270,25 +270,87 @@ export interface AIHealthDto {
 // aquí (AuditLogDto, con action/entity/ipAddress) no existen en el backend.
 
 // ============================================================================
-// Security Alerts
+// Security (fase 5)
 // ============================================================================
+// Formas REALES del backend (src/application/dto/admin/SecurityDto.ts):
+// el overview deja una sección a null cuando no se puede calcular (nunca se
+// inventa un valor), los login-attempts son paginados y las alertas se
+// calculan con datos reales (BRUTE_FORCE_EMAIL, ADMIN_WITHOUT_2FA,
+// GRACE_PERIOD_ENDING). Los DTOs de plantilla que había aquí (type
+// failed_login/suspicious_activity/..., items, limit, timestamp, resolved)
+// no existen en el backend.
+
+export interface GracePeriodAccountDto {
+  email: string;
+  eliminacionSolicitadaEn: string;
+  /** Días que quedan hasta la eliminación definitiva (30 días de gracia). */
+  daysLeft: number;
+}
+
+export interface SecurityOverviewDto {
+  /** Cuentas con 2FA sobre el total; null si no se pudo calcular. */
+  twoFactor: { enabled: number; total: number } | null;
+  /** Intentos fallidos en las últimas 24 h; null si no se pudo calcular. */
+  failedLoginsLast24h: number | null;
+  /** Turnstile está activo solo si TURNSTILE_SECRET_KEY está configurada. */
+  turnstile: { enabled: boolean };
+  /** Cuentas en periodo de gracia GDPR; null si no se pudo calcular. */
+  gracePeriod: { count: number; accounts: GracePeriodAccountDto[] } | null;
+  /** Motivos por sección cuando un dato no se pudo calcular. */
+  unavailable: {
+    twoFactor?: string;
+    failedLogins?: string;
+    gracePeriod?: string;
+  };
+}
+
+export type LoginAttemptReason =
+  | 'WRONG_PASSWORD'
+  | 'USER_NOT_FOUND'
+  | 'UNVERIFIED_EMAIL'
+  | 'INACTIVE_ACCOUNT'
+  | 'MFA_FAILED';
+
+export interface LoginAttemptDto {
+  id: string;
+  email: string;
+  success: boolean;
+  reason: LoginAttemptReason | null;
+  ipAddress: string | null;
+  userAgent: string | null;
+  createdAt: string;
+}
+
+export interface PaginatedLoginAttemptsDto {
+  attempts: LoginAttemptDto[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+/** Filtros de GET /admin/security/login-attempts. */
+export interface SecurityLoginAttemptFilters {
+  email?: string;
+  success?: boolean;
+  startDate?: string;
+  endDate?: string;
+}
 
 export interface SecurityAlertDto {
   id: string;
-  type: 'failed_login' | 'suspicious_activity' | 'rate_limit_exceeded' | 'unauthorized_access';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  type: 'BRUTE_FORCE_EMAIL' | 'ADMIN_WITHOUT_2FA' | 'GRACE_PERIOD_ENDING';
+  severity: 'high' | 'medium' | 'low';
   message: string;
-  userId?: string;
-  userName?: string;
-  ipAddress: string;
-  timestamp: string;
-  resolved: boolean;
+  /** Cuándo se originó el hecho que genera la alerta. */
+  createdAt: string;
+  relatedEmail?: string;
 }
 
 export interface PaginatedSecurityAlertsDto {
   alerts: SecurityAlertDto[];
   total: number;
   page: number;
-  limit: number;
+  pageSize: number;
   totalPages: number;
 }

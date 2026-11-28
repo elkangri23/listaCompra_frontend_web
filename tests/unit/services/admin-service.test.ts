@@ -22,6 +22,8 @@ import {
   impersonateUser,
   endImpersonation,
   getAuditLogs,
+  getSecurityOverview,
+  getLoginAttempts,
   getSecurityAlerts,
 } from '@/features/admin/services/admin-service';
 import { axiosInstance } from '@/lib/api/axios-instance';
@@ -744,63 +746,173 @@ describe('adminService (CRÍTICO - 100% coverage)', () => {
     });
   });
 
-  describe('getSecurityAlerts', () => {
-    it('debe obtener alertas de seguridad', async () => {
-      const mockAlerts = {
-        items: [
+  describe('getSecurityOverview', () => {
+    const mockOverview = {
+      twoFactor: { enabled: 1, total: 3 },
+      failedLoginsLast24h: 4,
+      turnstile: { enabled: true },
+      gracePeriod: {
+        count: 1,
+        accounts: [
           {
-            id: 'alert-1',
-            type: 'suspicious_login',
+            email: 'gracia@ejemplo.com',
+            eliminacionSolicitadaEn: '2025-11-03T10:00:00.000Z',
+            daysLeft: 5,
+          },
+        ],
+      },
+      unavailable: {},
+    };
+
+    it('debe obtener el resumen desempaquetando {success, data}', async () => {
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ success: true, data: mockOverview })
+      );
+
+      const result = await getSecurityOverview();
+
+      expect(axiosInstance.get).toHaveBeenCalledWith('/admin/security/overview');
+      expect(result.twoFactor).toEqual({ enabled: 1, total: 3 });
+      expect(result.failedLoginsLast24h).toBe(4);
+      expect(result.turnstile.enabled).toBe(true);
+      expect(result.gracePeriod?.count).toBe(1);
+    });
+
+    it('debe manejar error al obtener el resumen', async () => {
+      (axiosInstance.get as jest.Mock).mockRejectedValue(
+        createMockAxiosError('Error del servidor', 500)
+      );
+
+      await expect(getSecurityOverview()).rejects.toMatchObject({
+        message: 'Error del servidor',
+      });
+    });
+  });
+
+  describe('getLoginAttempts', () => {
+    const mockAttempts = {
+      attempts: [
+        {
+          id: 'att-1',
+          email: 'ana@ejemplo.com',
+          success: true,
+          reason: null,
+          ipAddress: '1.2.3.4',
+          userAgent: 'Mozilla/5.0 (Windows NT 10.0)',
+          createdAt: '2025-11-28T10:00:00.000Z',
+        },
+        {
+          id: 'att-2',
+          email: 'victima@ejemplo.com',
+          success: false,
+          reason: 'WRONG_PASSWORD',
+          ipAddress: '9.9.9.9',
+          userAgent: 'Mozilla/5.0 (iPhone)',
+          createdAt: '2025-11-28T09:00:00.000Z',
+        },
+      ],
+      total: 2,
+      page: 1,
+      pageSize: 20,
+      totalPages: 1,
+    };
+
+    it('debe obtener los intentos desempaquetando {success, data}', async () => {
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ success: true, data: mockAttempts })
+      );
+
+      const result = await getLoginAttempts();
+
+      expect(axiosInstance.get).toHaveBeenCalledWith('/admin/security/login-attempts', {
+        params: { page: 1, pageSize: 20 },
+      });
+      expect(result.attempts).toHaveLength(2);
+      expect(result.attempts[0].success).toBe(true);
+      expect(result.attempts[1].reason).toBe('WRONG_PASSWORD');
+    });
+
+    it('debe filtrar por email y resultado, y paginar', async () => {
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ success: true, data: mockAttempts })
+      );
+
+      await getLoginAttempts({ email: 'victima@ejemplo.com', success: false }, 2, 10);
+
+      expect(axiosInstance.get).toHaveBeenCalledWith('/admin/security/login-attempts', {
+        params: { email: 'victima@ejemplo.com', success: false, page: 2, pageSize: 10 },
+      });
+    });
+
+    it('debe manejar error al obtener los intentos', async () => {
+      (axiosInstance.get as jest.Mock).mockRejectedValue(
+        createMockAxiosError('Error del servidor', 500)
+      );
+
+      await expect(getLoginAttempts()).rejects.toMatchObject({
+        message: 'Error del servidor',
+      });
+    });
+  });
+
+  describe('getSecurityAlerts', () => {
+    it('debe obtener alertas de seguridad desempaquetando {success, data}', async () => {
+      const mockAlerts = {
+        alerts: [
+          {
+            id: 'brute-force:victima@ejemplo.com',
+            type: 'BRUTE_FORCE_EMAIL',
             severity: 'high',
-            userId: 'user-1',
-            description: 'Intento de login desde ubicación inusual',
-            timestamp: new Date('2025-11-25'),
+            message: '6 intentos fallidos en 1 hora para victima@ejemplo.com',
+            createdAt: '2025-11-28T10:00:00.000Z',
+            relatedEmail: 'victima@ejemplo.com',
           },
           {
-            id: 'alert-2',
-            type: 'rate_limit_exceeded',
+            id: 'admin-without-2fa:admin-id',
+            type: 'ADMIN_WITHOUT_2FA',
             severity: 'medium',
-            userId: 'user-2',
-            description: 'Múltiples intentos fallidos',
-            timestamp: new Date('2025-11-24'),
+            message: 'El administrador admin@ejemplo.com no tiene 2FA activado',
+            createdAt: '2025-11-28T10:00:00.000Z',
+            relatedEmail: 'admin@ejemplo.com',
           },
         ],
         total: 2,
         page: 1,
-        limit: 20,
+        pageSize: 20,
         totalPages: 1,
       };
 
       (axiosInstance.get as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockAlerts)
+        createMockAxiosResponse({ success: true, data: mockAlerts })
       );
 
       const result = await getSecurityAlerts();
 
       expect(axiosInstance.get).toHaveBeenCalledWith('/admin/security/alerts', {
-        params: { page: 1, limit: 20 },
+        params: { page: 1, pageSize: 20 },
       });
-      expect(result.items).toHaveLength(2);
-      expect(result.items[0].severity).toBe('high');
+      expect(result.alerts).toHaveLength(2);
+      expect(result.alerts[0].severity).toBe('high');
+      expect(result.alerts[0].type).toBe('BRUTE_FORCE_EMAIL');
     });
 
     it('debe paginar alertas correctamente', async () => {
       const mockAlerts = {
-        items: [],
+        alerts: [],
         total: 0,
         page: 2,
-        limit: 10,
+        pageSize: 10,
         totalPages: 1,
       };
 
       (axiosInstance.get as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockAlerts)
+        createMockAxiosResponse({ success: true, data: mockAlerts })
       );
 
       await getSecurityAlerts(2, 10);
 
       expect(axiosInstance.get).toHaveBeenCalledWith('/admin/security/alerts', {
-        params: { page: 2, limit: 10 },
+        params: { page: 2, pageSize: 10 },
       });
     });
 

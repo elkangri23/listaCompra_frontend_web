@@ -23,6 +23,8 @@ import {
   useEndImpersonation,
   useAuditLogs,
   useSecurityAlerts,
+  useSecurityOverview,
+  useLoginAttempts,
 } from '@/features/admin/hooks/use-admin-users';
 import { createTestQueryClient } from '../../utils/test-utils';
 import { ReactNode } from 'react';
@@ -536,13 +538,27 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
   describe('useSecurityAlerts', () => {
     it('debe obtener alertas de seguridad', async () => {
       const mockAlerts = {
-        items: [
-          { id: 'alert-1', type: 'suspicious_login', severity: 'high' },
-          { id: 'alert-2', type: 'rate_limit_exceeded', severity: 'medium' },
+        alerts: [
+          {
+            id: 'brute-force:victima@ejemplo.com',
+            type: 'BRUTE_FORCE_EMAIL',
+            severity: 'high',
+            message: '6 intentos fallidos en 1 hora',
+            createdAt: '2025-11-28T10:00:00.000Z',
+            relatedEmail: 'victima@ejemplo.com',
+          },
+          {
+            id: 'admin-without-2fa:admin-id',
+            type: 'ADMIN_WITHOUT_2FA',
+            severity: 'medium',
+            message: 'El administrador no tiene 2FA activado',
+            createdAt: '2025-11-28T10:00:00.000Z',
+            relatedEmail: 'admin@ejemplo.com',
+          },
         ],
         total: 2,
         page: 1,
-        limit: 20,
+        pageSize: 20,
         totalPages: 1,
       };
 
@@ -557,10 +573,10 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
 
     it('debe paginar alertas correctamente', async () => {
       const mockAlerts = {
-        items: [],
+        alerts: [],
         total: 0,
         page: 2,
-        limit: 10,
+        pageSize: 10,
         totalPages: 1,
       };
 
@@ -571,6 +587,65 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
       expect(adminService.getSecurityAlerts).toHaveBeenCalledWith(2, 10);
+    });
+  });
+
+  describe('useSecurityOverview', () => {
+    it('debe obtener el resumen de seguridad', async () => {
+      const mockOverview = {
+        twoFactor: { enabled: 1, total: 3 },
+        failedLoginsLast24h: 4,
+        turnstile: { enabled: true },
+        gracePeriod: { count: 0, accounts: [] },
+        unavailable: {},
+      };
+
+      (adminService.getSecurityOverview as jest.Mock).mockResolvedValue(mockOverview);
+
+      const { result } = renderHook(() => useSecurityOverview(), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(result.current.data).toEqual(mockOverview);
+      expect(adminService.getSecurityOverview).toHaveBeenCalled();
+    });
+  });
+
+  describe('useLoginAttempts', () => {
+    it('debe obtener los intentos con filtros y paginación', async () => {
+      const mockAttempts = {
+        attempts: [
+          {
+            id: 'att-1',
+            email: 'ana@ejemplo.com',
+            success: true,
+            reason: null,
+            ipAddress: '1.2.3.4',
+            userAgent: 'Mozilla/5.0',
+            createdAt: '2025-11-28T10:00:00.000Z',
+          },
+        ],
+        total: 1,
+        page: 1,
+        pageSize: 20,
+        totalPages: 1,
+      };
+
+      (adminService.getLoginAttempts as jest.Mock).mockResolvedValue(mockAttempts);
+
+      const { result } = renderHook(
+        () => useLoginAttempts({ email: 'ana@ejemplo.com', success: true }, 1, 20),
+        { wrapper }
+      );
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(result.current.data).toEqual(mockAttempts);
+      expect(adminService.getLoginAttempts).toHaveBeenCalledWith(
+        { email: 'ana@ejemplo.com', success: true },
+        1,
+        20
+      );
     });
   });
 });

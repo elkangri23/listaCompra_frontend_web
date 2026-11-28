@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminService } from '../services/admin-service';
 import type { AdminAuditFilters } from '../services/admin-service';
+import type { SecurityLoginAttemptFilters } from '@/types/dtos/admin';
 import { toast } from 'sonner';
 
 // ============================================================================
@@ -189,5 +190,34 @@ export const useSecurityAlerts = (page = 1, limit = 20) => {
     queryFn: () => adminService.getSecurityAlerts(page, limit),
     staleTime: 1000 * 60, // 1 minuto
     refetchInterval: 1000 * 60 * 2, // Refetch cada 2 minutos
+  });
+};
+
+/**
+ * Hook para obtener el resumen de seguridad (fase 5): 2FA, fallos 24 h,
+ * Turnstile y cuentas en periodo de gracia.
+ */
+export const useSecurityOverview = () => {
+  return useQuery({
+    queryKey: ['admin', 'security-overview'],
+    queryFn: adminService.getSecurityOverview,
+    staleTime: 1000 * 60, // 1 minuto
+    refetchInterval: 1000 * 60 * 2, // Refetch cada 2 minutos
+  });
+};
+
+/**
+ * Hook para obtener los intentos de inicio de sesión (fase 5), con filtros
+ * (email, resultado, fechas) y paginación.
+ */
+export const useLoginAttempts = (
+  filters?: SecurityLoginAttemptFilters,
+  page = 1,
+  limit = 20
+) => {
+  return useQuery({
+    queryKey: ['admin', 'security-login-attempts', filters, page, limit],
+    queryFn: () => adminService.getLoginAttempts(filters, page, limit),
+    staleTime: 1000 * 60, // 1 minuto
   });
 };

@@ -9,6 +9,9 @@ import type {
   EndImpersonationDto,
   EndImpersonationResponseDto,
   PaginatedSecurityAlertsDto,
+  SecurityOverviewDto,
+  PaginatedLoginAttemptsDto,
+  SecurityLoginAttemptFilters,
   PerformanceMetricsDto,
   HealthStatusDto,
   DashboardAlertsDto,
@@ -181,17 +184,57 @@ export const getAuditLogs = async (
   return response.data.data;
 };
 
+// ============================================================================
+// Security (fase 5)
+// ============================================================================
+
 /**
- * Obtener alertas de seguridad
+ * Resumen de seguridad (fase 5).
+ * GET /admin/security/overview → {success, data: SecurityOverviewDto}.
+ */
+export const getSecurityOverview = async (): Promise<SecurityOverviewDto> => {
+  const response = await axiosInstance.get<{ success: boolean; data: SecurityOverviewDto }>(
+    '/admin/security/overview'
+  );
+  return response.data.data;
+};
+
+/**
+ * Intentos de inicio de sesión (fase 5).
+ * GET /admin/security/login-attempts → {success, data: {attempts, total,
+ * page, pageSize, totalPages}}. Filtros: email, success, startDate, endDate.
+ */
+export const getLoginAttempts = async (
+  filters?: SecurityLoginAttemptFilters,
+  page = 1,
+  limit = 20
+): Promise<PaginatedLoginAttemptsDto> => {
+  const response = await axiosInstance.get<{
+    success: boolean;
+    data: PaginatedLoginAttemptsDto;
+  }>('/admin/security/login-attempts', {
+    params: { ...filters, page, pageSize: limit },
+  });
+  return response.data.data;
+};
+
+/**
+ * Alertas de seguridad (fase 5): calculadas en el backend con datos reales
+ * (fuerza bruta, admin sin 2FA, periodo de gracia a punto de vencer).
+ * GET /admin/security/alerts → {success, data: {alerts, total, page,
+ * pageSize, totalPages}}. Si no hay ninguna, la lista viene vacía.
  */
 export const getSecurityAlerts = async (
   page = 1,
   limit = 20
 ): Promise<PaginatedSecurityAlertsDto> => {
-  const response = await axiosInstance.get<PaginatedSecurityAlertsDto>('/admin/security/alerts', {
-    params: { page, limit },
+  const response = await axiosInstance.get<{
+    success: boolean;
+    data: PaginatedSecurityAlertsDto;
+  }>('/admin/security/alerts', {
+    params: { page, pageSize: limit },
   });
-  return response.data;
+  return response.data.data;
 };
 
 export const adminService = {
@@ -210,5 +253,8 @@ export const adminService = {
   endImpersonation,
   // Audit
   getAuditLogs,
+  // Security
+  getSecurityOverview,
+  getLoginAttempts,
   getSecurityAlerts,
 };

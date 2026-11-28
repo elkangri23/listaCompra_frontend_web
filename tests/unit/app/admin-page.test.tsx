@@ -1,7 +1,7 @@
 /**
- * Tests - Panel de administración (/admin, fase 4): shell con las 7 pestañas.
- * Estado, Usuarios, IA y Auditoría muestran contenido real del backend;
- * el resto sigue con el estado vacío honesto.
+ * Tests - Panel de administración (/admin, fase 5): shell con las 7 pestañas.
+ * Estado, Usuarios, IA, Auditoría y Seguridad muestran contenido real del
+ * backend; el resto sigue con el estado vacío honesto.
  */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -200,6 +200,40 @@ const mockAuditLogs = {
   totalPages: 1,
 };
 
+const mockSecurityOverview = {
+  twoFactor: { enabled: 1, total: 3 },
+  failedLoginsLast24h: 4,
+  turnstile: { enabled: true },
+  gracePeriod: { count: 0, accounts: [] },
+  unavailable: {},
+};
+
+const mockSecurityAlerts = {
+  alerts: [],
+  total: 0,
+  page: 1,
+  pageSize: 20,
+  totalPages: 1,
+};
+
+const mockLoginAttempts = {
+  attempts: [
+    {
+      id: 'att-1',
+      email: 'ana@ejemplo.com',
+      success: true,
+      reason: null,
+      ipAddress: '1.2.3.4',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+      createdAt: '2026-11-28T10:00:00.000Z',
+    },
+  ],
+  total: 1,
+  page: 1,
+  pageSize: 10,
+  totalPages: 1,
+};
+
 const renderPage = () => {
   const queryClient = createTestQueryClient();
   const wrapper = ({ children }: { children: ReactNode }) => (
@@ -223,6 +257,15 @@ describe('Panel de administración (fase 2)', () => {
       mockCacheAnalytics
     );
     (adminService.getAuditLogs as jest.Mock).mockResolvedValue(mockAuditLogs);
+    (adminService.getSecurityOverview as jest.Mock).mockResolvedValue(
+      mockSecurityOverview
+    );
+    (adminService.getSecurityAlerts as jest.Mock).mockResolvedValue(
+      mockSecurityAlerts
+    );
+    (adminService.getLoginAttempts as jest.Mock).mockResolvedValue(
+      mockLoginAttempts
+    );
   });
 
   it('muestra el título y las 7 pestañas', () => {
@@ -296,8 +339,23 @@ describe('Panel de administración (fase 2)', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('la pestaña Seguridad muestra la sección real', async () => {
+    renderPage();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Seguridad' }));
+
+    expect(await screen.findByText('Cuentas con 2FA')).toBeInTheDocument();
+    expect(screen.getByText('Últimos inicios de sesión')).toBeInTheDocument();
+    expect(screen.getByText('ana@ejemplo.com')).toBeInTheDocument();
+    expect(
+      screen.queryByText(/próximamente: esta sección llega en la siguiente fase/i),
+    ).not.toBeInTheDocument();
+  });
+
   it.each(
-    TAB_LABELS.filter((label) => !['Estado', 'Usuarios', 'IA', 'Auditoría'].includes(label))
+    TAB_LABELS.filter(
+      (label) => !['Estado', 'Usuarios', 'IA', 'Auditoría', 'Seguridad'].includes(label)
+    )
   )(
     'la pestaña %s muestra el estado vacío',
     (label) => {
