@@ -41,6 +41,18 @@ export const usePerformanceMetrics = () => {
   });
 };
 
+/**
+ * Hook para obtener alertas activas del sistema (GET /dashboard/alerts)
+ */
+export const useDashboardAlerts = () => {
+  return useQuery({
+    queryKey: ['admin', 'alerts'],
+    queryFn: adminService.getAlerts,
+    staleTime: 1000 * 60, // 1 minuto
+    refetchInterval: 1000 * 60, // Refetch cada minuto
+  });
+};
+
 // ============================================================================
 // User Management Hooks
 // ============================================================================
@@ -87,10 +99,10 @@ export const useImpersonateUser = () => {
   return useMutation({
     mutationFn: (userId: string) => adminService.impersonateUser(userId),
     onSuccess: (data) => {
-      toast.success(`Impersonando a ${data.impersonatedUserName}`);
+      toast.success(`Impersonando a ${data.impersonatedUser.nombre}`);
       // Guardar token de impersonación
-      localStorage.setItem('impersonation_token', data.token);
-      localStorage.setItem('original_user_id', data.originalUserId);
+      localStorage.setItem('impersonation_token', data.impersonationToken);
+      localStorage.setItem('original_user_id', data.adminUser.id);
       // Recargar la página para aplicar el nuevo contexto
       window.location.href = '/dashboard';
     },

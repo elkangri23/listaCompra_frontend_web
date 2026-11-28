@@ -1,7 +1,7 @@
 /**
  * Tests CRÍTICOS (100% coverage) - use-admin-users.ts
  * Hooks de React Query para administración del sistema
- * 
+ *
  * Patrón: Arrange-Act-Assert
  * Testing Library: @testing-library/react-hooks
  * Mock: adminService, toast, localStorage
@@ -14,6 +14,7 @@ import {
   useSystemMetrics,
   useHealthStatus,
   usePerformanceMetrics,
+  useDashboardAlerts,
   useAdminUsers,
   useUpdateUserStatus,
   useImpersonateUser,
@@ -46,6 +47,48 @@ afterAll(() => {
   console.error = originalError;
 });
 
+const mockMetrics = {
+  systemMetrics: {
+    totalEndpoints: 12,
+    globalRequestCount: 1250,
+    globalSuccessRate: 98.4,
+    globalAvgResponseTime: 125.5,
+    uptime: 3600000,
+    startTime: '2025-11-28T09:00:00.000Z',
+  },
+  endpointMetrics: [],
+  cacheMetrics: null,
+};
+
+const mockHealth = {
+  overall: 'healthy',
+  services: { api: 'healthy', cache: 'healthy', metrics: 'healthy' },
+  uptime: 3600000,
+  timestamp: '2025-11-28T10:00:00.000Z',
+};
+
+const mockPerformance = {
+  slowestEndpoints: [],
+  errorProneEndpoints: [],
+  errorRateStats: [],
+  timestamp: '2025-11-28T10:00:00.000Z',
+};
+
+const mockAlerts = {
+  activeAlerts: [
+    {
+      type: 'error_rate',
+      severity: 'medium',
+      message: 'Error rate is high: 12.0%',
+      value: 0.12,
+      threshold: 0.1,
+      timestamp: '2025-11-28T10:00:00.000Z',
+    },
+  ],
+  alertCount: 1,
+  timestamp: '2025-11-28T10:00:00.000Z',
+};
+
 describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
   let queryClient: QueryClient;
   let wrapper: ({ children }: { children: ReactNode }) => JSX.Element;
@@ -65,14 +108,6 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
 
   describe('useSystemMetrics', () => {
     it('debe obtener métricas del sistema', async () => {
-      const mockMetrics = {
-        totalUsers: 1500,
-        activeUsers: 1200,
-        totalLists: 8500,
-        totalProducts: 45000,
-        storageUsedMB: 512,
-      };
-
       (adminService.getSystemMetrics as jest.Mock).mockResolvedValue(mockMetrics);
 
       const { result } = renderHook(() => useSystemMetrics(), { wrapper });
@@ -94,13 +129,6 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
 
   describe('useHealthStatus', () => {
     it('debe obtener estado de salud del sistema', async () => {
-      const mockHealth = {
-        status: 'healthy',
-        database: 'connected',
-        redis: 'connected',
-        apiResponse: 85,
-      };
-
       (adminService.getHealthStatus as jest.Mock).mockResolvedValue(mockHealth);
 
       const { result } = renderHook(() => useHealthStatus(), { wrapper });
@@ -111,33 +139,24 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
     });
 
     it('debe detectar sistema no saludable', async () => {
-      const mockHealth = {
-        status: 'unhealthy',
-        database: 'connected',
-        redis: 'disconnected',
-        apiResponse: 2500,
+      const unhealthy = {
+        ...mockHealth,
+        overall: 'unhealthy',
+        services: { api: 'unhealthy', cache: 'healthy', metrics: 'healthy' },
       };
 
-      (adminService.getHealthStatus as jest.Mock).mockResolvedValue(mockHealth);
+      (adminService.getHealthStatus as jest.Mock).mockResolvedValue(unhealthy);
 
       const { result } = renderHook(() => useHealthStatus(), { wrapper });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(result.current.data?.status).toBe('unhealthy');
+      expect(result.current.data?.overall).toBe('unhealthy');
     });
   });
 
   describe('usePerformanceMetrics', () => {
     it('debe obtener métricas de rendimiento', async () => {
-      const mockPerformance = {
-        avgResponseTime: 125,
-        requestsPerMinute: 450,
-        errorRate: 0.5,
-        cpuUsage: 45,
-        memoryUsage: 68,
-      };
-
       (adminService.getPerformanceMetrics as jest.Mock).mockResolvedValue(mockPerformance);
 
       const { result } = renderHook(() => usePerformanceMetrics(), { wrapper });
@@ -146,12 +165,43 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
 
       expect(result.current.data).toEqual(mockPerformance);
     });
+
+    it('debe manejar error al obtener rendimiento', async () => {
+      (adminService.getPerformanceMetrics as jest.Mock).mockRejectedValue(
+        new Error('Error del servidor')
+      );
+
+      const { result } = renderHook(() => usePerformanceMetrics(), { wrapper });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+    });
+  });
+
+  describe('useDashboardAlerts', () => {
+    it('debe obtener alertas activas del sistema', async () => {
+      (adminService.getAlerts as jest.Mock).mockResolvedValue(mockAlerts);
+
+      const { result } = renderHook(() => useDashboardAlerts(), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(result.current.data).toEqual(mockAlerts);
+      expect(adminService.getAlerts).toHaveBeenCalledTimes(1);
+    });
+
+    it('debe manejar error al obtener alertas', async () => {
+      (adminService.getAlerts as jest.Mock).mockRejectedValue(new Error('Error del servidor'));
+
+      const { result } = renderHook(() => useDashboardAlerts(), { wrapper });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+    });
   });
 
   describe('useAdminUsers', () => {
     it('debe obtener lista de usuarios', async () => {
       const mockUsers = {
-        items: [
+        usuarios: [
           { id: 'user-1', nombre: 'Juan', email: 'juan@example.com', activo: true },
           { id: 'user-2', nombre: 'María', email: 'maria@example.com', activo: true },
         ],
@@ -173,7 +223,7 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
 
     it('debe buscar usuarios por query', async () => {
       const mockUsers = {
-        items: [{ id: 'user-1', nombre: 'Juan', email: 'juan@example.com', activo: true }],
+        usuarios: [{ id: 'user-1', nombre: 'Juan', email: 'juan@example.com', activo: true }],
         total: 1,
         page: 1,
         limit: 20,
@@ -191,7 +241,7 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
 
     it('debe paginar usuarios correctamente', async () => {
       const mockUsers = {
-        items: [],
+        usuarios: [],
         total: 50,
         page: 3,
         limit: 10,
@@ -255,9 +305,11 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
   describe('useImpersonateUser', () => {
     it('debe impersonar usuario correctamente', async () => {
       const mockResponse = {
-        token: 'impersonation-token-123',
-        originalUserId: 'admin-1',
-        impersonatedUserName: 'Juan Pérez',
+        impersonationToken: 'impersonation-token-123',
+        impersonatedUser: { id: 'user-1', email: 'juan@example.com', nombre: 'Juan Pérez' },
+        adminUser: { id: 'admin-1', email: 'admin@example.com', nombre: 'Admin' },
+        expiresAt: '2025-11-28T11:00:00.000Z',
+        startedAt: '2025-11-28T10:00:00.000Z',
       };
 
       (adminService.impersonateUser as jest.Mock).mockResolvedValue(mockResponse);
@@ -298,7 +350,15 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
       const mockResponse = {
         success: true,
         message: 'Impersonación finalizada',
-        token: 'original-token',
+        terminatedSession: {
+          sessionId: 'session-1',
+          adminId: 'admin-1',
+          targetUserId: 'user-1',
+          startedAt: '2025-11-28T10:00:00.000Z',
+          endedAt: '2025-11-28T10:15:00.000Z',
+          duration: '15m',
+        },
+        adminToken: 'original-token',
       };
 
       localStorage.setItem('impersonation_token', 'imp-token');

@@ -1,172 +1,156 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { SystemHealthPanel } from '@/features/admin/components/system-health-panel';
-import type { HealthStatusDto, PerformanceMetricsDto } from '@/types/dtos/admin';
+import type {
+  DashboardAlertsDto,
+  HealthStatusDto,
+} from '@/types/dtos/admin';
 
 describe('SystemHealthPanel', () => {
   const mockHealthHealthy: HealthStatusDto = {
-    status: 'healthy',
-    database: 'up',
-    cache: 'up',
-    aiService: 'up',
-    message: 'Todos los servicios operativos',
-    timestamp: '2025-11-26T10:00:00Z',
+    overall: 'healthy',
+    services: { api: 'healthy', cache: 'healthy', metrics: 'healthy' },
+    uptime: 3600000,
+    timestamp: '2025-11-28T10:00:00Z',
   };
 
   const mockHealthDegraded: HealthStatusDto = {
-    status: 'degraded',
-    database: 'up',
-    cache: 'down',
-    aiService: 'up',
-    message: 'Servicio de caché no disponible',
-    timestamp: '2025-11-26T10:00:00Z',
+    overall: 'degraded',
+    services: { api: 'healthy', cache: 'degraded', metrics: 'healthy' },
+    uptime: 5400000,
+    timestamp: '2025-11-28T10:00:00Z',
   };
 
-  const mockHealthDown: HealthStatusDto = {
-    status: 'down',
-    database: 'down',
-    cache: 'down',
-    aiService: 'down',
-    message: 'Sistema fuera de servicio',
-    timestamp: '2025-11-26T10:00:00Z',
+  const mockHealthUnhealthy: HealthStatusDto = {
+    overall: 'unhealthy',
+    services: { api: 'unhealthy', cache: 'healthy', metrics: 'healthy' },
+    uptime: 30000,
+    timestamp: '2025-11-28T10:00:00Z',
   };
 
-  const mockPerformance: PerformanceMetricsDto = {
-    apiResponseTime: 120,
-    databaseQueryTime: 45,
-    cacheHitRate: 85,
-    errorRate: 2,
-    requestsPerMinute: 350,
-    activeConnections: 42,
-    memoryUsage: 512,
-    cpuUsage: 35,
+  const mockAlerts: DashboardAlertsDto = {
+    activeAlerts: [
+      {
+        type: 'error_rate',
+        severity: 'medium',
+        message: 'Error rate is high: 12.0%',
+        value: 0.12,
+        threshold: 0.1,
+        timestamp: '2025-11-28T10:00:00Z',
+      },
+      {
+        type: 'cache_hit_ratio',
+        severity: 'high',
+        message: 'Cache hit ratio is low: 40.0%',
+        value: 0.4,
+        threshold: 0.7,
+        timestamp: '2025-11-28T10:00:00Z',
+      },
+    ],
+    alertCount: 2,
+    timestamp: '2025-11-28T10:00:00Z',
+  };
+
+  const emptyAlerts: DashboardAlertsDto = {
+    activeAlerts: [],
+    alertCount: 0,
+    timestamp: '2025-11-28T10:00:00Z',
   };
 
   describe('Renderizado del estado del sistema', () => {
     it('debe renderizar el título "Estado del Sistema"', () => {
-      render(<SystemHealthPanel health={mockHealthHealthy} />);
+      render(<SystemHealthPanel health={mockHealthHealthy} alerts={emptyAlerts} />);
 
       expect(screen.getByText('Estado del Sistema')).toBeInTheDocument();
     });
 
-    it('debe mostrar Badge "Saludable" con estado healthy', () => {
-      render(<SystemHealthPanel health={mockHealthHealthy} />);
+    it('debe mostrar "Todo en orden" con estado healthy', () => {
+      render(<SystemHealthPanel health={mockHealthHealthy} alerts={emptyAlerts} />);
 
-      expect(screen.getByText('✓ Saludable')).toBeInTheDocument();
+      expect(screen.getByText('✓ Todo en orden')).toBeInTheDocument();
     });
 
-    it('debe mostrar Badge "Degradado" con estado degraded', () => {
-      render(<SystemHealthPanel health={mockHealthDegraded} />);
+    it('debe mostrar "Degradado" con estado degraded', () => {
+      render(<SystemHealthPanel health={mockHealthDegraded} alerts={emptyAlerts} />);
 
       expect(screen.getByText('⚠ Degradado')).toBeInTheDocument();
     });
 
-    it('debe mostrar Badge "Caído" con estado down', () => {
-      render(<SystemHealthPanel health={mockHealthDown} />);
+    it('debe mostrar "Con problemas" con estado unhealthy', () => {
+      render(<SystemHealthPanel health={mockHealthUnhealthy} alerts={emptyAlerts} />);
 
-      expect(screen.getByText('✗ Caído')).toBeInTheDocument();
+      expect(screen.getByText('✗ Con problemas')).toBeInTheDocument();
     });
 
-    it('debe renderizar el estado de la Base de Datos (Operativa/Fuera de servicio)', () => {
-      render(<SystemHealthPanel health={mockHealthHealthy} />);
+    it('debe renderizar el estado de cada servicio (API, Caché, Métricas)', () => {
+      render(<SystemHealthPanel health={mockHealthHealthy} alerts={emptyAlerts} />);
 
-      expect(screen.getByText('Base de Datos')).toBeInTheDocument();
-      const operativaElements = screen.getAllByText('Operativa');
-      expect(operativaElements.length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText('API')).toBeInTheDocument();
+      expect(screen.getByText('Caché')).toBeInTheDocument();
+      expect(screen.getByText('Métricas')).toBeInTheDocument();
+      expect(screen.getAllByText('En orden')).toHaveLength(3);
     });
 
-    it('debe renderizar el estado del Caché como "Fuera de servicio" cuando está down', () => {
-      render(<SystemHealthPanel health={mockHealthDegraded} />);
+    it('debe marcar la caché como Degradado cuando está degraded', () => {
+      render(<SystemHealthPanel health={mockHealthDegraded} alerts={emptyAlerts} />);
 
-      const fueraServicio = screen.getAllByText('Fuera de servicio');
-      expect(fueraServicio.length).toBeGreaterThan(0);
+      expect(screen.getByText('Degradado')).toBeInTheDocument();
     });
 
-    it('debe renderizar el estado del Servicio IA', () => {
-      render(<SystemHealthPanel health={mockHealthHealthy} />);
+    it('debe mostrar el tiempo en marcha formateado', () => {
+      render(<SystemHealthPanel health={mockHealthHealthy} alerts={emptyAlerts} />);
 
-      expect(screen.getByText('Servicio IA')).toBeInTheDocument();
+      expect(screen.getByText(/En marcha desde hace 1 h/)).toBeInTheDocument();
     });
 
-    it('debe mostrar el mensaje de estado del sistema', () => {
-      render(<SystemHealthPanel health={mockHealthHealthy} />);
+    it('debe mostrar "menos de 1 min" con uptime corto', () => {
+      render(<SystemHealthPanel health={mockHealthUnhealthy} alerts={emptyAlerts} />);
 
-      expect(screen.getByText('Todos los servicios operativos')).toBeInTheDocument();
+      expect(screen.getByText(/En marcha desde hace menos de 1 min/)).toBeInTheDocument();
     });
 
     it('debe formatear y mostrar el timestamp en formato español', () => {
-      render(<SystemHealthPanel health={mockHealthHealthy} />);
+      render(<SystemHealthPanel health={mockHealthHealthy} alerts={emptyAlerts} />);
 
       const timestampText = screen.getByText(/Última actualización:/);
       expect(timestampText).toBeInTheDocument();
-      // Verifica que contiene el timestamp formateado
       expect(timestampText).toHaveTextContent('Última actualización:');
     });
   });
 
-  describe('Renderizado de métricas de rendimiento', () => {
-    it('NO debe renderizar la tarjeta de métricas si performance es undefined', () => {
+  describe('Renderizado de alertas', () => {
+    it('debe mostrar el contador de alertas en el título', () => {
+      render(<SystemHealthPanel health={mockHealthHealthy} alerts={mockAlerts} />);
+
+      expect(screen.getByText('Alertas activas (2)')).toBeInTheDocument();
+    });
+
+    it('debe listar las alertas con su mensaje y severidad', () => {
+      render(<SystemHealthPanel health={mockHealthHealthy} alerts={mockAlerts} />);
+
+      expect(screen.getByText('Error rate is high: 12.0%')).toBeInTheDocument();
+      expect(screen.getByText('Cache hit ratio is low: 40.0%')).toBeInTheDocument();
+      expect(screen.getByText('Media')).toBeInTheDocument();
+      expect(screen.getByText('Alta')).toBeInTheDocument();
+    });
+
+    it('debe mostrar "Ninguna alerta activa." cuando no hay alertas', () => {
+      render(<SystemHealthPanel health={mockHealthHealthy} alerts={emptyAlerts} />);
+
+      expect(screen.getByText('Alertas activas (0)')).toBeInTheDocument();
+      expect(screen.getByText('Ninguna alerta activa.')).toBeInTheDocument();
+    });
+
+    it('debe mostrar "Comprobando alertas…" mientras cargan', () => {
+      render(<SystemHealthPanel health={mockHealthHealthy} alertsLoading />);
+
+      expect(screen.getByText('Comprobando alertas…')).toBeInTheDocument();
+    });
+
+    it('debe mostrar "Comprobando alertas…" si aún no hay datos de alertas', () => {
       render(<SystemHealthPanel health={mockHealthHealthy} />);
 
-      expect(screen.queryByText('Métricas de Rendimiento')).not.toBeInTheDocument();
-    });
-
-    it('debe renderizar el título "Métricas de Rendimiento" cuando performance está presente', () => {
-      render(<SystemHealthPanel health={mockHealthHealthy} performance={mockPerformance} />);
-
-      expect(screen.getByText('Métricas de Rendimiento')).toBeInTheDocument();
-    });
-
-    it('debe mostrar todas las métricas de rendimiento con valores correctos', () => {
-      render(<SystemHealthPanel health={mockHealthHealthy} performance={mockPerformance} />);
-
-      expect(screen.getByText('Tiempo de respuesta API')).toBeInTheDocument();
-      expect(screen.getByText('120ms')).toBeInTheDocument();
-
-      expect(screen.getByText('Tiempo de consulta BD')).toBeInTheDocument();
-      expect(screen.getByText('45ms')).toBeInTheDocument();
-
-      expect(screen.getByText('Tasa de aciertos caché')).toBeInTheDocument();
-      expect(screen.getByText('85%')).toBeInTheDocument();
-
-      expect(screen.getByText('Tasa de errores')).toBeInTheDocument();
-      expect(screen.getByText('2%')).toBeInTheDocument();
-    });
-
-    it('debe renderizar métricas adicionales en la sección inferior', () => {
-      render(<SystemHealthPanel health={mockHealthHealthy} performance={mockPerformance} />);
-
-      expect(screen.getByText('Requests/minuto')).toBeInTheDocument();
-      expect(screen.getByText('350')).toBeInTheDocument();
-
-      expect(screen.getByText('Conexiones activas')).toBeInTheDocument();
-      expect(screen.getByText('42')).toBeInTheDocument();
-
-      expect(screen.getByText('Uso de memoria')).toBeInTheDocument();
-      expect(screen.getByText('512 MB')).toBeInTheDocument();
-
-      expect(screen.getByText('Uso de CPU')).toBeInTheDocument();
-      expect(screen.getByText('35%')).toBeInTheDocument();
-    });
-
-    it('debe aplicar clase text-red-600 cuando errorRate > 5%', () => {
-      const highErrorPerformance: PerformanceMetricsDto = {
-        ...mockPerformance,
-        errorRate: 8, // > 5%
-      };
-
-      render(<SystemHealthPanel health={mockHealthHealthy} performance={highErrorPerformance} />);
-
-      const errorRateElement = screen.getByText('8%');
-      expect(errorRateElement).toHaveClass('text-red-600');
-    });
-
-    it('debe aplicar clase text-muted-foreground cuando errorRate <= 5%', () => {
-      render(<SystemHealthPanel health={mockHealthHealthy} performance={mockPerformance} />);
-
-      const errorRateElement = screen.getByText('2%');
-      expect(errorRateElement).toHaveClass('text-muted-foreground');
-      expect(errorRateElement).not.toHaveClass('text-red-600');
+      expect(screen.getByText('Comprobando alertas…')).toBeInTheDocument();
     });
   });
 });

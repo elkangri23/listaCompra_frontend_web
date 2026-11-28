@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { formatUptime } from '@/lib/format-uptime';
 import { useSystemAlerts, useSystemHealth } from '../hooks/use-system-status';
 import type { SystemHealthLevel } from '../types';
 
@@ -14,18 +15,6 @@ const LEVEL_STYLE: Record<SystemHealthLevel, string> = {
   degraded: 'bg-yellow-100 text-yellow-800',
   unhealthy: 'bg-red-100 text-red-800',
 };
-
-/**
- * El backend devuelve el uptime en milisegundos (Date.now() - startTime);
- * se convierte a segundos antes de formatear.
- */
-function formatUptime(milliseconds: number): string {
-  const seconds = Math.floor(milliseconds / 1000);
-  if (seconds < 60) return 'menos de 1 min';
-  if (seconds < 3600) return `${Math.floor(seconds / 60)} min`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)} h`;
-  return `${Math.floor(seconds / 86400)} días`;
-}
 
 /**
  * Estado del servicio: salud de la API y la caché, y alertas activas del

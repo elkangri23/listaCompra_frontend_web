@@ -1,35 +1,60 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { HealthStatusDto, PerformanceMetricsDto } from '@/types/dtos/admin';
+import { formatUptime } from '@/lib/format-uptime';
+import type { DashboardAlertsDto, HealthLevel, HealthStatusDto } from '@/types/dtos/admin';
 
 interface SystemHealthPanelProps {
   health: HealthStatusDto;
-  performance?: PerformanceMetricsDto;
+  /** Alertas de /dashboard/alerts; undefined mientras cargan. */
+  alerts?: DashboardAlertsDto;
+  alertsLoading?: boolean;
 }
 
-export function SystemHealthPanel({ health, performance }: SystemHealthPanelProps) {
-  const getStatusColor = (status: 'up' | 'down' | 'healthy' | 'degraded') => {
-    switch (status) {
-      case 'up':
-      case 'healthy':
-        return 'bg-green-500';
-      case 'degraded':
-        return 'bg-yellow-500';
-      case 'down':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
+const LEVEL_LABEL: Record<HealthLevel, string> = {
+  healthy: 'En orden',
+  degraded: 'Degradado',
+  unhealthy: 'Con problemas',
+};
 
-  const getStatusBadge = (status: 'healthy' | 'degraded' | 'down') => {
-    const variants: Record<typeof status, 'default' | 'secondary' | 'destructive'> = {
-      healthy: 'default',
-      degraded: 'secondary',
-      down: 'destructive',
-    };
-    return variants[status];
-  };
+const OVERALL_BADGE_TEXT: Record<HealthLevel, string> = {
+  healthy: '✓ Todo en orden',
+  degraded: '⚠ Degradado',
+  unhealthy: '✗ Con problemas',
+};
+
+const SEVERITY_LABEL: Record<string, string> = {
+  low: 'Baja',
+  medium: 'Media',
+  high: 'Alta',
+};
+
+function ServiceRow({ label, level }: { label: string; level: HealthLevel }) {
+  const dotColor =
+    level === 'healthy'
+      ? 'bg-green-500'
+      : level === 'degraded'
+        ? 'bg-yellow-500'
+        : 'bg-red-500';
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-sm font-medium">{label}</span>
+      <div className="flex items-center gap-2">
+        <div className={`h-2 w-2 rounded-full ${dotColor}`} />
+        <span className="text-sm text-muted-foreground">{LEVEL_LABEL[level]}</span>
+      </div>
+    </div>
+  );
+}
+
+export function SystemHealthPanel({ health, alerts, alertsLoading }: SystemHealthPanelProps) {
+  const badgeVariant =
+    health.overall === 'healthy'
+      ? 'default'
+      : health.overall === 'degraded'
+        ? 'secondary'
+        : 'destructive';
+
+  const activeAlerts = alerts?.activeAlerts ?? [];
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -37,102 +62,55 @@ export function SystemHealthPanel({ health, performance }: SystemHealthPanelProp
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             Estado del Sistema
-            <Badge variant={getStatusBadge(health.status)}>
-              {health.status === 'healthy' && '✓ Saludable'}
-              {health.status === 'degraded' && '⚠ Degradado'}
-              {health.status === 'down' && '✗ Caído'}
-            </Badge>
+            <Badge variant={badgeVariant}>{OVERALL_BADGE_TEXT[health.overall]}</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Base de Datos</span>
-            <div className="flex items-center gap-2">
-              <div className={`h-2 w-2 rounded-full ${getStatusColor(health.database)}`} />
-              <span className="text-sm text-muted-foreground">
-                {health.database === 'up' ? 'Operativa' : 'Fuera de servicio'}
-              </span>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Caché</span>
-            <div className="flex items-center gap-2">
-              <div className={`h-2 w-2 rounded-full ${getStatusColor(health.cache)}`} />
-              <span className="text-sm text-muted-foreground">
-                {health.cache === 'up' ? 'Operativa' : 'Fuera de servicio'}
-              </span>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Servicio IA</span>
-            <div className="flex items-center gap-2">
-              <div className={`h-2 w-2 rounded-full ${getStatusColor(health.aiService)}`} />
-              <span className="text-sm text-muted-foreground">
-                {health.aiService === 'up' ? 'Operativa' : 'Fuera de servicio'}
-              </span>
-            </div>
-          </div>
-          
+          <ServiceRow label="API" level={health.services.api} />
+          <ServiceRow label="Caché" level={health.services.cache} />
+          <ServiceRow label="Métricas" level={health.services.metrics} />
+
           <div className="pt-2 border-t">
-            <p className="text-xs text-muted-foreground">{health.message}</p>
+            <p className="text-sm text-muted-foreground">
+              En marcha desde hace {formatUptime(health.uptime)}
+            </p>
             <p className="text-xs text-muted-foreground mt-1">
               Última actualización: {new Date(health.timestamp).toLocaleString('es-ES')}
             </p>
           </div>
         </CardContent>
       </Card>
-      
-      {performance && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Métricas de Rendimiento</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Tiempo de respuesta API</span>
-              <span className="text-sm text-muted-foreground">{performance.apiResponseTime}ms</span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Tiempo de consulta BD</span>
-              <span className="text-sm text-muted-foreground">{performance.databaseQueryTime}ms</span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Tasa de aciertos caché</span>
-              <span className="text-sm text-muted-foreground">{performance.cacheHitRate}%</span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Tasa de errores</span>
-              <span className={`text-sm ${performance.errorRate > 5 ? 'text-red-600' : 'text-muted-foreground'}`}>
-                {performance.errorRate}%
-              </span>
-            </div>
-            
-            <div className="pt-2 border-t space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Requests/minuto</span>
-                <span className="text-xs font-medium">{performance.requestsPerMinute}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Conexiones activas</span>
-                <span className="text-xs font-medium">{performance.activeConnections}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Uso de memoria</span>
-                <span className="text-xs font-medium">{performance.memoryUsage} MB</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Uso de CPU</span>
-                <span className="text-xs font-medium">{performance.cpuUsage}%</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            Alertas activas{alerts ? ` (${alerts.alertCount})` : ''}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {alertsLoading || !alerts ? (
+            <p className="text-sm text-muted-foreground">Comprobando alertas…</p>
+          ) : activeAlerts.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Ninguna alerta activa.</p>
+          ) : (
+            <ul className="space-y-3">
+              {activeAlerts.map((alert) => (
+                <li key={alert.type} className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant={alert.severity === 'high' ? 'destructive' : 'secondary'}
+                    >
+                      {SEVERITY_LABEL[alert.severity] ?? alert.severity}
+                    </Badge>
+                    <span className="text-sm font-medium">{alert.type}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{alert.message}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

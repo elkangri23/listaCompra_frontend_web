@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import styles from './admin.module.css'
 import { SkeletonCard } from '@/components/ui/skeleton'
+import { AdminStatusSection } from '@/features/admin/components/admin-status-section'
+import { AdminUsersSection } from '@/features/admin/components/admin-users-section'
 
 type AdminTab =
   | 'estado'
@@ -42,26 +43,6 @@ function ComingSoon({ section }: { section: string }) {
   )
 }
 
-/**
- * La gestión de usuarios ya existe en su propia pantalla (/admin/users).
- * En esta fase el shell solo la enlaza; la integración completa en la
- * pestaña llega en la fase 2.
- */
-function UsersTabContent() {
-  return (
-    <div className={styles.comingSoon}>
-      <h2 className={styles.sectionTitle}>Usuarios</h2>
-      <p>
-        La gestión de usuarios ya existe en su propia pantalla. La integración
-        completa dentro de esta pestaña llega en la fase 2.
-      </p>
-      <Link href="/admin/users" className={styles.linkButton}>
-        Abrir la gestión de usuarios
-      </Link>
-    </div>
-  )
-}
-
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>('estado')
   const activeLabel =
@@ -95,8 +76,10 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {activeTab === 'usuarios' ? (
-        <UsersTabContent />
+      {activeTab === 'estado' ? (
+        <AdminStatusSection />
+      ) : activeTab === 'usuarios' ? (
+        <AdminUsersSection />
       ) : (
         <ComingSoon section={activeLabel} />
       )}

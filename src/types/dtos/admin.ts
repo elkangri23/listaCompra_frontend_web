@@ -1,41 +1,128 @@
 /**
  * DTOs para Administración
  * Tipos relacionados con funcionalidades de administración del sistema
+ *
+ * Los DTOs de dashboard siguen EXACTAMENTE las respuestas reales del
+ * backend (GET /dashboard/*): sobre `{status: 'success', data, timestamp}`
+ * y payload en `data`. Si un dato no existe o es null, la UI muestra
+ * "sin datos aún": nunca se inventa un valor.
  */
 
 // ============================================================================
-// Dashboard Metrics
+// Dashboard — Salud, métricas y rendimiento (GET /dashboard/*)
 // ============================================================================
 
+export type HealthLevel = 'healthy' | 'degraded' | 'unhealthy';
+
+/**
+ * GET /dashboard/health → data
+ * uptime en milisegundos (Date.now() - startTime del backend).
+ */
+export interface HealthStatusDto {
+  overall: HealthLevel;
+  services: {
+    api: HealthLevel;
+    cache: HealthLevel;
+    metrics: HealthLevel;
+  };
+  uptime: number;
+  timestamp: string;
+}
+
+export interface EndpointMetricsDto {
+  path: string;
+  method: string;
+  totalRequests: number;
+  successRequests: number;
+  errorRequests: number;
+  totalResponseTime: number;
+  minResponseTime: number;
+  maxResponseTime: number;
+  avgResponseTime: number;
+  /** El backend serializa el Date como ISO string. */
+  lastUpdated: string;
+}
+
+/**
+ * Forma real de CacheAnalytics (RedisCacheAnalytics.getRealTimeMetrics):
+ * hitRatio es tanto por uno (0-1). La caché puede no estar disponible:
+ * entonces cacheMetrics es null o `{error: string}`.
+ */
+export interface CacheCategoryStatsDto {
+  hits: number;
+  misses: number;
+  hitRatio: number;
+  avgTTL: number;
+}
+
+export interface CacheAnalyticsDto {
+  hits: number;
+  misses: number;
+  hitRatio: number;
+  averageResponseTime: number;
+  cacheResponseTime: number;
+  apiResponseTime: number;
+  totalOperations: number;
+  readsPerMinute: number;
+  writesPerMinute: number;
+  /** Requests API evitadas por los hits. */
+  costSavings: number;
+  /** MB utilizados (aprox.). */
+  spaceSavings: number;
+  categoryStats: Record<string, CacheCategoryStatsDto>;
+}
+
+export type CacheMetricsDto = CacheAnalyticsDto | { error: string } | null;
+
+export interface DashboardSystemMetricsDto {
+  totalEndpoints: number;
+  globalRequestCount: number;
+  /** Porcentaje 0-100. */
+  globalSuccessRate: number;
+  globalAvgResponseTime: number;
+  /** Milisegundos desde que arrancó la API. */
+  uptime: number;
+  /** El backend serializa el Date como ISO string. */
+  startTime: string;
+}
+
+/** GET /dashboard/metrics → data */
 export interface SystemMetricsDto {
-  totalUsers: number;
-  activeUsers: number;
-  totalLists: number;
-  activeLists: number;
-  totalProducts: number;
-  categorizedProducts: number;
-  totalInvitations: number;
-  pendingInvitations: number;
-  totalBlueprints: number;
-  publicBlueprints: number;
+  systemMetrics: DashboardSystemMetricsDto;
+  endpointMetrics: EndpointMetricsDto[];
+  cacheMetrics: CacheMetricsDto;
 }
 
-export interface UserActivityDto {
-  userId: string;
-  userName: string;
-  userEmail: string;
-  listsCount: number;
-  productsCount: number;
-  lastActivity: string;
+/** GET /dashboard/alerts → data */
+export interface DashboardAlertDto {
+  type: string;
+  severity: 'low' | 'medium' | 'high';
+  message: string;
+  value?: number;
+  threshold?: number;
+  timestamp: string;
 }
 
-export interface ListStatDto {
-  listId: string;
-  listName: string;
-  owner: string;
-  productsCount: number;
-  collaboratorsCount: number;
-  lastUpdate: string;
+export interface DashboardAlertsDto {
+  activeAlerts: DashboardAlertDto[];
+  alertCount: number;
+  timestamp: string;
+}
+
+export interface ErrorRateStatDto {
+  path: string;
+  method: string;
+  /** Porcentaje 0-100. */
+  errorRate: number;
+  totalErrors: number;
+}
+
+/** GET /dashboard/performance → data */
+export interface PerformanceMetricsDto {
+  slowestEndpoints: EndpointMetricsDto[];
+  errorProneEndpoints: EndpointMetricsDto[];
+  errorRateStats: ErrorRateStatDto[];
+  timestamp: string;
 }
 
 // ============================================================================
@@ -54,6 +141,8 @@ export interface AdminUserDto {
   // Estadísticas adicionales
   listasCreadas?: number;
   productosAgregados?: number;
+  // El backend NO devuelve ultimaConexion hoy; si algún día la envía,
+  // la tabla la muestra, y si no, la columna no aparece.
   ultimaConexion?: string;
 }
 
@@ -69,26 +158,55 @@ export interface UpdateUserStatusDto {
   activo: boolean;
 }
 
+/**
+ * POST /admin/impersonate — al menos uno de targetUserId / targetUserEmail.
+ */
 export interface ImpersonateUserDto {
-  userId: string;
+  targetUserId?: string;
+  targetUserEmail?: string;
+  reason?: string;
+  durationMinutes?: number;
 }
 
+/** POST /admin/impersonate → data */
 export interface ImpersonateResponseDto {
-  token: string;
-  originalUserId: string;
-  impersonatedUserId: string;
-  impersonatedUserName: string;
+  impersonationToken: string;
+  impersonatedUser: {
+    id: string;
+    email: string;
+    nombre: string;
+    apellidos?: string;
+  };
+  adminUser: {
+    id: string;
+    email: string;
+    nombre: string;
+  };
   expiresAt: string;
+  startedAt: string;
 }
 
+/** DELETE /admin/impersonate — cuerpo opcional. */
 export interface EndImpersonationDto {
-  // Puede estar vacío o requerir confirmación
+  sessionId?: string;
+  reason?: string;
 }
 
+/** DELETE /admin/impersonate → data */
 export interface EndImpersonationResponseDto {
-  token: string;
-  userId: string;
+  success: boolean;
   message: string;
+  terminatedSession: {
+    sessionId: string;
+    adminId: string;
+    targetUserId: string;
+    startedAt: string;
+    endedAt: string;
+    /** Duración en formato legible, p. ej. "2h 15m". */
+    duration: string;
+  };
+  /** Token original del administrador, restaurado. */
+  adminToken: string;
 }
 
 // ============================================================================
@@ -145,32 +263,4 @@ export interface PaginatedSecurityAlertsDto {
   page: number;
   limit: number;
   totalPages: number;
-}
-
-// ============================================================================
-// Performance Metrics
-// ============================================================================
-
-export interface PerformanceMetricsDto {
-  apiResponseTime: number; // ms
-  databaseQueryTime: number; // ms
-  cacheHitRate: number; // percentage
-  errorRate: number; // percentage
-  requestsPerMinute: number;
-  activeConnections: number;
-  memoryUsage: number; // MB
-  cpuUsage: number; // percentage
-}
-
-// ============================================================================
-// Health Status
-// ============================================================================
-
-export interface HealthStatusDto {
-  status: 'healthy' | 'degraded' | 'down';
-  database: 'up' | 'down';
-  cache: 'up' | 'down';
-  aiService: 'up' | 'down';
-  message: string;
-  timestamp: string;
 }

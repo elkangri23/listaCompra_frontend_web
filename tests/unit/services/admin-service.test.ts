@@ -1,16 +1,20 @@
 /**
  * Tests CRÍTICOS (100% coverage) - admin-service.ts
  * Servicios de administración del sistema
- * 
+ *
  * Patrón: Arrange-Act-Assert
  * Mock: axios-instance
  * Funciones: Métricas, gestión de usuarios, auditoría, impersonación
+ *
+ * Los endpoints de dashboard responden `{status: 'success', data}` y los
+ * de /admin/* `{success, data}`: el servicio desempaqueta el payload.
  */
 
 import {
   getSystemMetrics,
   getHealthStatus,
   getPerformanceMetrics,
+  getAlerts,
   getAdminUsers,
   updateUserStatus,
   impersonateUser,
@@ -26,8 +30,92 @@ jest.mock('@/lib/api/axios-instance', () => ({
     get: jest.fn(),
     post: jest.fn(),
     patch: jest.fn(),
+    delete: jest.fn(),
   },
 }));
+
+const mockHealthData = {
+  overall: 'healthy',
+  services: { api: 'healthy', cache: 'healthy', metrics: 'healthy' },
+  uptime: 3600000,
+  timestamp: '2025-11-28T10:00:00.000Z',
+};
+
+const mockMetricsData = {
+  systemMetrics: {
+    totalEndpoints: 12,
+    globalRequestCount: 1250,
+    globalSuccessRate: 98.4,
+    globalAvgResponseTime: 125.5,
+    uptime: 3600000,
+    startTime: '2025-11-28T09:00:00.000Z',
+  },
+  endpointMetrics: [
+    {
+      path: '/api/v1/lists',
+      method: 'GET',
+      totalRequests: 500,
+      successRequests: 490,
+      errorRequests: 10,
+      totalResponseTime: 50000,
+      minResponseTime: 20,
+      maxResponseTime: 800,
+      avgResponseTime: 100,
+      lastUpdated: '2025-11-28T10:00:00.000Z',
+    },
+  ],
+  cacheMetrics: {
+    hits: 800,
+    misses: 200,
+    hitRatio: 0.8,
+    averageResponseTime: 45,
+    cacheResponseTime: 12,
+    apiResponseTime: 180,
+    totalOperations: 1000,
+    readsPerMinute: 50,
+    writesPerMinute: 10,
+    costSavings: 800,
+    spaceSavings: 12.5,
+    categoryStats: {},
+  },
+};
+
+const mockPerformanceData = {
+  slowestEndpoints: [
+    {
+      path: '/api/v1/ai/analyze',
+      method: 'POST',
+      totalRequests: 40,
+      successRequests: 38,
+      errorRequests: 2,
+      totalResponseTime: 40000,
+      minResponseTime: 500,
+      maxResponseTime: 2500,
+      avgResponseTime: 1000,
+      lastUpdated: '2025-11-28T10:00:00.000Z',
+    },
+  ],
+  errorProneEndpoints: [],
+  errorRateStats: [
+    { path: '/api/v1/lists', method: 'GET', errorRate: 2, totalErrors: 10 },
+  ],
+  timestamp: '2025-11-28T10:00:00.000Z',
+};
+
+const mockAlertsData = {
+  activeAlerts: [
+    {
+      type: 'error_rate',
+      severity: 'medium',
+      message: 'Error rate is high: 12.0%',
+      value: 0.12,
+      threshold: 0.1,
+      timestamp: '2025-11-28T10:00:00.000Z',
+    },
+  ],
+  alertCount: 1,
+  timestamp: '2025-11-28T10:00:00.000Z',
+};
 
 describe('adminService (CRÍTICO - 100% coverage)', () => {
   beforeEach(() => {
@@ -35,24 +123,18 @@ describe('adminService (CRÍTICO - 100% coverage)', () => {
   });
 
   describe('getSystemMetrics', () => {
-    it('debe obtener métricas del sistema', async () => {
-      const mockMetrics = {
-        totalUsers: 1250,
-        activeUsers: 890,
-        totalLists: 4500,
-        totalProducts: 18750,
-        storageUsedMB: 342.5,
-      };
-
+    it('debe obtener métricas del sistema desempaquetando {status, data}', async () => {
       (axiosInstance.get as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockMetrics)
+        createMockAxiosResponse({ status: 'success', data: mockMetricsData })
       );
 
       const result = await getSystemMetrics();
 
       expect(axiosInstance.get).toHaveBeenCalledWith('/dashboard/metrics');
-      expect(result.totalUsers).toBe(1250);
-      expect(result.activeUsers).toBe(890);
+      expect(result.systemMetrics.globalRequestCount).toBe(1250);
+      expect(result.systemMetrics.globalSuccessRate).toBe(98.4);
+      expect(result.endpointMetrics).toHaveLength(1);
+      expect(result.cacheMetrics).toMatchObject({ hitRatio: 0.8 });
     });
 
     it('debe manejar error al obtener métricas', async () => {
@@ -67,102 +149,113 @@ describe('adminService (CRÍTICO - 100% coverage)', () => {
   });
 
   describe('getHealthStatus', () => {
-    it('debe obtener estado de salud del sistema', async () => {
-      const mockHealth = {
-        status: 'healthy',
-        database: 'connected',
-        redis: 'connected',
-        apiResponse: 45,
-      };
-
+    it('debe obtener estado de salud del sistema desempaquetando {status, data}', async () => {
       (axiosInstance.get as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockHealth)
+        createMockAxiosResponse({ status: 'success', data: mockHealthData })
       );
 
       const result = await getHealthStatus();
 
       expect(axiosInstance.get).toHaveBeenCalledWith('/dashboard/health');
-      expect(result.status).toBe('healthy');
-      expect(result.database).toBe('connected');
+      expect(result.overall).toBe('healthy');
+      expect(result.services.api).toBe('healthy');
+      expect(result.uptime).toBe(3600000);
     });
 
-    it('debe detectar sistema no saludable', async () => {
-      const mockHealth = {
-        status: 'unhealthy',
-        database: 'connected',
-        redis: 'disconnected',
-        apiResponse: 2500,
+    it('debe detectar sistema degradado', async () => {
+      const degraded = {
+        ...mockHealthData,
+        overall: 'degraded',
+        services: { api: 'healthy', cache: 'degraded', metrics: 'healthy' },
       };
 
       (axiosInstance.get as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockHealth)
+        createMockAxiosResponse({ status: 'success', data: degraded })
       );
 
       const result = await getHealthStatus();
 
-      expect(result.status).toBe('unhealthy');
-      expect(result.redis).toBe('disconnected');
+      expect(result.overall).toBe('degraded');
+      expect(result.services.cache).toBe('degraded');
     });
   });
 
   describe('getPerformanceMetrics', () => {
-    it('debe obtener métricas de rendimiento', async () => {
-      const mockPerformance = {
-        avgResponseTime: 125,
-        requestsPerMinute: 450,
-        errorRate: 0.5,
-        cpuUsage: 45.2,
-        memoryUsage: 67.8,
-      };
-
+    it('debe obtener métricas de rendimiento desempaquetando {status, data}', async () => {
       (axiosInstance.get as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockPerformance)
+        createMockAxiosResponse({ status: 'success', data: mockPerformanceData })
       );
 
       const result = await getPerformanceMetrics();
 
       expect(axiosInstance.get).toHaveBeenCalledWith('/dashboard/performance');
-      expect(result.avgResponseTime).toBe(125);
-      expect(result.errorRate).toBe(0.5);
+      expect(result.slowestEndpoints).toHaveLength(1);
+      expect(result.slowestEndpoints[0].avgResponseTime).toBe(1000);
+      expect(result.errorRateStats[0].errorRate).toBe(2);
     });
 
-    it('debe manejar alto uso de recursos', async () => {
-      const mockPerformance = {
-        avgResponseTime: 850,
-        requestsPerMinute: 1200,
-        errorRate: 5.2,
-        cpuUsage: 92.5,
-        memoryUsage: 88.3,
-      };
-
-      (axiosInstance.get as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockPerformance)
+    it('debe manejar error al obtener rendimiento', async () => {
+      (axiosInstance.get as jest.Mock).mockRejectedValue(
+        createMockAxiosError('Error del servidor', 500)
       );
 
-      const result = await getPerformanceMetrics();
+      await expect(getPerformanceMetrics()).rejects.toMatchObject({
+        message: 'Error del servidor',
+      });
+    });
+  });
 
-      expect(result.cpuUsage).toBeGreaterThan(90);
-      expect(result.errorRate).toBeGreaterThan(5);
+  describe('getAlerts', () => {
+    it('debe obtener alertas activas desempaquetando {status, data}', async () => {
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ status: 'success', data: mockAlertsData })
+      );
+
+      const result = await getAlerts();
+
+      expect(axiosInstance.get).toHaveBeenCalledWith('/dashboard/alerts');
+      expect(result.alertCount).toBe(1);
+      expect(result.activeAlerts[0].type).toBe('error_rate');
+    });
+
+    it('debe manejar error al obtener alertas', async () => {
+      (axiosInstance.get as jest.Mock).mockRejectedValue(
+        createMockAxiosError('Error del servidor', 500)
+      );
+
+      await expect(getAlerts()).rejects.toMatchObject({
+        message: 'Error del servidor',
+      });
     });
   });
 
   describe('getAdminUsers', () => {
-    it('debe obtener lista de usuarios con paginación', async () => {
+    it('debe obtener lista de usuarios con paginación desempaquetando {success, data}', async () => {
       const mockUsers = {
-        items: [
+        usuarios: [
           {
             id: 'user-1',
             nombre: 'Juan Pérez',
             email: 'juan@example.com',
-            rol: 'Usuario',
+            rol: 'USUARIO',
             activo: true,
+            emailVerificado: true,
+            fechaCreacion: '2025-11-01T10:00:00.000Z',
+            fechaActualizacion: '2025-11-20T10:00:00.000Z',
+            listasCreadas: 3,
+            productosAgregados: 12,
           },
           {
             id: 'user-2',
             nombre: 'María García',
             email: 'maria@example.com',
-            rol: 'Administrador',
+            rol: 'ADMIN',
             activo: true,
+            emailVerificado: true,
+            fechaCreacion: '2025-11-01T10:00:00.000Z',
+            fechaActualizacion: '2025-11-20T10:00:00.000Z',
+            listasCreadas: 1,
+            productosAgregados: 4,
           },
         ],
         total: 2,
@@ -172,7 +265,7 @@ describe('adminService (CRÍTICO - 100% coverage)', () => {
       };
 
       (axiosInstance.get as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockUsers)
+        createMockAxiosResponse({ success: true, data: mockUsers })
       );
 
       const result = await getAdminUsers();
@@ -180,18 +273,22 @@ describe('adminService (CRÍTICO - 100% coverage)', () => {
       expect(axiosInstance.get).toHaveBeenCalledWith('/admin/users', {
         params: { q: undefined, page: 1, limit: 20 },
       });
-      expect(result.items).toHaveLength(2);
+      expect(result.usuarios).toHaveLength(2);
+      expect(result.usuarios[0].nombre).toBe('Juan Pérez');
     });
 
     it('debe buscar usuarios por query', async () => {
       const mockUsers = {
-        items: [
+        usuarios: [
           {
             id: 'user-1',
             nombre: 'Juan Pérez',
             email: 'juan@example.com',
-            rol: 'Usuario',
+            rol: 'USUARIO',
             activo: true,
+            emailVerificado: true,
+            fechaCreacion: '2025-11-01T10:00:00.000Z',
+            fechaActualizacion: '2025-11-20T10:00:00.000Z',
           },
         ],
         total: 1,
@@ -201,7 +298,7 @@ describe('adminService (CRÍTICO - 100% coverage)', () => {
       };
 
       (axiosInstance.get as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockUsers)
+        createMockAxiosResponse({ success: true, data: mockUsers })
       );
 
       const result = await getAdminUsers('juan', 1, 20);
@@ -209,7 +306,7 @@ describe('adminService (CRÍTICO - 100% coverage)', () => {
       expect(axiosInstance.get).toHaveBeenCalledWith('/admin/users', {
         params: { q: 'juan', page: 1, limit: 20 },
       });
-      expect(result.items[0].nombre).toBe('Juan Pérez');
+      expect(result.usuarios[0].nombre).toBe('Juan Pérez');
     });
 
     it('debe manejar permisos insuficientes', async () => {
@@ -272,29 +369,35 @@ describe('adminService (CRÍTICO - 100% coverage)', () => {
   });
 
   describe('impersonateUser', () => {
-    it('debe impersonar a un usuario', async () => {
-      const mockResponse = {
-        success: true,
-        token: 'impersonation-token',
-        user: {
+    it('debe impersonar a un usuario con POST /admin/impersonate {targetUserId}', async () => {
+      const mockData = {
+        impersonationToken: 'impersonation-token',
+        impersonatedUser: {
           id: 'user-1',
-          nombre: 'Juan Pérez',
           email: 'juan@example.com',
+          nombre: 'Juan Pérez',
         },
+        adminUser: { id: 'admin-1', email: 'admin@example.com', nombre: 'Admin' },
+        expiresAt: '2025-11-28T11:00:00.000Z',
+        startedAt: '2025-11-28T10:00:00.000Z',
       };
 
       (axiosInstance.post as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockResponse)
+        createMockAxiosResponse({
+          success: true,
+          message: 'Impersonación iniciada exitosamente',
+          data: mockData,
+        })
       );
 
       const result = await impersonateUser('user-1');
 
-      expect(axiosInstance.post).toHaveBeenCalledWith(
-        '/admin/impersonate/user-1',
-        {}
-      );
-      expect(result.token).toBe('impersonation-token');
-      expect(result.user.id).toBe('user-1');
+      expect(axiosInstance.post).toHaveBeenCalledWith('/admin/impersonate', {
+        targetUserId: 'user-1',
+      });
+      expect(result.impersonationToken).toBe('impersonation-token');
+      expect(result.impersonatedUser.nombre).toBe('Juan Pérez');
+      expect(result.adminUser.id).toBe('admin-1');
     });
 
     it('debe rechazar impersonación de admin', async () => {
@@ -329,29 +432,68 @@ describe('adminService (CRÍTICO - 100% coverage)', () => {
   });
 
   describe('endImpersonation', () => {
-    it('debe finalizar impersonación correctamente', async () => {
-      const mockResponse = {
+    it('debe finalizar impersonación correctamente con DELETE /admin/impersonate', async () => {
+      const mockData = {
         success: true,
         message: 'Impersonación finalizada',
-        token: 'original-admin-token',
+        terminatedSession: {
+          sessionId: 'session-1',
+          adminId: 'admin-1',
+          targetUserId: 'user-1',
+          startedAt: '2025-11-28T10:00:00.000Z',
+          endedAt: '2025-11-28T10:15:00.000Z',
+          duration: '15m',
+        },
+        adminToken: 'original-admin-token',
       };
 
-      (axiosInstance.post as jest.Mock).mockResolvedValue(
-        createMockAxiosResponse(mockResponse)
+      (axiosInstance.delete as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({
+          success: true,
+          message: 'Impersonación finalizada',
+          data: mockData,
+        })
       );
 
       const result = await endImpersonation();
 
-      expect(axiosInstance.post).toHaveBeenCalledWith(
-        '/admin/end-impersonation',
-        {}
-      );
+      expect(axiosInstance.delete).toHaveBeenCalledWith('/admin/impersonate', {
+        data: {},
+      });
       expect(result.success).toBe(true);
-      expect(result.token).toBe('original-admin-token');
+      expect(result.message).toBe('Impersonación finalizada');
+      expect(result.adminToken).toBe('original-admin-token');
+      expect(result.terminatedSession.sessionId).toBe('session-1');
+    });
+
+    it('debe aceptar sessionId y reason opcionales', async () => {
+      const mockData = {
+        success: true,
+        message: 'Impersonación finalizada',
+        terminatedSession: {
+          sessionId: 'session-1',
+          adminId: 'admin-1',
+          targetUserId: 'user-1',
+          startedAt: '2025-11-28T10:00:00.000Z',
+          endedAt: '2025-11-28T10:15:00.000Z',
+          duration: '15m',
+        },
+        adminToken: 'original-admin-token',
+      };
+
+      (axiosInstance.delete as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ success: true, data: mockData })
+      );
+
+      await endImpersonation({ sessionId: 'session-1', reason: 'Revisión terminada' });
+
+      expect(axiosInstance.delete).toHaveBeenCalledWith('/admin/impersonate', {
+        data: { sessionId: 'session-1', reason: 'Revisión terminada' },
+      });
     });
 
     it('debe manejar finalización sin impersonación activa', async () => {
-      (axiosInstance.post as jest.Mock).mockRejectedValue(
+      (axiosInstance.delete as jest.Mock).mockRejectedValue(
         createMockAxiosError('No hay impersonación activa', 400)
       );
 

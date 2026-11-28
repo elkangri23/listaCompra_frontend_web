@@ -5,17 +5,23 @@ import type {
   UpdateUserStatusDto,
   ImpersonateUserDto,
   ImpersonateResponseDto,
+  EndImpersonationDto,
   EndImpersonationResponseDto,
   PaginatedAuditLogsDto,
   AuditLogFiltersDto,
   PaginatedSecurityAlertsDto,
   PerformanceMetricsDto,
   HealthStatusDto,
+  DashboardAlertsDto,
 } from '@/types/dtos/admin';
 
 /**
  * Servicio de administración del sistema
  * Funcionalidades para admins: métricas, usuarios, auditoría, impersonación
+ *
+ * Los endpoints de dashboard responden `{status: 'success', data, timestamp}`
+ * (sobre distinta a `{success, data}` del resto de la API): el payload está
+ * en `response.data.data`. Los de /admin/* responden `{success, data}`.
  */
 
 // ============================================================================
@@ -26,24 +32,40 @@ import type {
  * Obtener métricas generales del sistema
  */
 export const getSystemMetrics = async (): Promise<SystemMetricsDto> => {
-  const response = await axiosInstance.get<SystemMetricsDto>('/dashboard/metrics');
-  return response.data;
+  const response = await axiosInstance.get<{ status: string; data: SystemMetricsDto }>(
+    '/dashboard/metrics'
+  );
+  return response.data.data;
 };
 
 /**
  * Obtener estado de salud del sistema
  */
 export const getHealthStatus = async (): Promise<HealthStatusDto> => {
-  const response = await axiosInstance.get<HealthStatusDto>('/dashboard/health');
-  return response.data;
+  const response = await axiosInstance.get<{ status: string; data: HealthStatusDto }>(
+    '/dashboard/health'
+  );
+  return response.data.data;
 };
 
 /**
  * Obtener métricas de rendimiento
  */
 export const getPerformanceMetrics = async (): Promise<PerformanceMetricsDto> => {
-  const response = await axiosInstance.get<PerformanceMetricsDto>('/dashboard/performance');
-  return response.data;
+  const response = await axiosInstance.get<{ status: string; data: PerformanceMetricsDto }>(
+    '/dashboard/performance'
+  );
+  return response.data.data;
+};
+
+/**
+ * Obtener alertas activas del sistema
+ */
+export const getAlerts = async (): Promise<DashboardAlertsDto> => {
+  const response = await axiosInstance.get<{ status: string; data: DashboardAlertsDto }>(
+    '/dashboard/alerts'
+  );
+  return response.data.data;
 };
 
 // ============================================================================
@@ -58,10 +80,13 @@ export const getAdminUsers = async (
   page = 1,
   limit = 20
 ): Promise<PaginatedAdminUsersDto> => {
-  const response = await axiosInstance.get<PaginatedAdminUsersDto>('/admin/users', {
-    params: { q: query, page, limit },
-  });
-  return response.data;
+  const response = await axiosInstance.get<{ success: boolean; data: PaginatedAdminUsersDto }>(
+    '/admin/users',
+    {
+      params: { q: query, page, limit },
+    }
+  );
+  return response.data.data;
 };
 
 /**
@@ -75,25 +100,30 @@ export const updateUserStatus = async (
 };
 
 /**
- * Impersonar usuario (admin actúa como otro usuario)
+ * Impersonar usuario (admin actúa como otro usuario).
+ * POST /admin/impersonate con {targetUserId} en el cuerpo.
  */
 export const impersonateUser = async (userId: string): Promise<ImpersonateResponseDto> => {
-  const response = await axiosInstance.post<ImpersonateResponseDto>(
-    '/admin/impersonate/:userId'.replace(':userId', userId),
-    {} as ImpersonateUserDto
+  const response = await axiosInstance.post<{ success: boolean; data: ImpersonateResponseDto }>(
+    '/admin/impersonate',
+    { targetUserId: userId } as ImpersonateUserDto
   );
-  return response.data;
+  return response.data.data;
 };
 
 /**
- * Finalizar impersonación
+ * Finalizar impersonación.
+ * DELETE /admin/impersonate; devuelve el token original del admin en
+ * data.adminToken. El cuerpo es opcional (sessionId / reason).
  */
-export const endImpersonation = async (): Promise<EndImpersonationResponseDto> => {
-  const response = await axiosInstance.post<EndImpersonationResponseDto>(
-    '/admin/end-impersonation',
-    {}
-  );
-  return response.data;
+export const endImpersonation = async (
+  body?: EndImpersonationDto
+): Promise<EndImpersonationResponseDto> => {
+  const response = await axiosInstance.delete<{
+    success: boolean;
+    data: EndImpersonationResponseDto;
+  }>('/admin/impersonate', { data: body ?? {} });
+  return response.data.data;
 };
 
 // ============================================================================
@@ -132,6 +162,7 @@ export const adminService = {
   getSystemMetrics,
   getHealthStatus,
   getPerformanceMetrics,
+  getAlerts,
   // Users
   getAdminUsers,
   updateUserStatus,
