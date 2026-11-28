@@ -221,3 +221,94 @@ export const useLoginAttempts = (
     staleTime: 1000 * 60, // 1 minuto
   });
 };
+
+// ============================================================================
+// Copias de seguridad Hooks (fase 6)
+// ============================================================================
+
+/**
+ * Hay trabajo en curso (una copia creándose o restaurándose) mientras
+ * alguna copia esté PENDING o RESTORING: solo entonces se revalida la
+ * lista, nunca con un polling permanente.
+ */
+export const backupsHaveActiveWork = (backups: { status: string }[]): boolean =>
+  backups.some((b) => b.status === 'PENDING' || b.status === 'RESTORING');
+
+/** Mensaje del backend cuando lo trae (p. ej. el 409 de «ya hay una copia en curso»). */
+function errorMessage(error: unknown): string {
+  const axiosError = error as {
+    response?: { data?: { message?: string } };
+    message?: string;
+  };
+  return axiosError.response?.data?.message ?? axiosError.message ?? 'Error desconocido';
+}
+
+/**
+ * Hook para obtener el historial de copias (fase 6), con paginación.
+ * Mientras haya una copia PENDING o RESTORING, revalida cada 15 s para
+ * ver cómo avanza; en cuanto termina, el refresco automático se detiene.
+ */
+export const useBackups = (page = 1, limit = 20) => {
+  return useQuery({
+    queryKey: ['admin', 'backups', page, limit],
+    queryFn: () => adminService.getBackups(page, limit),
+    staleTime: 1000 * 30, // 30 segundos
+    refetchInterval: (query) =>
+      backupsHaveActiveWork(query.state.data?.backups ?? []) ? 1000 * 15 : false,
+  });
+};
+
+/**
+ * Hook para solicitar una copia manual. Al crearla se refresca la lista
+ * para mostrar la PENDING; el 409 («ya hay una copia en curso») muestra
+ * el mensaje del backend.
+ */
+export const useCreateBackup = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => adminService.createBackup(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'backups'] });
+      toast.success('Copia solicitada: se está creando, actualiza en unos minutos');
+    },
+    onError: (error: Error) => {
+      toast.error(`Error al crear la copia: ${errorMessage(error)}`);
+    },
+  });
+};
+
+/**
+ * Hook para descargar el .sql.gz de una copia. El servicio devuelve el
+ * Blob (con el token de sesión); el enlace de descarga lo dispara el
+ * componente que llama a este hook.
+ */
+export const useDownloadBackup = () => {
+  return useMutation({
+    mutationFn: ({ id }: { id: string; filename: string }) =>
+      adminService.downloadBackup(id),
+    onError: (error: Error) => {
+      toast.error(`Error al descargar la copia: ${errorMessage(error)}`);
+    },
+  });
+};
+
+/**
+ * Hook para restaurar una copia. Al aceptarla se refresca la lista para
+ * mostrar la copia en RESTORING.
+ */
+export const useRestoreBackup = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, motivo }: { id: string; motivo: string }) =>
+      adminService.restoreBackup(id, { confirmacion: 'RESTAURAR', motivo }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'backups'] });
+      toast.success('Restauración iniciada: la copia se está restaurando');
+    },
+    onError: (error: Error) => {
+      toast.error(`Error al restaurar la copia: ${errorMessage(error)}`);
+    },
+  });
+};

@@ -354,3 +354,57 @@ export interface PaginatedSecurityAlertsDto {
   pageSize: number;
   totalPages: number;
 }
+
+// ============================================================================
+// Copias de seguridad (fase 6)
+// ============================================================================
+// Formas REALES del backend (GET /api/v1/admin/backups, POST
+// /api/v1/admin/backups, POST /api/v1/admin/backups/:id/restore): la lista
+// viene ordenada por createdAt desc bajo el sobre {success, data}. No hay
+// DTO de plantilla de copias: una copia PENDING aún no tiene tamaño ni
+// archivo descargable, y restoreReason/restoredAt solo existen tras una
+// restauración.
+
+export type BackupStatus =
+  | 'PENDING'
+  | 'CREATED'
+  | 'FAILED'
+  | 'RESTORING'
+  | 'RESTORED'
+  | 'RESTORE_FAILED';
+
+export type BackupSource = 'SCHEDULED' | 'MANUAL';
+
+export interface BackupDto {
+  id: string;
+  filename: string;
+  /** Bytes del .sql.gz; null mientras la copia aún se está creando. */
+  sizeBytes: number | null;
+  status: BackupStatus;
+  source: BackupSource;
+  createdAt: string;
+  createdByUserId: string | null;
+  /** Motivo que dio el admin al restaurar; null si nunca se restauró. */
+  restoreReason: string | null;
+  /** Cuándo se restauró; null si nunca se restauró. */
+  restoredAt: string | null;
+}
+
+export interface PaginatedBackupsDto {
+  backups: BackupDto[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+/** POST /admin/backups y POST /admin/backups/:id/restore → data */
+export interface BackupResponseDto {
+  backup: BackupDto;
+}
+
+/** POST /admin/backups/:id/restore — la confirmación es literal. */
+export interface RestoreBackupDto {
+  confirmacion: 'RESTAURAR';
+  motivo: string;
+}

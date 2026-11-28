@@ -8,6 +8,7 @@ import { AdminUsersSection } from '@/features/admin/components/admin-users-secti
 import { AdminAISection } from '@/features/admin/components/admin-ai-section'
 import { AdminAuditSection } from '@/features/admin/components/admin-audit-section'
 import { AdminSecuritySection } from '@/features/admin/components/admin-security-section'
+import { AdminBackupsSection } from '@/features/admin/components/admin-backups-section'
 
 type AdminTab =
   | 'estado'
@@ -89,6 +90,8 @@ export default function AdminPage() {
         <AdminAuditSection />
       ) : activeTab === 'seguridad' ? (
         <AdminSecuritySection />
+      ) : activeTab === 'copias' ? (
+        <AdminBackupsSection />
       ) : (
         <ComingSoon section={activeLabel} />
       )}

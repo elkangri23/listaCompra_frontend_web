@@ -17,6 +17,9 @@ import type {
   DashboardAlertsDto,
   AIUsageDto,
   AIHealthDto,
+  PaginatedBackupsDto,
+  BackupResponseDto,
+  RestoreBackupDto,
 } from '@/types/dtos/admin';
 
 /** Filtros de la vista global de auditoría (fase 4). */
@@ -237,6 +240,71 @@ export const getSecurityAlerts = async (
   return response.data.data;
 };
 
+// ============================================================================
+// Copias de seguridad (fase 6)
+// ============================================================================
+
+/**
+ * Historial de copias de seguridad (fase 6), ordenado por createdAt desc.
+ * GET /admin/backups → {success, data: {backups, total, page, pageSize,
+ * totalPages}}.
+ */
+export const getBackups = async (
+  page = 1,
+  limit = 20
+): Promise<PaginatedBackupsDto> => {
+  const response = await axiosInstance.get<{
+    success: boolean;
+    data: PaginatedBackupsDto;
+  }>('/admin/backups', {
+    params: { page, pageSize: limit },
+  });
+  return response.data.data;
+};
+
+/**
+ * Solicitar una copia manual (fase 6).
+ * POST /admin/backups → 201 {success, data: {backup}} con status PENDING
+ * y source MANUAL. 409 si ya hay una PENDING en curso.
+ */
+export const createBackup = async (): Promise<BackupResponseDto> => {
+  const response = await axiosInstance.post<{ success: boolean; data: BackupResponseDto }>(
+    '/admin/backups'
+  );
+  return response.data.data;
+};
+
+/**
+ * Descargar el .sql.gz de una copia (fase 6). La descarga va con el token
+ * de sesión: se pide con responseType 'blob' a través del cliente axios
+ * del proyecto (mismo patrón que la exportación GDPR), nunca con un
+ * <a href> pelado, que iría sin token.
+ * GET /admin/backups/:id/download → 200 binario .sql.gz.
+ */
+export const downloadBackup = async (id: string): Promise<Blob> => {
+  const response = await axiosInstance.get(`/admin/backups/${id}/download`, {
+    responseType: 'blob',
+  });
+  return response.data as Blob;
+};
+
+/**
+ * Restaurar una copia (fase 6).
+ * POST /admin/backups/:id/restore {confirmacion: 'RESTAURAR', motivo} →
+ * 202 {success, data: {backup}} con status RESTORING. 400 si la
+ * confirmación no es exactamente RESTAURAR o el motivo está vacío.
+ */
+export const restoreBackup = async (
+  id: string,
+  body: RestoreBackupDto
+): Promise<BackupResponseDto> => {
+  const response = await axiosInstance.post<{
+    success: boolean;
+    data: BackupResponseDto;
+  }>(`/admin/backups/${id}/restore`, body);
+  return response.data.data;
+};
+
 export const adminService = {
   // Dashboard
   getSystemMetrics,
@@ -257,4 +325,9 @@ export const adminService = {
   getSecurityOverview,
   getLoginAttempts,
   getSecurityAlerts,
+  // Copias de seguridad
+  getBackups,
+  createBackup,
+  downloadBackup,
+  restoreBackup,
 };

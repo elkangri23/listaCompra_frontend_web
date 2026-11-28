@@ -234,6 +234,26 @@ const mockLoginAttempts = {
   totalPages: 1,
 };
 
+const mockBackups = {
+  backups: [
+    {
+      id: 'bk-1',
+      filename: 'backup-2026-11-28-040000.sql.gz',
+      sizeBytes: 4404019,
+      status: 'CREATED',
+      source: 'SCHEDULED',
+      createdAt: '2026-11-28T04:00:00.000Z',
+      createdByUserId: null,
+      restoreReason: null,
+      restoredAt: null,
+    },
+  ],
+  total: 1,
+  page: 1,
+  pageSize: 10,
+  totalPages: 1,
+};
+
 const renderPage = () => {
   const queryClient = createTestQueryClient();
   const wrapper = ({ children }: { children: ReactNode }) => (
@@ -266,6 +286,7 @@ describe('Panel de administración (fase 2)', () => {
     (adminService.getLoginAttempts as jest.Mock).mockResolvedValue(
       mockLoginAttempts
     );
+    (adminService.getBackups as jest.Mock).mockResolvedValue(mockBackups);
   });
 
   it('muestra el título y las 7 pestañas', () => {
@@ -352,9 +373,25 @@ describe('Panel de administración (fase 2)', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('la pestaña Copias muestra la sección real', async () => {
+    renderPage();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Copias' }));
+
+    expect(await screen.findByText('Copias de seguridad')).toBeInTheDocument();
+    expect(screen.getByText('Crear copia ahora')).toBeInTheDocument();
+    expect(
+      await screen.findAllByText('backup-2026-11-28-040000.sql.gz')
+    ).toHaveLength(2);
+    expect(
+      screen.queryByText(/próximamente: esta sección llega en la siguiente fase/i),
+    ).not.toBeInTheDocument();
+  });
+
   it.each(
     TAB_LABELS.filter(
-      (label) => !['Estado', 'Usuarios', 'IA', 'Auditoría', 'Seguridad'].includes(label)
+      (label) =>
+        !['Estado', 'Usuarios', 'IA', 'Auditoría', 'Seguridad', 'Copias'].includes(label)
     )
   )(
     'la pestaña %s muestra el estado vacío',

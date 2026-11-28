@@ -25,6 +25,10 @@ import {
   getSecurityOverview,
   getLoginAttempts,
   getSecurityAlerts,
+  getBackups,
+  createBackup,
+  downloadBackup,
+  restoreBackup,
 } from '@/features/admin/services/admin-service';
 import { axiosInstance } from '@/lib/api/axios-instance';
 import { createMockAxiosResponse, createMockAxiosError } from '../../utils/test-utils';
@@ -923,6 +927,218 @@ describe('adminService (CRÍTICO - 100% coverage)', () => {
 
       await expect(getSecurityAlerts()).rejects.toMatchObject({
         message: 'Error del servidor',
+      });
+    });
+  });
+
+  describe('getBackups', () => {
+    const mockBackups = {
+      backups: [
+        {
+          id: 'bk-1',
+          filename: 'backup-2026-11-28-040000.sql.gz',
+          sizeBytes: 4404019,
+          status: 'CREATED',
+          source: 'SCHEDULED',
+          createdAt: '2026-11-28T04:00:00.000Z',
+          createdByUserId: null,
+          restoreReason: null,
+          restoredAt: null,
+        },
+        {
+          id: 'bk-2',
+          filename: 'backup-2026-11-28-113000.sql.gz',
+          sizeBytes: null,
+          status: 'PENDING',
+          source: 'MANUAL',
+          createdAt: '2026-11-28T11:30:00.000Z',
+          createdByUserId: 'admin-1',
+          restoreReason: null,
+          restoredAt: null,
+        },
+      ],
+      total: 2,
+      page: 1,
+      pageSize: 20,
+      totalPages: 1,
+    };
+
+    it('debe obtener el historial desempaquetando {success, data}', async () => {
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ success: true, data: mockBackups })
+      );
+
+      const result = await getBackups();
+
+      expect(axiosInstance.get).toHaveBeenCalledWith('/admin/backups', {
+        params: { page: 1, pageSize: 20 },
+      });
+      expect(result.backups).toHaveLength(2);
+      expect(result.backups[0].status).toBe('CREATED');
+      expect(result.backups[1].sizeBytes).toBeNull();
+      expect(result.total).toBe(2);
+    });
+
+    it('debe paginar el historial', async () => {
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ success: true, data: { ...mockBackups, backups: [] } })
+      );
+
+      await getBackups(2, 10);
+
+      expect(axiosInstance.get).toHaveBeenCalledWith('/admin/backups', {
+        params: { page: 2, pageSize: 10 },
+      });
+    });
+
+    it('debe rechazar sin token (401)', async () => {
+      (axiosInstance.get as jest.Mock).mockRejectedValue(
+        createMockAxiosError('No autorizado', 401)
+      );
+
+      await expect(getBackups()).rejects.toMatchObject({
+        response: { status: 401 },
+      });
+    });
+
+    it('debe rechazar sin rol ADMIN (403)', async () => {
+      (axiosInstance.get as jest.Mock).mockRejectedValue(
+        createMockAxiosError('No autorizado', 403)
+      );
+
+      await expect(getBackups()).rejects.toMatchObject({
+        response: { status: 403 },
+      });
+    });
+  });
+
+  describe('createBackup', () => {
+    const mockCreated = {
+      backup: {
+        id: 'bk-3',
+        filename: 'backup-2026-11-28-114500.sql.gz',
+        sizeBytes: null,
+        status: 'PENDING',
+        source: 'MANUAL',
+        createdAt: '2026-11-28T11:45:00.000Z',
+        createdByUserId: 'admin-1',
+        restoreReason: null,
+        restoredAt: null,
+      },
+    };
+
+    it('debe crear una copia manual desempaquetando {success, data}', async () => {
+      (axiosInstance.post as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ success: true, data: mockCreated }, 201)
+      );
+
+      const result = await createBackup();
+
+      expect(axiosInstance.post).toHaveBeenCalledWith('/admin/backups');
+      expect(result.backup.status).toBe('PENDING');
+      expect(result.backup.source).toBe('MANUAL');
+    });
+
+    it('debe propagar el 409 si ya hay una copia en curso', async () => {
+      (axiosInstance.post as jest.Mock).mockRejectedValue(
+        createMockAxiosError('Ya hay una copia de seguridad en curso', 409)
+      );
+
+      await expect(createBackup()).rejects.toMatchObject({
+        response: { status: 409 },
+      });
+    });
+
+    it('debe rechazar sin rol ADMIN (403)', async () => {
+      (axiosInstance.post as jest.Mock).mockRejectedValue(
+        createMockAxiosError('No autorizado', 403)
+      );
+
+      await expect(createBackup()).rejects.toMatchObject({
+        response: { status: 403 },
+      });
+    });
+  });
+
+  describe('downloadBackup', () => {
+    it('debe pedir el binario con responseType blob y devolver el Blob', async () => {
+      const blob = new Blob(['contenido'], { type: 'application/gzip' });
+      (axiosInstance.get as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse(blob)
+      );
+
+      const result = await downloadBackup('bk-1');
+
+      expect(axiosInstance.get).toHaveBeenCalledWith('/admin/backups/bk-1/download', {
+        responseType: 'blob',
+      });
+      expect(result).toBe(blob);
+    });
+
+    it('debe rechazar sin token (401)', async () => {
+      (axiosInstance.get as jest.Mock).mockRejectedValue(
+        createMockAxiosError('No autorizado', 401)
+      );
+
+      await expect(downloadBackup('bk-1')).rejects.toMatchObject({
+        response: { status: 401 },
+      });
+    });
+  });
+
+  describe('restoreBackup', () => {
+    const mockRestoring = {
+      backup: {
+        id: 'bk-1',
+        filename: 'backup-2026-11-28-040000.sql.gz',
+        sizeBytes: 4404019,
+        status: 'RESTORING',
+        source: 'SCHEDULED',
+        createdAt: '2026-11-28T04:00:00.000Z',
+        createdByUserId: null,
+        restoreReason: 'Datos corruptos tras la migración',
+        restoredAt: null,
+      },
+    };
+
+    it('debe restaurar con confirmación RESTAURAR y motivo desempaquetando {success, data}', async () => {
+      (axiosInstance.post as jest.Mock).mockResolvedValue(
+        createMockAxiosResponse({ success: true, data: mockRestoring }, 202)
+      );
+
+      const result = await restoreBackup('bk-1', {
+        confirmacion: 'RESTAURAR',
+        motivo: 'Datos corruptos tras la migración',
+      });
+
+      expect(axiosInstance.post).toHaveBeenCalledWith('/admin/backups/bk-1/restore', {
+        confirmacion: 'RESTAURAR',
+        motivo: 'Datos corruptos tras la migración',
+      });
+      expect(result.backup.status).toBe('RESTORING');
+    });
+
+    it('debe propagar el 400 con confirmación incorrecta o motivo vacío', async () => {
+      (axiosInstance.post as jest.Mock).mockRejectedValue(
+        createMockAxiosError('La confirmación debe ser exactamente RESTAURAR', 400)
+      );
+
+      await expect(
+        restoreBackup('bk-1', { confirmacion: 'RESTAURAR', motivo: '' })
+      ).rejects.toMatchObject({
+        response: { status: 400 },
+      });
+    });
+
+    it('debe rechazar sin rol ADMIN (403)', async () => {
+      (axiosInstance.post as jest.Mock).mockRejectedValue(
+        createMockAxiosError('No autorizado', 403)
+      );
+
+      await expect(
+        restoreBackup('bk-1', { confirmacion: 'RESTAURAR', motivo: 'Prueba' })
+      ).rejects.toMatchObject({
+        response: { status: 403 },
       });
     });
   });

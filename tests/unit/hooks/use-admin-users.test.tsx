@@ -25,6 +25,11 @@ import {
   useSecurityAlerts,
   useSecurityOverview,
   useLoginAttempts,
+  useBackups,
+  useCreateBackup,
+  useDownloadBackup,
+  useRestoreBackup,
+  backupsHaveActiveWork,
 } from '@/features/admin/hooks/use-admin-users';
 import { createTestQueryClient } from '../../utils/test-utils';
 import { ReactNode } from 'react';
@@ -645,6 +650,222 @@ describe('useAdminUsers hooks (CRÍTICO - 100% coverage)', () => {
         { email: 'ana@ejemplo.com', success: true },
         1,
         20
+      );
+    });
+  });
+
+  describe('backupsHaveActiveWork', () => {
+    it('detecta trabajo en curso con PENDING o RESTORING', () => {
+      expect(backupsHaveActiveWork([{ status: 'PENDING' }])).toBe(true);
+      expect(backupsHaveActiveWork([{ status: 'RESTORING' }])).toBe(true);
+      expect(
+        backupsHaveActiveWork([{ status: 'CREATED' }, { status: 'PENDING' }])
+      ).toBe(true);
+    });
+
+    it('no hay trabajo en curso con estados finales', () => {
+      expect(backupsHaveActiveWork([])).toBe(false);
+      expect(
+        backupsHaveActiveWork([
+          { status: 'CREATED' },
+          { status: 'FAILED' },
+          { status: 'RESTORED' },
+          { status: 'RESTORE_FAILED' },
+        ])
+      ).toBe(false);
+    });
+  });
+
+  describe('useBackups', () => {
+    const mockBackups = {
+      backups: [
+        {
+          id: 'bk-1',
+          filename: 'backup-2026-11-28-040000.sql.gz',
+          sizeBytes: 4404019,
+          status: 'CREATED',
+          source: 'SCHEDULED',
+          createdAt: '2026-11-28T04:00:00.000Z',
+          createdByUserId: null,
+          restoreReason: null,
+          restoredAt: null,
+        },
+      ],
+      total: 1,
+      page: 1,
+      pageSize: 10,
+      totalPages: 1,
+    };
+
+    it('debe obtener el historial de copias con paginación', async () => {
+      (adminService.getBackups as jest.Mock).mockResolvedValue(mockBackups);
+
+      const { result } = renderHook(() => useBackups(1, 10), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(result.current.data).toEqual(mockBackups);
+      expect(adminService.getBackups).toHaveBeenCalledWith(1, 10);
+    });
+
+    it('debe manejar error al obtener las copias', async () => {
+      (adminService.getBackups as jest.Mock).mockRejectedValue(
+        new Error('No autorizado')
+      );
+
+      const { result } = renderHook(() => useBackups(), { wrapper });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+    });
+  });
+
+  describe('useCreateBackup', () => {
+    it('debe crear la copia, avisar y refrescar la lista', async () => {
+      const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
+      const mockCreated = {
+        backup: {
+          id: 'bk-3',
+          filename: 'backup-2026-11-28-114500.sql.gz',
+          sizeBytes: null,
+          status: 'PENDING',
+          source: 'MANUAL',
+          createdAt: '2026-11-28T11:45:00.000Z',
+          createdByUserId: 'admin-1',
+          restoreReason: null,
+          restoredAt: null,
+        },
+      };
+      (adminService.createBackup as jest.Mock).mockResolvedValue(mockCreated);
+
+      const { result } = renderHook(() => useCreateBackup(), { wrapper });
+
+      result.current.mutate();
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(adminService.createBackup).toHaveBeenCalledWith();
+      expect(toast.success).toHaveBeenCalledWith(
+        'Copia solicitada: se está creando, actualiza en unos minutos'
+      );
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['admin', 'backups'] });
+    });
+
+    it('debe mostrar el mensaje del backend en el 409', async () => {
+      const conflict = {
+        response: { data: { message: 'Ya hay una copia de seguridad en curso' } },
+        message: 'Request failed with status code 409',
+      };
+      (adminService.createBackup as jest.Mock).mockRejectedValue(conflict);
+
+      const { result } = renderHook(() => useCreateBackup(), { wrapper });
+
+      result.current.mutate();
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+
+      expect(toast.error).toHaveBeenCalledWith(
+        'Error al crear la copia: Ya hay una copia de seguridad en curso'
+      );
+    });
+
+    it('debe mostrar el mensaje genérico si el error no trae mensaje del backend', async () => {
+      (adminService.createBackup as jest.Mock).mockRejectedValue(
+        new Error('Error de red')
+      );
+
+      const { result } = renderHook(() => useCreateBackup(), { wrapper });
+
+      result.current.mutate();
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+
+      expect(toast.error).toHaveBeenCalledWith('Error al crear la copia: Error de red');
+    });
+  });
+
+  describe('useDownloadBackup', () => {
+    it('debe descargar el Blob de la copia', async () => {
+      const blob = new Blob(['contenido'], { type: 'application/gzip' });
+      (adminService.downloadBackup as jest.Mock).mockResolvedValue(blob);
+
+      const { result } = renderHook(() => useDownloadBackup(), { wrapper });
+
+      result.current.mutate({ id: 'bk-1', filename: 'backup.sql.gz' });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(adminService.downloadBackup).toHaveBeenCalledWith('bk-1');
+      expect(result.current.data).toBe(blob);
+    });
+
+    it('debe mostrar el mensaje del backend si la descarga falla', async () => {
+      const notFound = {
+        response: { data: { message: 'Copia no encontrada' } },
+        message: 'Request failed with status code 404',
+      };
+      (adminService.downloadBackup as jest.Mock).mockRejectedValue(notFound);
+
+      const { result } = renderHook(() => useDownloadBackup(), { wrapper });
+
+      result.current.mutate({ id: 'bk-9', filename: 'backup.sql.gz' });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+
+      expect(toast.error).toHaveBeenCalledWith(
+        'Error al descargar la copia: Copia no encontrada'
+      );
+    });
+  });
+
+  describe('useRestoreBackup', () => {
+    it('debe restaurar con RESTAURAR y motivo, avisar y refrescar la lista', async () => {
+      const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
+      const mockRestoring = {
+        backup: {
+          id: 'bk-1',
+          filename: 'backup-2026-11-28-040000.sql.gz',
+          sizeBytes: 4404019,
+          status: 'RESTORING',
+          source: 'SCHEDULED',
+          createdAt: '2026-11-28T04:00:00.000Z',
+          createdByUserId: null,
+          restoreReason: 'Datos corruptos',
+          restoredAt: null,
+        },
+      };
+      (adminService.restoreBackup as jest.Mock).mockResolvedValue(mockRestoring);
+
+      const { result } = renderHook(() => useRestoreBackup(), { wrapper });
+
+      result.current.mutate({ id: 'bk-1', motivo: 'Datos corruptos' });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(adminService.restoreBackup).toHaveBeenCalledWith('bk-1', {
+        confirmacion: 'RESTAURAR',
+        motivo: 'Datos corruptos',
+      });
+      expect(toast.success).toHaveBeenCalledWith(
+        'Restauración iniciada: la copia se está restaurando'
+      );
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['admin', 'backups'] });
+    });
+
+    it('debe mostrar el mensaje del backend si la restauración falla', async () => {
+      const badRequest = {
+        response: { data: { message: 'La confirmación debe ser exactamente RESTAURAR' } },
+        message: 'Request failed with status code 400',
+      };
+      (adminService.restoreBackup as jest.Mock).mockRejectedValue(badRequest);
+
+      const { result } = renderHook(() => useRestoreBackup(), { wrapper });
+
+      result.current.mutate({ id: 'bk-1', motivo: 'Datos corruptos' });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+
+      expect(toast.error).toHaveBeenCalledWith(
+        'Error al restaurar la copia: La confirmación debe ser exactamente RESTAURAR'
       );
     });
   });
